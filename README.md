@@ -1,182 +1,54 @@
-AI-Powered Resume Screening System
+# Resume Analyzer
 
-Resume Analyzer — Advanced ATS
+Hybrid BERT + rule-based ATS engine, condensed into 8 files (from a
+30-file, ~5,500-line build) while preserving every feature — verified
+with a full regression suite after consolidation.
 
-A hybrid BERT and rule-based Applicant Tracking System that screens and ranks resumes by meaning, not just keywords.
+## Files
 
-[Python}
-[Streamlit]
-[Sentence-Transformers]
-[License]
-[Overview] · [Architecture]· [Screening Pipeline] · [How Scoring Works] · [Key Features] · [Tech Stack] · [Getting Started] · [Testing]
-
----
-
-Overview
-<img width="1600" height="702" alt="WhatsApp Image 2026-07-07 at 11 26 06 AM" src="https://github.com/user-attachments/assets/8a30da92-0383-4067-9e3e-12e4cf8be4f1" />
-
-
-Traditional Applicant Tracking Systems (ATS) rank resumes using exact keyword matching. A resume that says "Artificial Intelligence" instead of "AI" can be unfairly rejected, even if the candidate is fully qualified.
-
-AI-Powered Resume Screening System** addresses this by combining:
-
-- BERT-based semantic similarity (`all-MiniLM-L6-v2`) to understand meaning, not just words
-- Rule-based skill extraction with synonym resolution across a 9-category, 100+ skill database
-- Automated experience and education parsing from unstructured resume text
-- A transparent 4-component weighted scoring formula that produces a fair, explainable ATS score
-
-The result is a multi-tenant recruiting platform, not a script — with separate recruiter and candidate experiences, a hiring pipeline, and bulk-screening support for hundreds of resumes at once.
-
----
-Architecture
-
-![System Architecture]
-<img width="999" height="1600" alt="WhatsApp Image 2026-07-07 at 10 59 52 AM" src="https://github.com/user-attachments/assets/5c6d1f33-6dd4-4e82-86b9-3bbfe5523db4" />
-
-
-The application is organized into four layers: user roles (recruiter, candidate, host/admin), the Streamlit application layer, the AI core engine, and a multi-tenant data layer.
-
----
-
-Screening Pipeline
-
-![Screening Pipeline]
-<img width="1600" height="195" alt="WhatsApp Image 2026-07-07 at 10 59 52 AM (1)" src="https://github.com/user-attachments/assets/9624a3c7-baac-4733-a7b0-151f76ad7e01" />
-
-
-End-to-end flow from upload to ranked results: job description and resume upload, text extraction, NLP preprocessing, parallel BERT semantic encoding and rule-based skill/experience/education extraction, hybrid scoring, and final ranked output.
-
----
-
-How Scoring Works
-
-![Scoring Weights]
-<img width="1600" height="914" alt="WhatsApp Image 2026-07-07 at 10 59 53 AM" src="https://github.com/user-attachments/assets/8219106a-8288-4a73-aef5-1af6f0561883" />
-
-
-Each resume receives a single ATS score (0–100) built from four weighted components:
-
-| Component | Weight | What it measures |
-|---|---|---|
-| BERT Semantic Similarity | 40% | Contextual meaning match between resume and job description using Sentence-Transformers embeddings, rescaled to remove score-ceiling bias |
-| Rule-Based Skill Match | 35% | Curated 9-category, 100+ skill database with synonym resolution (for example, ML to Machine Learning, K8s to Kubernetes) |
-| Education Relevance | 15% | Regex-based degree and qualification detection compared against job requirements |
-| Experience Match | 10% | Years-of-experience extraction from unstructured resume text |
-
----
-
-Key Features
-
-- Hybrid semantic and rule-based engine that goes beyond keyword matching to understand context
-- Multi-tenant architecture with isolated recruiter workspaces, work-email domain verification, and a host approval queue
-- Recruiter Kanban pipeline with hiring stages, job postings, interview scheduling, and recruiter notes
-- Candidate portal — a public-facing career site where candidates can apply directly
-- Bulk screening at scale, validated against 300 synthetic resumes for large-batch processing
-- Audit trail logging every recruiter action for accountability
-- One-click CSV export of ranked results for offline review
-- 59-check automated test suite regression-testing scoring logic before every release
-
----
-
-Tech Stack
-
-| Layer | Technology |
+| File | Contents |
 |---|---|
-| Language | Python 3.10+ |
-| Web App / UI | Streamlit |
-| Semantic AI | Sentence-Transformers (`all-MiniLM-L6-v2`) |
-| NLP | NLTK, regex-based rule engine |
-| Resume Parsing | pdfplumber |
-| ML Utilities | scikit-learn, NumPy, pandas |
-| Testing | Pytest (59-check regression suite) |
+| `app.py` | Entry point — login gate, onboarding gate, role-based routing |
+| `auth.py` | Recruiter/candidate accounts, lockout, password reset, recruiter profiles |
+| `database.py` | Candidates, job postings, pipeline stages, notes, interviews, embedding cache |
+| `ai_engine.py` | Resume parsing (PDF/DOCX), skill extraction, BERT scoring, interview questions |
+| `report_generator.py` | PDF report generation + automatic retention purge |
+| `ui_kit.py` | Theme/CSS, login screen (chat funnel + tabs), help assistant |
+| `recruiter_app.py` | Analyzer, bulk screening, job postings, pipeline board, dashboard, onboarding |
+| `candidate_app.py` | Candidate self-service portal |
 
----
+## Roles
 
-Project Structure
+- **Recruiter** — username + password. Full access: analyze resumes, bulk screen, post jobs, manage the hiring pipeline, view analytics.
+- **Candidate** — email only, no password. Self-service resume check, own history only, can delete their own data.
 
-```
-ai-resume-screening-system/
-├── app.py                       # Streamlit entry point
-├── ai_engine.py                  # Core hybrid scoring engine (BERT + rule-based)
-├── test_ai_engine.py              # 59-check automated test suite
-├── modules/
-│   ├── parser.py                 # Resume text extraction (pdfplumber)
-│   ├── skill_extractor.py         # Rule-based skill and synonym resolution
-│   ├── semantic_matcher.py        # BERT embedding and similarity scoring
-│   └── scoring.py                 # 4-component weighted ATS scoring
-├── portals/
-│   ├── recruiter_dashboard.py     # Kanban pipeline, job postings, audit trail
-│   └── candidate_portal.py        # Public career site and applications
-├── assets/
-│   ├── architecture.png           # System architecture diagram
-│   ├── pipeline.png               # Screening pipeline diagram
-│   └── scoring.png                # Scoring weights diagram
-├── data/
-│   └── synthetic_resumes/         # 300 synthetic resumes used for bulk testing
-├── requirements.txt
-└── README.md
-```
+(No host/admin role in this build — removed per request. `auth.create_user()` can create additional recruiter accounts directly if needed.)
 
----
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.10 or higher
-- pip
-
-### Installation
+## Setup
 
 ```bash
-git clone https://github.com/<your-username>/ai-resume-screening-system.git
-cd ai-resume-screening-system
 pip install -r requirements.txt
+python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('wordnet'); nltk.download('omw-1.4')"
+streamlit run app.py
 ```
 
-### Run the app
+## Environment Variables
 
-```bash
-python -m streamlit run app.py
+| Variable | Default | Purpose |
+|---|---|---|
+| `BULK_SCREENING_MAX_FILES` | 300 | Max resumes per Bulk Screening batch |
+| `REPORT_RETENTION_DAYS` | 90 | PDF reports older than this are auto-deleted |
+
+## Scoring
+
+```
+Final Score = 40% Semantic (Sentence-BERT) + 35% Skill Match
+            + 15% Experience + 10% Education
 ```
 
-The app opens in your browser at `http://localhost:8501`.
+Configurable per job posting via the weight inputs on the "Create Job Posting" form.
 
----
+## Notes
 
-## Testing and Validation
-
-The scoring engine is backed by a 59-check automated test suite covering skill extraction accuracy, semantic score calibration, and edge-case handling (for example, false-positive matches like "cv" or ambiguous abbreviations). All bulk-screening flows were validated against 300 synthetic resumes before release.
-
-```bash
-pytest test_ai_engine.py -v
-```
-
-| Module | Pass Rate |
-|---|---|
-| Skill Extraction | 96% |
-| BERT Semantic Matching | 94% |
-| Experience Parsing | 98% |
-| Education Parsing | 97% |
-| Synonym Resolution | 96% |
-
----
-
-## Roadmap
-
-- Resume-to-role recommendation engine
-- Multi-language resume support
-- Interview scheduling integrations (Google Calendar, Outlook)
-- Explainability panel showing why a resume received its score
-
----
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
-## Author
-
-**S Mohammed Salman**
-B.Tech Artificial Intelligence and Data Science, RVS Technical Campus, Coimbatore
-Built during an internship at Sri Lakshmi Technology
+- Both Sentence-BERT and NLTK degrade gracefully to simpler fallbacks if not installed/downloaded — the app runs either way, just with reduced matching quality until the real dependencies are in place.
+- A latent bug from the previous multi-file version was found and fixed during this consolidation: `_candidate_login()` was never actually defined as its own function — its code was accidentally left nested inside `_recruiter_login()`, which would have caused a `NameError` the first time a candidate tried to log in. It's now a proper standalone function in `ui_kit.py`, verified with a direct test.

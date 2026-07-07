@@ -1,0 +1,12 @@
+streamlit
+pandas
+numpy
+pdfplumber
+python-docx
+sentence-transformers
+scikit-learn
+torch
+transformers
+reportlab
+plotly
+nltk
