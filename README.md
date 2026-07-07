@@ -4,17 +4,17 @@ Resume Analyzer — Advanced ATS
 
 A hybrid BERT and rule-based Applicant Tracking System that screens and ranks resumes by meaning, not just keywords.
 
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?style=flat-square)](https://streamlit.io/)
-[![Sentence-Transformers](https://img.shields.io/badge/Sentence--Transformers-BERT-444444?style=flat-square)](https://www.sbert.net/)
-[![License](https://img.shields.io/badge/License-MIT-444444?style=flat-square)](#license)
-[![Status](https://img.shields.io/badge/Status-Active-444444?style=flat-square)](#)
-
-[Overview](#overview) · [Architecture](#architecture) · [Screening Pipeline](#screening-pipeline) · [How Scoring Works](#how-scoring-works) · [Key Features](#key-features) · [Tech Stack](#tech-stack) · [Getting Started](#getting-started) · [Testing](#testing-and-validation)
+[Python}
+[Streamlit]
+[Sentence-Transformers]
+[License]
+[Overview] · [Architecture]· [Screening Pipeline] · [How Scoring Works] · [Key Features] · [Tech Stack] · [Getting Started] · [Testing]
 
 ---
 
 Overview
+<img width="1600" height="702" alt="WhatsApp Image 2026-07-07 at 11 26 06 AM" src="https://github.com/user-attachments/assets/8a30da92-0383-4067-9e3e-12e4cf8be4f1" />
+
 
 Traditional Applicant Tracking Systems (ATS) rank resumes using exact keyword matching. A resume that says "Artificial Intelligence" instead of "AI" can be unfairly rejected, even if the candidate is fully qualified.
 
@@ -30,7 +30,9 @@ The result is a multi-tenant recruiting platform, not a script — with separate
 ---
 Architecture
 
-![System Architecture](assets/architecture.png)
+![System Architecture]
+<img width="999" height="1600" alt="WhatsApp Image 2026-07-07 at 10 59 52 AM" src="https://github.com/user-attachments/assets/5c6d1f33-6dd4-4e82-86b9-3bbfe5523db4" />
+
 
 The application is organized into four layers: user roles (recruiter, candidate, host/admin), the Streamlit application layer, the AI core engine, and a multi-tenant data layer.
 
@@ -38,7 +40,9 @@ The application is organized into four layers: user roles (recruiter, candidate,
 
 Screening Pipeline
 
-![Screening Pipeline](assets/pipeline.png)
+![Screening Pipeline]
+<img width="1600" height="195" alt="WhatsApp Image 2026-07-07 at 10 59 52 AM (1)" src="https://github.com/user-attachments/assets/9624a3c7-baac-4733-a7b0-151f76ad7e01" />
+
 
 End-to-end flow from upload to ranked results: job description and resume upload, text extraction, NLP preprocessing, parallel BERT semantic encoding and rule-based skill/experience/education extraction, hybrid scoring, and final ranked output.
 
@@ -46,7 +50,9 @@ End-to-end flow from upload to ranked results: job description and resume upload
 
 How Scoring Works
 
-![Scoring Weights](assets/scoring.png)
+![Scoring Weights]
+<img width="1600" height="914" alt="WhatsApp Image 2026-07-07 at 10 59 53 AM" src="https://github.com/user-attachments/assets/8219106a-8288-4a73-aef5-1af6f0561883" />
+
 
 Each resume receives a single ATS score (0–100) built from four weighted components:
 
