@@ -1,0 +1,10 @@
+google-generativeai
+fastapi[all]
+uvicorn[standard]
+python-dotenv
+bcrypt
+python-docx
+pypdf
+scikit-learn
+scipy
+python-multipart
