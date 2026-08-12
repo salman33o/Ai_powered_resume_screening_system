@@ -2,14 +2,15 @@ import '../styles/globals.css';
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
+import ThreeCanvas from '@/components/ThreeCanvas';
 
 export const metadata: Metadata = {
-  title: 'ResumeAI — AI-Powered Resume Analyzer',
-  description: 'Analyze your resume with Gemini AI. Get ATS scores, skill gap analysis, cover letters, and career suggestions — all free.',
-  keywords: 'resume analyzer, ATS score, AI resume, job matching, cover letter generator',
+  title: 'ResumeAI — Next-Gen AI Resume Screening & Career Intelligence',
+  description: 'Ultra-modern AI Resume Screening Platform powered by Gemini AI. Get instant ATS scores, human-centric skill gap analysis, custom cover letters, and mock interview prep.',
+  keywords: 'resume analyzer, ATS score, AI resume reviewer, 3D resume scanner, job matching platform',
   openGraph: {
-    title: 'ResumeAI — AI-Powered Resume Analyzer',
-    description: 'Analyze your resume with Gemini AI. Get ATS scores, skill gap analysis, and career suggestions — all free.',
+    title: 'ResumeAI — Next-Gen AI Resume Screening & Career Intelligence',
+    description: 'Ultra-modern AI Resume Screening Platform powered by Gemini AI. Get instant ATS scores, human-centric skill gap analysis, and interview prep.',
     type: 'website',
   },
 };
@@ -23,8 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <AuthProvider>
-          <Navbar />
-          {children}
+          <ThreeCanvas />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <Navbar />
+            {children}
+          </div>
         </AuthProvider>
       </body>
     </html>
