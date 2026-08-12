@@ -44,11 +44,14 @@ export default function Navbar() {
       {/* Nav Links */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
         <NavLink href="/candidate/jobs" active={isActive('/candidate/jobs')}>Jobs</NavLink>
-        {user?.role === 'recruiter' && (
-          <NavLink href="/recruiter/dashboard" active={isActive('/recruiter/dashboard')}>Dashboard</NavLink>
-        )}
         {user?.role === 'candidate' && (
-          <NavLink href="/candidate/dashboard" active={isActive('/candidate/dashboard')}>My Dashboard</NavLink>
+          <NavLink href="/candidate/dashboard" active={isActive('/candidate/dashboard')}>Mode 1: Candidate Scan</NavLink>
+        )}
+        {user?.role === 'recruiter' && (
+          <>
+            <NavLink href="/recruiter/dashboard" active={isActive('/recruiter/dashboard')}>Dashboard</NavLink>
+            <NavLink href="/recruiter/studio" active={isActive('/recruiter/studio')}>Mode 2: AI Studio</NavLink>
+          </>
         )}
       </div>
 

@@ -73,3 +73,7 @@ export async function generateInterviewQuestions(candidateData: any, jobPostingI
 export async function fetchRecruiterAnalytics(): Promise<any> {
   return apiClient.get('recruiter/dashboard/analytics').json();
 }
+
+export async function queryMatchmaker(query: string): Promise<{ results: any[] }> {
+  return apiClient.post('recruiter/matchmaker', { json: { query } }).json();
+}

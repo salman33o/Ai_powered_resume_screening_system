@@ -445,3 +445,40 @@ Use strong action verbs and quantified achievements."""
         fallback = f"[Professional resume template for {preferred_role} would appear here.]"
 
     return _ask_gemini(prompt, fallback)
+
+
+def ai_matchmaker_query(query: str, candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Mode 2 AI Headhunter: semantic match & rank candidates against a natural language search query."""
+    results = []
+    query_skills = set(_extract_skills_from_text(query))
+
+    for cand in candidates:
+        resume_text = cand.get("resume_text", "")
+        cand_skills = set(s.lower() for s in cand.get("skills", []))
+        if resume_text:
+            cand_skills.update(_extract_skills_from_text(resume_text))
+
+        # Semantic match score
+        sem_score = _tfidf_similarity(resume_text, query) * 100
+
+        # Skill match score
+        matched_skills = list(cand_skills & query_skills) if query_skills else list(cand_skills[:5])
+        skill_score = (len(matched_skills) / len(query_skills) * 100) if query_skills else 60.0
+
+        total_score = round(min(100.0, sem_score * 0.5 + skill_score * 0.5), 1)
+
+        results.append({
+            "candidate_id": cand.get("id"),
+            "name": cand.get("name", "Candidate"),
+            "email": cand.get("email", "N/A"),
+            "location": cand.get("location", "Remote"),
+            "match_score": total_score if total_score > 0 else 50.0,
+            "matched_skills": matched_skills,
+            "all_skills": list(cand_skills)[:8],
+            "ai_highlight": f"Strong alignment in {', '.join(matched_skills[:3]) if matched_skills else 'core engineering competencies'}.",
+        })
+
+    # Sort descending by match score
+    results.sort(key=lambda x: x["match_score"], reverse=True)
+    return results
+

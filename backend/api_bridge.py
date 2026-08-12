@@ -360,6 +360,17 @@ async def get_candidate_profile(user_id: int):
 recruiter_router = APIRouter(prefix="/recruiter")
 
 
+class MatchmakerRequest(BaseModel):
+    query: str
+
+
+@recruiter_router.post("/matchmaker")
+async def query_matchmaker(req: MatchmakerRequest):
+    candidates = db.get_all_candidates()
+    results = ai.ai_matchmaker_query(req.query, candidates)
+    return {"results": results}
+
+
 @recruiter_router.get("/dashboard/analytics")
 async def get_recruiter_analytics():
     stats = db.get_applications_stats()

@@ -426,3 +426,21 @@ def get_applications_stats():
         }
     finally:
         conn.close()
+
+
+def get_all_candidates():
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM candidates")
+        rows = rows_to_dicts(cur.fetchall())
+        for row in rows:
+            if isinstance(row.get("skills"), str):
+                try:
+                    row["skills"] = json.loads(row["skills"])
+                except Exception:
+                    row["skills"] = []
+        return rows
+    finally:
+        conn.close()
+
