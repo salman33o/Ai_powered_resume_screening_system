@@ -1,17 +1,33 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional, Dict, List, Any
-from datetime import datetime
+"""
+FastAPI REST API Bridge — Advanced ATS & Resume Screening Platform
+Supports Candidate & Recruiter Workflows, JWT Auth, Role Access Control, Bulk Screening, & AI Features.
+"""
+import sys
+import os
+from pathlib import Path
 
-import auth
+# Add directory to sys.path to resolve internal modules cleanly
+_backend_dir = Path(__file__).resolve().parent
+if str(_backend_dir) not in sys.path:
+    sys.path.insert(0, str(_backend_dir))
+
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, Header, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, EmailStr
+from typing import Optional, Dict, List, Any
+from sqlalchemy.orm import Session
+import json
+
 import database as db
+import auth
 import ai_engine as ai
+from models import User, CandidateProfile, RecruiterProfile, JobPosting, Application, ResumeVersion, UserRole, ApplicationStatus
+import worker
 
 app = FastAPI(
-    title="Resume Analyzer API",
-    version="3.0",
-    description="AI-powered Resume Analysis, Job Matching, and Hiring Management.",
+    title="Advanced ATS & Resume Screening Platform API",
+    version="4.0",
+    description="Production-ready REST APIs for Candidate Resume Optimization and Recruiter ATS Bulk Screening.",
 )
 
 app.add_middleware(
@@ -22,361 +38,245 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.on_event("startup")
 async def startup_event():
-    print("Initializing database tables...")
-    auth.init_db()
+    print("[INIT] Initializing database and tables...")
     db.init_db()
-    print("Database initialization complete.")
+    print("[OK] Database ready.")
 
-
-api_router = APIRouter()
-
-
-@api_router.get("/health")
-async def health_check():
-    return {"status": "ok", "message": "Resume Analyzer API v3.0 is running"}
-
-
-# ── Auth ──────────────────────────────────────────────────────────────────────
-
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-
-
-class RegisterRequest(BaseModel):
-    username: str
-    password: str
-    email: str
-    role: str
-
-
-@api_router.post("/auth/login")
-async def login(req: LoginRequest):
-    try:
-        user_data = auth.authenticate_user(req.username, req.password)
-        if not user_data:
-            raise HTTPException(status_code=401, detail="Incorrect username or password")
-
-        if auth.is_2fa_enabled(user_data["id"]):
-            return {"requires_2fa": True, "user_id": user_data["id"]}
-
-        session_token = auth.create_session(user_data["id"])
-        return {"requires_2fa": False, "session_token": session_token, "user": user_data}
-
-    except auth.AccountLockedError as e:
-        raise HTTPException(status_code=423, detail=str(e))
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Login error: {e}")
-        raise HTTPException(status_code=500, detail="An unexpected error occurred during login.")
-
-
-@api_router.post("/auth/register")
-async def register(req: RegisterRequest):
-    if len(req.password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long.")
-
-    existing_user = auth._get_user_by_username(req.username)
-    if existing_user:
-        raise HTTPException(status_code=409, detail="Username already exists.")
-
-    user = auth.create_user(req.username, req.password, req.email, req.role)
+# ── JWT Dependency ───────────────────────────────────────────────────────────
+def get_current_user(authorization: Optional[str] = Header(None), dbs: Session = Depends(db.get_db)) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header.")
+    token = authorization.split(" ")[1]
+    payload = auth.decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token expired or invalid.")
+    user = dbs.query(User).filter(User.username == payload.get("sub")).first()
     if not user:
-        raise HTTPException(status_code=500, detail="Failed to create user.")
+        raise HTTPException(status_code=401, detail="User not found.")
+    return user
 
-    return {"message": "User registered successfully", "user_id": user["id"]}
+# ── Health check ─────────────────────────────────────────────────────────────
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok", "message": "Advanced ATS Platform API v4.0 is active"}
 
-
-# ── Candidate data model ──────────────────────────────────────────────────────
-
-class CandidateData(BaseModel):
-    name: str
+# ── Authentication ────────────────────────────────────────────────────────────
+class RegisterSchema(BaseModel):
+    username: str
     email: str
-    phone: Optional[str] = None
-    linkedin_url: Optional[str] = None
-    github_url: Optional[str] = None
-    location: Optional[str] = None
-    resume_text: Optional[str] = None
-    skills: Optional[List[str]] = []
-    education: Optional[List[Dict[str, Any]]] = []
-    experience: Optional[List[Dict[str, Any]]] = []
+    password: str
+    role: str = "Candidate" # Candidate or Recruiter
 
+class LoginSchema(BaseModel):
+    username: str
+    password: str
 
-# ── Resume upload ─────────────────────────────────────────────────────────────
-
-@api_router.post("/candidate/resume/upload")
-async def upload_resume(user_id: int = Form(...), file: UploadFile = File(...)):
-    file_bytes = await file.read()
-
-    try:
-        parsed_data = ai.parse_resume(file_bytes, file.filename or "resume.dat")
-    except Exception as e:
-        print(f"Error parsing resume: {e}")
-        raise HTTPException(status_code=500, detail="Could not parse resume file.")
-
-    original_filename = file.filename or "resume.dat"
-    resume_file_path = f"/storage/resumes/{user_id}/{original_filename}"
-
-    candidate_email = parsed_data.get("email")
-    candidate_name = parsed_data.get("name")
-
-    if not candidate_email or candidate_email == "N/A":
-        candidate_email = f"user_{user_id}@placeholder.com"
-    if not candidate_name or candidate_name == "N/A":
-        candidate_name = f"User {user_id}"
-
-    existing_candidate = db.get_candidate_by_user_id(user_id)
-
-    if existing_candidate:
-        candidate_id = existing_candidate["id"]
-        db.update_candidate(
-            candidate_id=candidate_id,
-            name=candidate_name,
-            email=candidate_email,
-            resume_text=parsed_data.get("resume_text"),
-            original_filename=original_filename,
-            file_path=resume_file_path,
-            skills=parsed_data.get("skills", []),
-        )
-    else:
-        candidate_id = db.save_candidate_profile(
-            user_id=user_id,
-            name=candidate_name,
-            email=candidate_email,
-            resume_text=parsed_data.get("resume_text"),
-            original_filename=original_filename,
-            file_path=resume_file_path,
-            skills=parsed_data.get("skills", []),
-        )
-
-    try:
-        db.save_resume_version(
-            candidate_id=candidate_id,
-            label=f"{original_filename} — {datetime.now().strftime('%Y-%m-%d')}",
-            resume_text=parsed_data.get("resume_text", ""),
-            original_filename=original_filename,
-            file_path=resume_file_path,
-            parsed_data=parsed_data,
-        )
-    except Exception as e:
-        print(f"Failed to save resume version: {e}")
-
+@app.post("/api/auth/register")
+async def register(req: RegisterSchema, dbs: Session = Depends(db.get_db)):
+    if len(req.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters.")
+    existing = dbs.query(User).filter((User.username == req.username) | (User.email == req.email)).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Username or Email already registered.")
+    
+    user = auth.create_user(dbs, req.username, req.password, req.email, req.role)
+    token = auth.create_access_token({"sub": user.username, "role": user.role, "user_id": user.id})
     return {
-        "message": "Resume uploaded and processed successfully",
-        "candidate_id": candidate_id,
-        "user_id": user_id,
-        "parsed_data": parsed_data,
-        "resume_file_path": resume_file_path,
+        "message": "User registered successfully",
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {"id": user.id, "username": user.username, "role": user.role, "email": user.email}
     }
 
-
-# ── Jobs ──────────────────────────────────────────────────────────────────────
-
-@api_router.get("/jobs")
-async def get_job_postings(status: str = "Published"):
-    return db.get_job_postings(status=status)
-
-
-@api_router.get("/jobs/{posting_id}")
-async def get_job_posting(posting_id: int):
-    posting = db.get_job_posting(posting_id)
-    if not posting:
-        raise HTTPException(status_code=404, detail="Job posting not found")
-    return posting
-
-
-class JobScoreRequest(BaseModel):
-    candidate_data: CandidateData
-
-
-@api_router.post("/jobs/{posting_id}/score")
-async def score_against_job(posting_id: int, req: JobScoreRequest):
-    posting = db.get_job_posting(posting_id)
-    if not posting:
-        raise HTTPException(status_code=404, detail="Job posting not found")
-
-    if not req.candidate_data.resume_text:
-        raise HTTPException(status_code=400, detail="Candidate resume text is missing for scoring.")
-
-    skill_report = ai.analyze_skills(req.candidate_data.model_dump(), posting.get("jd_text", ""))
-
-    weights = {
-        "semantic": float(posting.get("semantic_weight", 0.4)),
-        "skill": float(posting.get("skill_weight", 0.3)),
-        "experience": float(posting.get("experience_weight", 0.2)),
-        "education": float(posting.get("education_weight", 0.1)),
-    }
-
-    ats_result = ai.calculate_ats_score(
-        candidate_data=req.candidate_data.model_dump(),
-        jd_text=posting.get("jd_text", ""),
-        skill_report=skill_report,
-        weights=weights,
-    )
-
-    already_applied = (
-        db.get_existing_application(req.candidate_data.email, posting_id) is not None
-    )
-
+@app.post("/api/auth/login")
+async def login(req: LoginSchema, dbs: Session = Depends(db.get_db)):
+    user = auth.authenticate_user(dbs, req.username, req.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
+    token = auth.create_access_token({"sub": user.username, "role": user.role, "user_id": user.id})
     return {
-        "posting": posting,
-        "skill_report": skill_report,
-        "ats_result": ats_result,
-        "already_applied": already_applied,
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {"id": user.id, "username": user.username, "role": user.role, "email": user.email}
     }
 
-
-class ApplyRequest(BaseModel):
-    user_id: int
-    candidate_data: CandidateData
-    skill_report: Dict[str, Any]
-    ats_result: Dict[str, Any]
-    original_resume_filename: Optional[str] = None
-    resume_file_path: Optional[str] = None
-
-
-@api_router.post("/jobs/{posting_id}/apply")
-async def apply_to_job(posting_id: int, req: ApplyRequest):
-    posting = db.get_job_posting(posting_id)
-    if not posting:
-        raise HTTPException(status_code=404, detail="Job posting not found")
-
-    existing_app = db.get_existing_application(req.candidate_data.email, posting_id)
-    if existing_app:
-        raise HTTPException(status_code=409, detail="You have already applied for this position.")
-
-    existing_candidate = db.get_candidate_by_user_id(req.user_id)
-    if existing_candidate:
-        candidate_id = existing_candidate["id"]
-        db.update_candidate_on_apply(candidate_id=candidate_id, candidate_data=req.candidate_data)
-    else:
-        candidate_id = db.save_candidate_profile(
-            user_id=req.user_id,
-            name=req.candidate_data.name,
-            email=req.candidate_data.email,
-            resume_text=req.candidate_data.resume_text,
-        )
-
-    resume_version_id = None
-    if req.resume_file_path and req.original_resume_filename:
-        try:
-            res_version_info = db.save_resume_version(
-                candidate_id=candidate_id,
-                label=f"Application for {posting['title']} — {req.original_resume_filename}",
-                resume_text=req.candidate_data.resume_text,
-                original_filename=req.original_resume_filename,
-                file_path=req.resume_file_path,
-                parsed_data=None,
-            )
-            resume_version_id = res_version_info["id"]
-        except Exception as e:
-            print(f"Warning: Failed to save resume version for application: {e}")
-
-    application_id = db.save_application(
-        candidate_id=candidate_id,
-        job_posting_id=posting_id,
-        recruiter_id=posting.get("created_by"),
-        application_text=req.candidate_data.resume_text,
-        resume_version_id=resume_version_id,
-        ats_score=req.ats_result.get("Total Score"),
-        ats_result=req.ats_result,
-    )
-
-    return {
-        "status": "applied",
-        "application_id": application_id,
-        "score": req.ats_result.get("Total Score"),
-        "verdict": req.ats_result.get("Verdict"),
-    }
-
-
-# ── AI generation endpoints ───────────────────────────────────────────────────
-
-@api_router.post("/ai/generate/summary")
-async def generate_ai_summary(resume_text: str = Form(...)):
-    summary = ai.generate_summary(resume_text)
-    return {"summary": summary}
-
-
-@api_router.post("/ai/generate/cover-letter")
-async def generate_ai_cover_letter(
-    candidate_data_json: str = Form(...),
-    job_posting_id: int = Form(...),
+# ── Candidate Features ───────────────────────────────────────────────────────
+@app.post("/api/candidate/analyze-resume")
+async def analyze_candidate_resume(
+    file: UploadFile = File(...),
+    jd_text: str = Form(...),
+    current_user: User = Depends(get_current_user)
 ):
-    import json
-    posting = db.get_job_posting(job_posting_id)
-    if not posting:
-        raise HTTPException(status_code=404, detail="Job posting not found.")
-    try:
-        candidate_data = json.loads(candidate_data_json)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid candidate_data JSON.")
-    cover_letter = ai.generate_cover_letter(candidate_data, posting)
-    return {"cover_letter": cover_letter}
+    content = await file.read()
+    parsed = ai.parse_resume(content, file.filename)
+    ats_result = ai.calculate_hybrid_ats_score(parsed["raw_text"], jd_text)
+    explanation = ai.generate_ats_explanation(ats_result, "Target Role")
+    optimizer_tips = ai.generate_resume_optimizer_tips(parsed["raw_text"], jd_text)
 
+    return {
+        "filename": file.filename,
+        "candidate": {
+            "name": parsed["name"],
+            "email": parsed["email"],
+            "extracted_skills": parsed["skills"]
+        },
+        "ats_score": ats_result["overall_score"],
+        "confidence_score": ats_result["confidence_score"],
+        "components": ats_result["components"],
+        "matched_skills": ats_result["matched_skills"],
+        "missing_skills": ats_result["missing_skills"],
+        "ai_explanation": explanation,
+        "optimizer_suggestions": optimizer_tips
+    }
 
-class SuggestionsRequest(BaseModel):
-    resume_text: str
-    preferred_role: str
+@app.post("/api/candidate/analyze-resume-text")
+async def analyze_candidate_resume_text(
+    resume_text: str = Form(...),
+    jd_text: str = Form(...),
+    current_user: User = Depends(get_current_user)
+):
+    extracted_skills = ai.extract_skills_from_text(resume_text)
+    ats_result = ai.calculate_hybrid_ats_score(resume_text, jd_text)
+    explanation = ai.generate_ats_explanation(ats_result, "Target Role")
+    optimizer_tips = ai.generate_resume_optimizer_tips(resume_text, jd_text)
 
+    return {
+        "filename": "Pasted Resume Text",
+        "candidate": {
+            "name": current_user.username,
+            "email": current_user.email,
+            "extracted_skills": extracted_skills
+        },
+        "ats_score": ats_result["overall_score"],
+        "confidence_score": ats_result["confidence_score"],
+        "components": ats_result["components"],
+        "matched_skills": ats_result["matched_skills"],
+        "missing_skills": ats_result["missing_skills"],
+        "ai_explanation": explanation,
+        "optimizer_suggestions": optimizer_tips
+    }
 
-@api_router.post("/ai/generate/suggestions")
-async def generate_ai_suggestions(req: SuggestionsRequest):
-    suggestions = ai.generate_suggestions(req.resume_text, req.preferred_role)
-    return suggestions
+@app.post("/api/candidate/skill-gap")
+async def analyze_skill_gap(
+    resume_text: str = Form(...),
+    jd_text: str = Form(...),
+    current_user: User = Depends(get_current_user)
+):
+    candidate_skills = set(ai.extract_skills_from_text(resume_text))
+    jd_skills = set(ai.extract_skills_from_text(jd_text))
 
+    matched = sorted(list(candidate_skills & jd_skills))
+    missing = sorted(list(jd_skills - candidate_skills))
+    coverage = round((len(matched) / len(jd_skills) * 100), 1) if jd_skills else 100.0
 
-class InterviewQuestionsRequest(BaseModel):
-    candidate_data: CandidateData
-    job_posting_id: int
-    num_questions: int = 5
+    recommendations = []
+    for skill in missing[:5]:
+        recommendations.append(f"Learn & add hands-on projects for '{skill.title()}'")
+    if not recommendations:
+        recommendations.append("Your skills closely match all core requirements for this job role!")
 
+    return {
+        "candidate_skills": sorted(list(candidate_skills)),
+        "jd_skills": sorted(list(jd_skills)),
+        "matched_skills": matched,
+        "missing_skills": missing,
+        "skill_coverage_percent": coverage,
+        "recommendations": recommendations
+    }
 
-@api_router.post("/ai/generate/interview-questions")
-async def generate_ai_interview_questions(req: InterviewQuestionsRequest):
-    posting = db.get_job_posting(req.job_posting_id)
-    if not posting:
-        raise HTTPException(status_code=404, detail="Job posting not found.")
-    questions = ai.generate_interview_questions(
-        req.candidate_data.model_dump(), posting, req.num_questions
-    )
+@app.post("/api/candidate/interview-questions")
+async def get_interview_questions(
+    resume_text: str = Form(...),
+    jd_text: str = Form(...),
+    current_user: User = Depends(get_current_user)
+):
+    questions = ai.generate_interview_questions(resume_text, jd_text)
     return {"questions": questions}
 
+# ── Recruiter Workflows ───────────────────────────────────────────────────────
+class CreateJobSchema(BaseModel):
+    title: str
+    company_name: str
+    location: Optional[str] = "Remote"
+    jd_text: str
+    weight_skills: Optional[float] = 0.30
+    weight_experience: Optional[float] = 0.25
+    weight_responsibilities: Optional[float] = 0.20
+    weight_projects: Optional[float] = 0.10
+    weight_education: Optional[float] = 0.05
 
-@api_router.get("/candidate/profile/{user_id}")
-async def get_candidate_profile(user_id: int):
-    profile = db.get_candidate_by_user_id(user_id)
-    if not profile:
-        raise HTTPException(status_code=404, detail="Candidate profile not found")
-    return profile
+@app.get("/api/jobs")
+async def list_jobs(dbs: Session = Depends(db.get_db)):
+    jobs = dbs.query(JobPosting).filter(JobPosting.status == "Published").order_by(JobPosting.created_at.desc()).all()
+    return [{
+        "id": j.id,
+        "title": j.title,
+        "company_name": j.company_name,
+        "location": j.location,
+        "jd_text": j.jd_text,
+        "jd_snippet": j.jd_text[:150] + ("..." if len(j.jd_text) > 150 else ""),
+        "created_at": j.created_at.isoformat() if j.created_at else None
+    } for j in jobs]
 
+@app.post("/api/recruiter/jobs")
+async def create_job(req: CreateJobSchema, current_user: User = Depends(get_current_user), dbs: Session = Depends(db.get_db)):
+    if current_user.role != UserRole.RECRUITER.value:
+        raise HTTPException(status_code=403, detail="Only recruiters can create job postings.")
+    
+    recruiter = dbs.query(RecruiterProfile).filter(RecruiterProfile.user_id == current_user.id).first()
+    if not recruiter:
+        recruiter = RecruiterProfile(user_id=current_user.id, company_name=req.company_name)
+        dbs.add(recruiter)
+        dbs.commit()
+        dbs.refresh(recruiter)
 
-# ── Recruiter ─────────────────────────────────────────────────────────────────
+    job = JobPosting(
+        recruiter_id=recruiter.id,
+        title=req.title,
+        company_name=req.company_name,
+        location=req.location,
+        jd_text=req.jd_text,
+        weight_skills=req.weight_skills,
+        weight_experience=req.weight_experience,
+        weight_responsibilities=req.weight_responsibilities,
+        weight_projects=req.weight_projects,
+        weight_education=req.weight_education
+    )
+    dbs.add(job)
+    dbs.commit()
+    dbs.refresh(job)
+    return {"message": "Job posting created successfully", "job_id": job.id}
 
-recruiter_router = APIRouter(prefix="/recruiter")
+@app.post("/api/recruiter/bulk-screen/{job_id}")
+async def bulk_screen_resumes(
+    job_id: int,
+    files: List[UploadFile] = File(...),
+    current_user: User = Depends(get_current_user),
+    dbs: Session = Depends(db.get_db)
+):
+    if current_user.role != UserRole.RECRUITER.value:
+        raise HTTPException(status_code=403, detail="Recruiter access required.")
 
+    files_data = []
+    for f in files:
+        content = await f.read()
+        files_data.append({"filename": f.filename, "content": content})
 
-class MatchmakerRequest(BaseModel):
-    query: str
+    result = await worker.process_bulk_resume_screening(job_id, files_data, dbs)
+    return result
 
-
-@recruiter_router.post("/matchmaker")
-async def query_matchmaker(req: MatchmakerRequest):
-    candidates = db.get_all_candidates()
-    results = ai.ai_matchmaker_query(req.query, candidates)
-    return {"results": results}
-
-
-@recruiter_router.get("/dashboard/analytics")
-async def get_recruiter_analytics():
-    stats = db.get_applications_stats()
-    applications = db.get_all_applications_for_recruiter()
-    return {"stats": stats, "applications": applications}
-
-
-app.include_router(api_router)
-app.include_router(recruiter_router)
+@app.get("/api/recruiter/candidate-ranking/{job_id}")
+async def get_candidate_ranking(job_id: int, dbs: Session = Depends(db.get_db)):
+    applications = dbs.query(Application).filter(Application.job_id == job_id).order_by(Application.ats_score.desc()).all()
+    rankings = []
+    for app in applications:
+        rankings.append({
+            "application_id": app.id,
+            "candidate_id": app.candidate_id,
+            "ats_score": app.ats_score,
+            "status": app.status,
+            "applied_at": app.applied_at
+        })
+    return {"job_id": job_id, "rankings": rankings}

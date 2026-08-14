@@ -8,3 +8,7 @@ pypdf
 scikit-learn
 scipy
 python-multipart
+sqlalchemy
+psycopg2-binary
+alembic
+python-jose[cryptography]

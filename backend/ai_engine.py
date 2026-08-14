@@ -1,11 +1,11 @@
 """
-AI Engine — powered by Google Gemini 1.5 Flash (free tier)
-Falls back to smart rule-based analysis if GEMINI_API_KEY is not set.
+AI Engine & Explainable ATS Scoring System — Powered by Gemini 1.5 Flash & Scikit-learn
+Includes Skill Ontology, Hybrid Scoring Engine, Confidence Score, & Generative AI Features.
 """
 import re
 import io
 import os
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Set, Tuple
 
 # ── Gemini setup ──────────────────────────────────────────────────────────────
 import google.generativeai as genai
@@ -14,12 +14,12 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 _gemini_model = None
 
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    _gemini_model = genai.GenerativeModel("gemini-1.5-flash")
-    print("[OK] Gemini 1.5 Flash initialized.")
-else:
-    print("[INFO] GEMINI_API_KEY not set - using enhanced rule-based fallback.")
-
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        _gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+        print("[OK] Gemini 1.5 Flash initialized.")
+    except Exception as e:
+        print(f"[WARN] Failed to init Gemini: {e}")
 
 def _ask_gemini(prompt: str, fallback: str) -> str:
     """Call Gemini; return fallback string on any error."""
@@ -32,8 +32,7 @@ def _ask_gemini(prompt: str, fallback: str) -> str:
         print(f"Gemini error: {e}")
         return fallback
 
-
-# ── Skill taxonomy ────────────────────────────────────────────────────────────
+# ── Skill Taxonomy & Alias Ontology System ──────────────────────────────────
 SKILL_TAXONOMY = {
     "languages": [
         "python", "java", "javascript", "typescript", "c", "c++", "c#", "go",
@@ -53,7 +52,7 @@ SKILL_TAXONOMY = {
     "databases": [
         "postgresql", "mysql", "sqlite", "mongodb", "redis", "elasticsearch",
         "cassandra", "dynamodb", "firebase", "supabase", "neo4j", "oracle",
-        "mariadb", "cockroachdb", "influxdb",
+        "mariadb", "cockroachdb", "influxdb", "sql",
     ],
     "cloud_devops": [
         "aws", "gcp", "azure", "docker", "kubernetes", "k8s", "terraform",
@@ -66,13 +65,12 @@ SKILL_TAXONOMY = {
         "scikit-learn", "pandas", "numpy", "scipy", "spark", "hadoop",
         "airflow", "mlflow", "hugging face", "nlp", "computer vision",
         "data analysis", "data visualization", "tableau", "power bi",
-        "jupyter", "sql", "etl", "dbt",
+        "jupyter", "etl", "dbt",
     ],
     "tools_practices": [
         "git", "github", "gitlab", "jira", "agile", "scrum", "kanban",
         "tdd", "bdd", "code review", "system design", "api design",
-        "microservices", "event driven", "oauth", "jwt", "graphql",
-        "swagger", "openapi", "postman",
+        "microservices", "event driven", "oauth", "jwt", "swagger", "openapi", "postman",
     ],
     "soft_skills": [
         "leadership", "team lead", "management", "communication",
@@ -80,98 +78,122 @@ SKILL_TAXONOMY = {
     ],
 }
 
-ALL_SKILLS: List[str] = []
+SKILL_ALIASES = {
+    "ml": "machine learning",
+    "machine learning algorithms": "machine learning",
+    "dl": "deep learning",
+    "structured query language": "sql",
+    "sql database": "sql",
+    "postgres": "postgresql",
+    "node": "node.js",
+    "next": "next.js",
+    "react.js": "react",
+    "reactjs": "react",
+    "vue.js": "vue",
+    "vuejs": "vue",
+    "amazon web services": "aws",
+    "google cloud": "gcp",
+    "google cloud platform": "gcp",
+    "k8s": "kubernetes",
+    "js": "javascript",
+    "ts": "typescript",
+    "py": "python",
+}
+
+ALL_SKILLS: Set[str] = set()
 for skills in SKILL_TAXONOMY.values():
-    ALL_SKILLS.extend(skills)
+    ALL_SKILLS.update(skills)
 
+def normalize_skill(skill: str) -> str:
+    s = skill.lower().strip()
+    return SKILL_ALIASES.get(s, s)
 
-# ── PDF / DOCX parsing ────────────────────────────────────────────────────────
-def _extract_text_from_pdf(file_content: bytes) -> str:
+# ── Multi-Stage File Parsers ──────────────────────────────────────────────────
+def _extract_text_from_pdf(file_content: bytes) -> Tuple[str, float]:
+    """Extracts text from PDF. Returns (text, confidence_score)."""
     try:
         from pypdf import PdfReader
         reader = PdfReader(io.BytesIO(file_content))
         pages = [page.extract_text() or "" for page in reader.pages]
-        return "\n".join(pages)
+        text = "\n".join(pages).strip()
+        confidence = 0.95 if len(text) > 100 else 0.40
+        return text, confidence
     except Exception as e:
         print(f"PDF parse error: {e}")
-        return ""
+        return "", 0.0
 
-
-def _extract_text_from_docx(file_content: bytes) -> str:
+def _extract_text_from_docx(file_content: bytes) -> Tuple[str, float]:
+    """Extracts text from DOCX. Returns (text, confidence_score)."""
     try:
         import docx
         document = docx.Document(io.BytesIO(file_content))
-        return "\n".join([para.text for para in document.paragraphs])
+        text = "\n".join([para.text for para in document.paragraphs if para.text]).strip()
+        confidence = 0.98 if len(text) > 100 else 0.50
+        return text, confidence
     except Exception as e:
         print(f"DOCX parse error: {e}")
-        return ""
-
-
-def _extract_skills_from_text(text: str) -> List[str]:
-    text_lower = text.lower()
-    found = set()
-    for skill in ALL_SKILLS:
-        pattern = r"\b" + re.escape(skill) + r"\b"
-        if re.search(pattern, text_lower):
-            found.add(skill)
-    return sorted(found)
-
+        return "", 0.0
 
 def parse_resume(file_content: bytes, filename: str) -> Dict[str, Any]:
     print(f"Parsing resume: {filename}")
     filename_lower = filename.lower()
 
     if filename_lower.endswith(".pdf"):
-        resume_text = _extract_text_from_pdf(file_content)
+        resume_text, confidence = _extract_text_from_pdf(file_content)
     elif filename_lower.endswith(".docx"):
-        resume_text = _extract_text_from_docx(file_content)
+        resume_text, confidence = _extract_text_from_docx(file_content)
     else:
         try:
-            resume_text = file_content.decode("utf-8", errors="ignore")
+            resume_text = file_content.decode("utf-8", errors="ignore").strip()
+            confidence = 0.70 if len(resume_text) > 50 else 0.20
         except Exception:
             resume_text = ""
+            confidence = 0.0
 
     if not resume_text:
-        resume_text = "Could not extract text from resume."
+        resume_text = "Could not extract readable text from resume."
+        confidence = 0.0
 
-    # Extract name (first non-empty line, up to 60 chars, no email chars)
+    # Extract Contact Details safely
     lines = [l.strip() for l in resume_text.split("\n") if l.strip()]
-    name = "N/A"
+    name = "Candidate"
     for line in lines[:5]:
-        if "@" not in line and len(line) < 60 and len(line) > 2:
+        if "@" not in line and not any(char.isdigit() for char in line) and 2 < len(line) < 50:
             name = line
             break
 
     email_match = re.search(r"[\w.\-+]+@[\w.\-]+\.\w+", resume_text)
-    phone_match = re.search(
-        r"(\+?\d[\d\s\-().]{7,}\d)", resume_text
-    )
+    phone_match = re.search(r"(\+?\d[\d\s\-().]{7,}\d)", resume_text)
 
-    skills = _extract_skills_from_text(resume_text)
+    # Extract Skills
+    extracted_skills = extract_skills_from_text(resume_text)
 
     return {
-        "resume_text": resume_text,
+        "raw_text": resume_text,
         "name": name,
-        "email": email_match.group(0) if email_match else "N/A",
+        "email": email_match.group(0) if email_match else None,
         "phone": phone_match.group(0).strip() if phone_match else None,
-        "skills": skills,
-        "experience": [],
-        "education": [],
-        "parsed_features": {},
+        "skills": extracted_skills,
+        "extraction_confidence": round(confidence * 100, 1),
     }
 
+def extract_skills_from_text(text: str) -> List[str]:
+    text_lower = text.lower()
+    found = set()
+    for skill in ALL_SKILLS:
+        pattern = r"\b" + re.escape(skill) + r"\b"
+        if re.search(pattern, text_lower):
+            found.add(normalize_skill(skill))
+    
+    # Also check aliases explicitly
+    for alias, canonical in SKILL_ALIASES.items():
+        pattern = r"\b" + re.escape(alias) + r"\b"
+        if re.search(pattern, text_lower):
+            found.add(canonical)
 
-# ── TF-IDF semantic scoring ───────────────────────────────────────────────────
-def _pure_python_similarity(text_a: str, text_b: str) -> float:
-    words_a = set(re.findall(r"\b\w{3,}\b", text_a.lower()))
-    words_b = set(re.findall(r"\b\w{3,}\b", text_b.lower()))
-    if not words_a or not words_b:
-        return 0.0
-    intersection = words_a & words_b
-    union = words_a | words_b
-    return float(len(intersection)) / float(len(union))
+    return sorted(list(found))
 
-
+# ── Semantic Matcher ─────────────────────────────────────────────────────────
 def _tfidf_similarity(text_a: str, text_b: str) -> float:
     try:
         from sklearn.feature_extraction.text import TfidfVectorizer
@@ -182,303 +204,165 @@ def _tfidf_similarity(text_a: str, text_b: str) -> float:
         score = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
         return float(score)
     except Exception:
-        return _pure_python_similarity(text_a, text_b)
+        # Fallback Jaccard similarity
+        words_a = set(re.findall(r"\b\w{3,}\b", text_a.lower()))
+        words_b = set(re.findall(r"\b\w{3,}\b", text_b.lower()))
+        if not words_a or not words_b: return 0.0
+        return len(words_a & words_b) / len(words_a | words_b)
 
-
-# ── Core analysis functions ───────────────────────────────────────────────────
-def analyze_skills(candidate_data: Dict[str, Any], jd_text: str) -> Dict[str, Any]:
-    required_skills = set(_extract_skills_from_text(jd_text))
-    candidate_skills = set(
-        s.lower() for s in candidate_data.get("skills", [])
-    )
-
-    # Also check resume text directly
-    resume_text = candidate_data.get("resume_text", "")
-    if resume_text:
-        candidate_skills.update(_extract_skills_from_text(resume_text))
-
-    matched = list(candidate_skills & required_skills)
-    unmatched = list(required_skills - candidate_skills)
-
-    return {
-        "required_skills": sorted(required_skills),
-        "candidate_skills": sorted(candidate_skills),
-        "matched_skills": sorted(matched),
-        "unmatched_skills": sorted(unmatched),
-        "skill_gap_analysis": (
-            f"Matched {len(matched)} of {len(required_skills)} required skills."
-            if required_skills
-            else "No specific skills identified in job description."
-        ),
-    }
-
-
-def calculate_ats_score(
-    candidate_data: Dict[str, Any],
+# ── Deterministic Hybrid ATS Scoring Engine ──────────────────────────────────
+def calculate_hybrid_ats_score(
+    resume_text: str,
     jd_text: str,
-    skill_report: Dict[str, Any],
-    weights: Dict[str, float],
+    weights: Optional[Dict[str, float]] = None
 ) -> Dict[str, Any]:
-    resume_text = candidate_data.get("resume_text", "")
+    if not weights:
+        weights = {
+            "skills": 0.30,
+            "experience": 0.25,
+            "responsibilities": 0.20,
+            "projects": 0.10,
+            "education": 0.05,
+            "keywords": 0.05,
+            "certifications": 0.05,
+        }
 
-    # Semantic score via TF-IDF
-    semantic_score = _tfidf_similarity(resume_text, jd_text) * 100
+    resume_skills = set(extract_skills_from_text(resume_text))
+    jd_skills = set(extract_skills_from_text(jd_text))
 
-    # Skill score
-    matched = len(skill_report.get("matched_skills", []))
-    required = len(skill_report.get("required_skills", []))
-    skill_score = min(100.0, (matched / required) * 100) if required > 0 else 50.0
+    # 1. Skills Score (30%)
+    matched_skills = sorted(list(resume_skills & jd_skills))
+    missing_skills = sorted(list(jd_skills - resume_skills))
+    skills_score = (len(matched_skills) / len(jd_skills) * 100) if jd_skills else 70.0
 
-    # Experience heuristic (keyword-based)
-    exp_keywords = ["experience", "years", "managed", "led", "built", "designed",
-                    "developed", "architected", "delivered", "senior", "lead"]
-    exp_count = sum(1 for kw in exp_keywords if kw in resume_text.lower())
-    experience_score = min(100.0, exp_count * 10)
+    # 2. Experience Match Score (25%)
+    exp_words = ["years", "experience", "senior", "lead", "managed", "architected", "delivered"]
+    exp_matches = sum(1 for w in exp_words if w in resume_text.lower())
+    experience_score = min(100.0, exp_matches * 15.0)
 
-    # Education heuristic
-    edu_keywords = ["bachelor", "master", "phd", "degree", "b.e", "b.tech",
-                    "m.tech", "m.s", "m.sc", "b.sc", "mba", "university", "college"]
-    edu_count = sum(1 for kw in edu_keywords if kw in resume_text.lower())
-    education_score = min(100.0, edu_count * 20)
+    # 3. Responsibilities Match (20%) - Semantic similarity
+    responsibilities_score = _tfidf_similarity(resume_text, jd_text) * 100.0
 
-    w = {
-        "semantic": weights.get("semantic", 0.4),
-        "skill": weights.get("skill", 0.3),
-        "experience": weights.get("experience", 0.2),
-        "education": weights.get("education", 0.1),
-    }
+    # 4. Projects Score (10%)
+    proj_words = ["project", "built", "implemented", "system", "application", "designed", "deployed"]
+    proj_matches = sum(1 for w in proj_words if w in resume_text.lower())
+    projects_score = min(100.0, proj_matches * 20.0)
 
-    total = (
-        semantic_score * w["semantic"]
-        + skill_score * w["skill"]
-        + experience_score * w["experience"]
-        + education_score * w["education"]
+    # 5. Education Score (5%)
+    edu_words = ["bachelor", "master", "degree", "b.e", "b.tech", "m.tech", "phd", "university", "college"]
+    edu_matches = sum(1 for w in edu_words if w in resume_text.lower())
+    education_score = min(100.0, edu_matches * 30.0)
+
+    # 6. Keywords Score (5%)
+    keywords_score = _tfidf_similarity(resume_text, jd_text) * 100.0
+
+    # 7. Certifications Score (5%)
+    cert_words = ["certified", "certification", "aws certified", "pmp", "ckad", "azure certified"]
+    cert_matches = sum(1 for w in cert_words if w in resume_text.lower())
+    certifications_score = min(100.0, cert_matches * 50.0)
+
+    # Calculate Weighted Overall Score
+    overall_score = (
+        skills_score * weights.get("skills", 0.30) +
+        experience_score * weights.get("experience", 0.25) +
+        responsibilities_score * weights.get("responsibilities", 0.20) +
+        projects_score * weights.get("projects", 0.10) +
+        education_score * weights.get("education", 0.05) +
+        keywords_score * weights.get("keywords", 0.05) +
+        certifications_score * weights.get("certifications", 0.05)
     )
-    total = round(min(100.0, total), 1)
 
-    if total >= 75:
-        verdict = "Strong Match"
-    elif total >= 50:
-        verdict = "Potential Match"
+    # Calculate Confidence Score based on document length and extraction quality
+    doc_length = len(resume_text)
+    if doc_length < 200:
+        confidence = 40.0
+    elif doc_length < 500:
+        confidence = 70.0
     else:
-        verdict = "Weak Match"
+        confidence = 92.0
+
+    overall_score = round(overall_score, 1)
+    confidence = round(confidence, 1)
 
     return {
-        "semantic": round(semantic_score, 1),
-        "skill": round(skill_score, 1),
-        "experience": round(experience_score, 1),
-        "education": round(education_score, 1),
-        "Total Score": total,
-        "Verdict": verdict,
+        "overall_score": overall_score,
+        "confidence_score": confidence,
+        "components": {
+            "skills_score": round(skills_score, 1),
+            "experience_score": round(experience_score, 1),
+            "responsibilities_score": round(responsibilities_score, 1),
+            "projects_score": round(projects_score, 1),
+            "education_score": round(education_score, 1),
+            "keywords_score": round(keywords_score, 1),
+            "certifications_score": round(certifications_score, 1),
+        },
+        "matched_skills": matched_skills,
+        "missing_skills": missing_skills,
     }
 
+# ── Generative AI Features (Gemini 1.5 Flash) ─────────────────────────────────
+def generate_ats_explanation(ats_result: Dict[str, Any], jd_title: str) -> str:
+    prompt = f"""
+Provide a clear, professional 3-bullet explanation of this ATS Candidate Evaluation for the position of '{jd_title}'.
 
-# ── Gemini-powered generation functions ──────────────────────────────────────
-def generate_summary(resume_text: str) -> str:
-    if not resume_text or len(resume_text) < 50:
-        return "Please upload a valid resume to generate a summary."
+Overall Match: {ats_result['overall_score']}%
+Matched Skills: {', '.join(ats_result['matched_skills'])}
+Missing Skills: {', '.join(ats_result['missing_skills'])}
 
-    prompt = f"""You are a professional career advisor. Write a concise, compelling 3-sentence professional summary for the following resume. 
-Focus on: key skills, years of experience, and what makes this candidate unique.
-Keep it in third person and under 100 words.
-
-Resume:
-{resume_text[:3000]}
-
-Professional Summary:"""
-
+Be objective, concise, and constructive.
+"""
     fallback = (
-        "A skilled professional with demonstrated expertise across multiple technical domains. "
-        "The candidate brings a strong foundation in software development and problem-solving. "
-        "Committed to delivering high-quality solutions and driving impactful results."
+        f"Candidate scored {ats_result['overall_score']}% match for {jd_title}. "
+        f"Key matched skills include {', '.join(ats_result['matched_skills'][:4]) if ats_result['matched_skills'] else 'general domain skills'}. "
+        f"Missing key skills: {', '.join(ats_result['missing_skills'][:4]) if ats_result['missing_skills'] else 'None identified'}."
     )
     return _ask_gemini(prompt, fallback)
 
+def generate_resume_optimizer_tips(resume_text: str, jd_text: str) -> List[str]:
+    prompt = f"""
+Act as an expert resume career coach. Analyze the resume against the job description and suggest 4 specific, actionable improvements.
+Do NOT fabricate experience or false information.
 
-def generate_suggestions(resume_text: str, preferred_role: str) -> Dict[str, Any]:
-    prompt = f"""You are a career coach specializing in tech roles. Analyze this resume for someone targeting a '{preferred_role}' position.
+RESUME TEXT:
+{resume_text[:1500]}
 
-Provide:
-1. Three specific skill improvement suggestions (be concrete, mention real tools/courses)
-2. Two project ideas they should build for their portfolio
-3. A 4-step learning roadmap with specific resources
+JOB DESCRIPTION:
+{jd_text[:1500]}
 
-Resume snippet:
-{resume_text[:2000]}
+Return 4 bullet points of realistic suggestions.
+"""
+    fallback_response = _ask_gemini(prompt, "")
+    if fallback_response:
+        return [b.strip("-* ") for b in fallback_response.split("\n") if b.strip()]
+    return [
+        "Clearly state technical tools and frameworks in bullet points.",
+        "Quantify project achievements with measurable metrics (e.g. improved performance by 20%).",
+        "Ensure exact keyword alignment with the key skills listed in the job description.",
+        "Add a dedicated Core Competencies section to highlight primary technologies."
+    ]
 
-Respond in this exact JSON format:
-{{
-  "skill_suggestions": ["suggestion1", "suggestion2", "suggestion3"],
-  "project_recommendations": ["project1", "project2"],
-  "learning_roadmap": [
-    {{"step": 1, "topic": "...", "resource": "..."}},
-    {{"step": 2, "topic": "...", "resource": "..."}},
-    {{"step": 3, "topic": "...", "resource": "..."}},
-    {{"step": 4, "topic": "...", "resource": "..."}}
-  ]
-}}"""
+def generate_interview_questions(resume_text: str, jd_text: str) -> List[Dict[str, str]]:
+    prompt = f"""
+Generate 3 tailored technical/behavioral interview questions based on the candidate's resume and job description.
 
-    fallback_json = {
-        "skill_suggestions": [
-            f"Master advanced {preferred_role} patterns through hands-on projects on GitHub",
-            f"Get certified in core {preferred_role} technologies (AWS, GCP, or relevant platform)",
-            "Strengthen system design skills via 'Designing Data-Intensive Applications' (Kleppmann)",
-        ],
-        "project_recommendations": [
-            f"Build a full-stack {preferred_role} demo with real-world complexity and deploy it",
-            "Create an open-source tool that solves a real problem — add it to your GitHub",
-        ],
-        "learning_roadmap": [
-            {"step": 1, "topic": "Core Fundamentals", "resource": "freeCodeCamp / official docs"},
-            {"step": 2, "topic": "Advanced Patterns", "resource": "Udemy / Coursera top-rated courses"},
-            {"step": 3, "topic": "Real Project", "resource": "Build & deploy on Vercel / Render"},
-            {"step": 4, "topic": "Community & Portfolio", "resource": "GitHub, LinkedIn, Dev.to"},
-        ],
-    }
+RESUME:
+{resume_text[:1000]}
 
-    result = _ask_gemini(prompt, "")
-    if result:
-        import json
-        try:
-            # Extract JSON from response
-            json_match = re.search(r"\{.*\}", result, re.DOTALL)
-            if json_match:
-                return json.loads(json_match.group(0))
-        except Exception:
-            pass
-    return fallback_json
+JOB DESCRIPTION:
+{jd_text[:1000]}
 
-
-def generate_cover_letter(candidate_data: Dict[str, Any], job_posting: Dict[str, Any]) -> str:
-    name = candidate_data.get("name", "Valued Candidate")
-    job_title = job_posting.get("title", "the role")
-    company = job_posting.get("company_name", "your company")
-    skills = candidate_data.get("skills", [])
-    resume_text = candidate_data.get("resume_text", "")
-
-    prompt = f"""Write a professional, engaging cover letter for this job application.
-
-Candidate: {name}
-Target Role: {job_title} at {company}
-Candidate Skills: {', '.join(skills[:15]) if skills else 'various technical skills'}
-Resume Excerpt: {resume_text[:1000]}
-Job Description: {job_posting.get('jd_text', '')[:800]}
-
-Write a 3-paragraph cover letter:
-- Paragraph 1: Opening — express enthusiasm and mention the specific role
-- Paragraph 2: Connect 2-3 specific skills/experiences to the job requirements
-- Paragraph 3: Call to action — request an interview
-
-Keep it professional, under 300 words, and avoid generic phrases. Do NOT include the address header, just start with 'Dear Hiring Manager,'."""
-
-    fallback = f"""Dear Hiring Manager,
-
-I am excited to apply for the {job_title} position at {company}. With my background in {', '.join(skills[:3]) if skills else 'software development'} and a passion for building impactful solutions, I am confident that I would be a strong addition to your team.
-
-Throughout my career, I have developed deep expertise in {', '.join(skills[:5]) if skills else 'key technical areas'}, which aligns closely with the requirements outlined in your job description. I thrive in collaborative environments and have consistently delivered high-quality work on time, even under pressure.
-
-I would welcome the opportunity to discuss how my background and enthusiasm can contribute to {company}'s continued success. Thank you for considering my application — I look forward to speaking with you.
-
-Sincerely,
-{name}"""
-
-    return _ask_gemini(prompt, fallback)
-
-
-def generate_interview_questions(
-    candidate_data: Dict[str, Any],
-    job_posting: Dict[str, Any],
-    num_questions: int = 5,
-) -> List[str]:
-    job_title = job_posting.get("title", "the role")
-    company = job_posting.get("company_name", "the company")
-    skills = candidate_data.get("skills", [])
-    jd_text = job_posting.get("jd_text", "")
-
-    prompt = f"""Generate {num_questions} thoughtful technical and behavioral interview questions for a {job_title} position at {company}.
-
-Required skills from JD: {', '.join(skills[:10]) if skills else 'general tech skills'}
-Job Description: {jd_text[:600]}
-
-Mix of:
-- 2-3 technical questions specific to the role's tech stack
-- 1-2 behavioral/situational questions (using STAR format)
-- 1 culture/motivation question
-
-Format as a numbered list. Be specific and relevant."""
-
-    fallback = [
-        f"Walk me through a challenging technical problem you solved in a previous {job_title}-like role.",
-        f"How do you stay current with new developments in {skills[0] if skills else 'your field'}?",
-        "Describe a time you had to deliver under a tight deadline. What was your approach?",
-        f"How would you design a scalable system for {company}'s expected use case?",
-        "Tell me about a time you disagreed with a technical decision. How did you handle it?",
-    ][:num_questions]
-
-    result = _ask_gemini(prompt, "")
-    if result:
-        # Parse numbered list
-        questions = re.findall(r"\d+\.\s+(.+?)(?=\n\d+\.|\Z)", result, re.DOTALL)
-        questions = [q.strip() for q in questions if q.strip()]
-        if questions:
-            return questions[:num_questions]
-    return fallback
-
-
-def generate_resume_draft(existing_resume: Optional[str], preferred_role: str) -> str:
-    if existing_resume:
-        prompt = f"""Rewrite and improve this resume for a '{preferred_role}' role.
-Make it:
-- ATS-friendly with strong action verbs
-- Quantified achievements where possible
-- Clean, professional format
-
-Original resume:
-{existing_resume[:2000]}
-
-Improved resume:"""
-        fallback = f"[Enhanced resume for {preferred_role} based on your original content would appear here.]"
-    else:
-        prompt = f"""Write a professional template resume for a '{preferred_role}' role.
-Include: Summary, Skills, Experience (2 sample jobs), Education, Projects sections.
-Use strong action verbs and quantified achievements."""
-        fallback = f"[Professional resume template for {preferred_role} would appear here.]"
-
-    return _ask_gemini(prompt, fallback)
-
-
-def ai_matchmaker_query(query: str, candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Mode 2 AI Headhunter: semantic match & rank candidates against a natural language search query."""
-    results = []
-    query_skills = set(_extract_skills_from_text(query))
-
-    for cand in candidates:
-        resume_text = cand.get("resume_text", "")
-        cand_skills = set(s.lower() for s in cand.get("skills", []))
-        if resume_text:
-            cand_skills.update(_extract_skills_from_text(resume_text))
-
-        # Semantic match score
-        sem_score = _tfidf_similarity(resume_text, query) * 100
-
-        # Skill match score
-        matched_skills = list(cand_skills & query_skills) if query_skills else list(cand_skills[:5])
-        skill_score = (len(matched_skills) / len(query_skills) * 100) if query_skills else 60.0
-
-        total_score = round(min(100.0, sem_score * 0.5 + skill_score * 0.5), 1)
-
-        results.append({
-            "candidate_id": cand.get("id"),
-            "name": cand.get("name", "Candidate"),
-            "email": cand.get("email", "N/A"),
-            "location": cand.get("location", "Remote"),
-            "match_score": total_score if total_score > 0 else 50.0,
-            "matched_skills": matched_skills,
-            "all_skills": list(cand_skills)[:8],
-            "ai_highlight": f"Strong alignment in {', '.join(matched_skills[:3]) if matched_skills else 'core engineering competencies'}.",
-        })
-
-    # Sort descending by match score
-    results.sort(key=lambda x: x["match_score"], reverse=True)
-    return results
-
+Return output formatted strictly as Question lines.
+"""
+    raw = _ask_gemini(prompt, "")
+    questions = []
+    if raw:
+        for line in raw.split("\n"):
+            if line.strip():
+                questions.append({"question": line.strip("-* 123. "), "category": "Tailored"})
+    if not questions:
+        questions = [
+            {"question": "Can you walk us through a recent technical project where you designed a key feature?", "category": "Technical"},
+            {"question": "How do you handle missing requirements or changing priorities during a deployment?", "category": "Behavioral"},
+            {"question": "What techniques do you use to ensure code quality and system performance?", "category": "Engineering Practices"}
+        ]
+    return questions
