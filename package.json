@@ -8,7 +8,8 @@
     "dev": "tsx server.ts",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
-    "start": "node dist/server.cjs"
+    "start": "node dist/server.cjs",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
