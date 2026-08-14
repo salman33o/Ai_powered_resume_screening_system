@@ -1,6 +1,14 @@
 """
 Async Worker Queue for Bulk Resume Screening (Handles up to 400 resumes without blocking FastAPI)
 """
+import sys
+import os
+from pathlib import Path
+
+_backend_dir = Path(__file__).resolve().parent
+if str(_backend_dir) not in sys.path:
+    sys.path.insert(0, str(_backend_dir))
+
 import asyncio
 import json
 from typing import List, Dict, Any
