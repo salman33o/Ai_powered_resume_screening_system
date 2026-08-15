@@ -259,3 +259,55 @@ export interface ATSAuditRecord {
   reviewerDecision?: string;
   reviewerNotes?: string;
 }
+
+export interface DirectMessage {
+  id: string;
+  threadId: string;
+  senderId: string;
+  senderName: string;
+  senderRole: UserRole;
+  senderAvatar?: string;
+  recipientId: string;
+  recipientName: string;
+  recipientRole: UserRole;
+  jobId: string;
+  jobTitle: string;
+  companyName: string;
+  content: string;
+  timestamp: string;
+  isRead: boolean;
+  candidateAtsScore?: number;
+  tags?: string[];
+}
+
+export interface MessageThread {
+  threadId: string;
+  jobId: string;
+  jobTitle: string;
+  companyName: string;
+  candidateId: string;
+  candidateName: string;
+  candidateEmail?: string;
+  candidateAtsScore?: number;
+  lastMessage: string;
+  lastMessageTimestamp: string;
+  unreadCount: number;
+  messages: DirectMessage[];
+}
+
+export interface TokenLogItem {
+  id: string;
+  action: string;
+  tokensDeducted: number;
+  timestamp: string;
+  targetName: string;
+  category: 'screening' | 'optimization' | 'interview_prep' | 'messaging' | 'system';
+}
+
+export interface TokenUsageState {
+  availableTokens: number;
+  totalAllocated: number;
+  usedTokens: number;
+  tier: 'Free Explorer' | 'Pro Recruiter' | 'Enterprise ATS';
+  history: TokenLogItem[];
+}

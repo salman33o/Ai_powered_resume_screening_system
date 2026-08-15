@@ -17,7 +17,10 @@ import {
   Layers,
   ChevronDown,
   LogOut,
-  KeyRound
+  KeyRound,
+  Zap,
+  Coins,
+  MessageSquare
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -40,6 +43,10 @@ interface NavbarProps {
   authUser: AuthUser | null;
   onLogout: () => void;
   onOpenLoginPortal: () => void;
+  availableTokens?: number;
+  onOpenTokenModal?: () => void;
+  unreadMessagesCount?: number;
+  onOpenMessages?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -61,7 +68,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleNotifications,
   authUser,
   onLogout,
-  onOpenLoginPortal
+  onOpenLoginPortal,
+  availableTokens = 25000,
+  onOpenTokenModal,
+  unreadMessagesCount = 0,
+  onOpenMessages
 }) => {
   const [showPersonaMenu, setShowPersonaMenu] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -285,6 +296,35 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Token Quota Badge & Modal Trigger */}
+            <button
+              onClick={onOpenTokenModal}
+              title="View & Top Up AI Token Quota"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs transition-all cursor-pointer glow-border-amber shadow-sm"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span>{availableTokens.toLocaleString()}</span>
+              <span className="text-[10px] text-amber-400/70 font-normal hidden sm:inline">Tokens</span>
+            </button>
+
+            {/* Direct Messages Center Trigger */}
+            <button
+              onClick={onOpenMessages || (() => setActiveView('messages'))}
+              title="Direct Candidate-Company Messages"
+              className={`relative p-2 rounded-xl border transition-all cursor-pointer ${
+                activeView === 'messages' 
+                  ? 'bg-indigo-600/20 border-indigo-500/40 text-indigo-300' 
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border-transparent hover:border-slate-800'
+              }`}
+            >
+              <MessageSquare className="w-4 h-4" />
+              {unreadMessagesCount > 0 && (
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px] animate-pulse">
+                  {unreadMessagesCount}
+                </span>
+              )}
+            </button>
 
             {/* ATS Audit Logs Button */}
             <button

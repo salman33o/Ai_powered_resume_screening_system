@@ -17,9 +17,10 @@ export const DEFAULT_WEIGHTS: ScoringWeights = {
 export function calculateCandidateExperienceYears(resume: StructuredResume): number {
   let totalMonths = 0;
   const currentYear = 2026;
+  const experiences = resume.experience || [];
 
-  for (const exp of resume.experience) {
-    let startYear = parseInt(exp.startDate.slice(0, 4), 10);
+  for (const exp of experiences) {
+    let startYear = parseInt((exp.startDate || '2022').slice(0, 4), 10);
     if (isNaN(startYear)) startYear = 2022;
 
     let endYear = currentYear;
@@ -33,7 +34,7 @@ export function calculateCandidateExperienceYears(resume: StructuredResume): num
   }
 
   // If no detailed experience records, estimate from text length/summary or minimum 1
-  if (resume.experience.length === 0) {
+  if (experiences.length === 0) {
     return 1.0;
   }
 
@@ -50,13 +51,27 @@ export function evaluateResumeAgainstJob(
 ): ATSScoreBreakdown {
   const weights = customWeights || job.scoringWeights || DEFAULT_WEIGHTS;
 
+  const technicalSkills = resume.skills?.technical || [];
+  const toolSkills = resume.skills?.tools || [];
+  const softSkills = resume.skills?.soft || [];
+  const experiences = resume.experience || [];
+  const projects = resume.projects || [];
+  const educations = resume.education || [];
+  const certifications = resume.certifications || [];
+
+  const requiredSkills = job.requiredSkills || [];
+  const preferredSkills = job.preferredSkills || [];
+  const responsibilities = job.responsibilities || [];
+  const keywords = job.keywords || [];
+  const requiredCertifications = job.requiredCertifications || [];
+
   // 1. Skill Matching (Required + Preferred)
   const allCandidateSkills = [
-    ...resume.skills.technical,
-    ...resume.skills.tools,
-    ...resume.skills.soft,
-    ...resume.experience.flatMap(e => e.technologies || []),
-    ...resume.projects.flatMap(p => p.technologies || [])
+    ...technicalSkills,
+    ...toolSkills,
+    ...softSkills,
+    ...experiences.flatMap(e => e.technologies || []),
+    ...projects.flatMap(p => p.technologies || [])
   ];
 
   const matchedSkills: { skill: string; evidence: string; matchType: 'exact' | 'alias' | 'semantic' }[] = [];
@@ -64,7 +79,7 @@ export function evaluateResumeAgainstJob(
   const missingPreferred: string[] = [];
 
   // Check required skills
-  for (const reqSkill of job.requiredSkills) {
+  for (const reqSkill of requiredSkills) {
     let found = false;
     for (const candSkill of allCandidateSkills) {
       const match = isSkillMatch(candSkill, reqSkill);
@@ -84,7 +99,7 @@ export function evaluateResumeAgainstJob(
   }
 
   // Check preferred skills
-  for (const prefSkill of job.preferredSkills) {
+  for (const prefSkill of preferredSkills) {
     let found = false;
     for (const candSkill of allCandidateSkills) {
       const match = isSkillMatch(candSkill, prefSkill);
@@ -103,10 +118,10 @@ export function evaluateResumeAgainstJob(
     }
   }
 
-  const totalRequired = Math.max(1, job.requiredSkills.length);
-  const totalPreferred = Math.max(1, job.preferredSkills.length);
-  const reqMatchRatio = (job.requiredSkills.length - missingRequired.length) / totalRequired;
-  const prefMatchRatio = (job.preferredSkills.length - missingPreferred.length) / totalPreferred;
+  const totalRequired = Math.max(1, requiredSkills.length);
+  const totalPreferred = Math.max(1, preferredSkills.length);
+  const reqMatchRatio = (requiredSkills.length - missingRequired.length) / totalRequired;
+  const prefMatchRatio = (preferredSkills.length - missingPreferred.length) / totalPreferred;
 
   // Required counts 75% of skill score, preferred counts 25%
   const skillsScore = Math.round((reqMatchRatio * 0.75 + prefMatchRatio * 0.25) * 100);
@@ -127,7 +142,7 @@ export function evaluateResumeAgainstJob(
   }
 
   // Title alignment check
-  const hasTitleMatch = resume.experience.some(e => 
+  const hasTitleMatch = experiences.some(e => 
     e.jobTitle.toLowerCase().includes(job.title.toLowerCase()) ||
     job.title.toLowerCase().includes(e.jobTitle.toLowerCase())
   );
@@ -135,15 +150,15 @@ export function evaluateResumeAgainstJob(
 
   // 3. Responsibilities & Semantic Overlap
   const resumeFullText = [
-    resume.summary,
-    ...resume.experience.map(e => `${e.jobTitle} at ${e.company}: ${e.description}`),
-    ...resume.projects.map(p => `${p.title}: ${p.description}`)
+    resume.summary || '',
+    ...experiences.map(e => `${e.jobTitle || ''} at ${e.company || ''}: ${e.description || ''}`),
+    ...projects.map(p => `${p.title || ''}: ${p.description || ''}`)
   ].join(' ').toLowerCase();
 
   const alignedPoints: { jdPoint: string; resumeEvidence: string; similarity: number }[] = [];
   const gapPoints: string[] = [];
 
-  for (const resp of job.responsibilities) {
+  for (const resp of responsibilities) {
     const respWords = resp.toLowerCase().split(/\s+/).filter(w => w.length > 3);
     const matchedWordCount = respWords.filter(w => resumeFullText.includes(w)).length;
     const similarity = respWords.length > 0 ? matchedWordCount / respWords.length : 0.5;
@@ -160,16 +175,16 @@ export function evaluateResumeAgainstJob(
   }
 
   const responsibilitiesScore = Math.round(
-    (alignedPoints.length / Math.max(1, job.responsibilities.length)) * 80 + 20
+    (alignedPoints.length / Math.max(1, responsibilities.length)) * 80 + 20
   );
 
   // 4. Projects Match
   const relevantProjects: { title: string; alignment: string }[] = [];
-  for (const proj of resume.projects) {
-    const projTechs = proj.technologies.map(normalizeSkillName);
+  for (const proj of projects) {
+    const projTechs = (proj.technologies || []).map(normalizeSkillName);
     const techMatches = projTechs.filter(t => 
-      job.requiredSkills.some(r => isSkillMatch(t, r).matched) ||
-      job.keywords.some(k => isSkillMatch(t, k).matched)
+      requiredSkills.some(r => isSkillMatch(t, r).matched) ||
+      keywords.some(k => isSkillMatch(t, k).matched)
     );
 
     if (techMatches.length > 0) {
@@ -180,26 +195,26 @@ export function evaluateResumeAgainstJob(
     }
   }
 
-  const projectsScore = resume.projects.length === 0 
+  const projectsScore = projects.length === 0 
     ? 50 
-    : Math.min(100, Math.round((relevantProjects.length / Math.max(1, resume.projects.length)) * 40 + 60));
+    : Math.min(100, Math.round((relevantProjects.length / Math.max(1, projects.length)) * 40 + 60));
 
   // 5. Education Match
   let educationScore = 80;
   let eduDetails = 'Relevant degree in Computer Science, Data, or Engineering field.';
-  if (resume.education.length > 0) {
-    const eduText = resume.education.map(e => `${e.degree} in ${e.fieldOfStudy}`).join(' ').toLowerCase();
-    const reqEdu = job.educationRequirement.toLowerCase();
+  if (educations.length > 0) {
+    const eduText = educations.map(e => `${e.degree || ''} in ${e.fieldOfStudy || ''}`).join(' ').toLowerCase();
+    const reqEdu = (job.educationRequirement || '').toLowerCase();
     if (eduText.includes('master') || eduText.includes('bachelor') || eduText.includes('computer') || eduText.includes('data')) {
       educationScore = 95;
-      eduDetails = `Degree (${resume.education[0]?.degree} in ${resume.education[0]?.fieldOfStudy}) fulfills ${job.educationRequirement}.`;
+      eduDetails = `Degree (${educations[0]?.degree} in ${educations[0]?.fieldOfStudy}) fulfills ${job.educationRequirement}.`;
     }
   }
 
   // 6. Keywords Match
   const matchedKeywords: string[] = [];
   const missingKeywords: string[] = [];
-  for (const kw of job.keywords) {
+  for (const kw of keywords) {
     if (resumeFullText.includes(kw.toLowerCase())) {
       matchedKeywords.push(kw);
     } else {
@@ -207,15 +222,15 @@ export function evaluateResumeAgainstJob(
     }
   }
   const keywordsScore = Math.round(
-    (matchedKeywords.length / Math.max(1, job.keywords.length)) * 100
+    (matchedKeywords.length / Math.max(1, keywords.length)) * 100
   );
 
   // 7. Certifications Match
   const matchedCerts: string[] = [];
   const missingCerts: string[] = [];
-  for (const cert of job.requiredCertifications) {
-    const hasCert = resume.certifications.some(c => 
-      c.name.toLowerCase().includes(cert.toLowerCase()) || cert.toLowerCase().includes(c.name.toLowerCase())
+  for (const cert of requiredCertifications) {
+    const hasCert = certifications.some(c => 
+      (c.name || '').toLowerCase().includes(cert.toLowerCase()) || cert.toLowerCase().includes((c.name || '').toLowerCase())
     );
     if (hasCert) {
       matchedCerts.push(cert);
@@ -224,9 +239,9 @@ export function evaluateResumeAgainstJob(
     }
   }
 
-  const certsScore = job.requiredCertifications.length === 0 
+  const certsScore = requiredCertifications.length === 0 
     ? 90 
-    : Math.round((matchedCerts.length / job.requiredCertifications.length) * 100);
+    : Math.round((matchedCerts.length / requiredCertifications.length) * 100);
 
   // Calculate Weighted Overall Score
   const totalWeight = 
@@ -264,11 +279,11 @@ export function evaluateResumeAgainstJob(
     reasons.push('Some sections in the uploaded document had OCR uncertainty or complex multi-column formatting');
   }
 
-  if (resume.experience.length === 0) {
+  if (experiences.length === 0) {
     confidenceScore -= 15;
     reasons.push('No formal work history section detected');
   }
-  if (resume.skills.technical.length < 3) {
+  if (technicalSkills.length < 3) {
     confidenceScore -= 10;
     reasons.push('Sparse explicit skills enumeration');
   }
@@ -291,11 +306,11 @@ export function evaluateResumeAgainstJob(
   if (missingRequired.length > 0) {
     improvementActionItems.push(`Incorporate verifiable experience with ${missingRequired.slice(0, 2).join(' and ')} in recent project bullets.`);
   }
-  if (matchedKeywords.length < job.keywords.length) {
+  if (matchedKeywords.length < keywords.length) {
     improvementActionItems.push(`Harmonize terminology with JD keywords: mention ${missingKeywords.slice(0, 3).join(', ')} in summary or experience.`);
   }
-  if (resume.projects.length < 2) {
-    improvementActionItems.push(`Add at least one enterprise project demonstrating ${job.requiredSkills.slice(0, 2).join(' / ')} architecture.`);
+  if (projects.length < 2) {
+    improvementActionItems.push(`Add at least one enterprise project demonstrating ${requiredSkills.slice(0, 2).join(' / ')} architecture.`);
   }
   improvementActionItems.push(`Quantify business metrics (e.g. latency reduction %, revenue impact $, team size) in work descriptions.`);
 

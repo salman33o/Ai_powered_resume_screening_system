@@ -7,7 +7,9 @@ import {
   PipelineCandidate, 
   ATSAuditRecord,
   CandidateApplication,
-  AuthUser
+  AuthUser,
+  DirectMessage,
+  TokenUsageState
 } from './types';
 import { 
   SAMPLE_JOBS, 
@@ -23,6 +25,9 @@ import { exportATSReportPDF, exportResumePDF } from './lib/pdfExport';
 import { Navbar } from './components/Navbar';
 import { AndroidFrame } from './components/AndroidFrame';
 import { LoginPortal } from './components/LoginPortal';
+import { TokenUsageModal } from './components/TokenUsageModal';
+import { DirectMessagingModal } from './components/messaging/DirectMessagingModal';
+import { MessagingCenter } from './components/messaging/MessagingCenter';
 
 // Candidate Views
 import { CandidateDashboard } from './components/candidate/CandidateDashboard';
@@ -66,7 +71,10 @@ import {
   Star, 
   Sparkles,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  MessageSquare,
+  Zap,
+  Coins
 } from 'lucide-react';
 
 export default function App() {
@@ -75,14 +83,13 @@ export default function App() {
   const [isMobileView, setIsMobileView] = useState(false);
   const [activeView, setActiveView] = useState<string>('candidate-dashboard');
 
-  // Auth User State
-  const [authUser, setAuthUser] = useState<AuthUser | null>({
-    id: 'usr-1',
-    name: 'Alex Rivera',
-    email: 'alex.rivera.analyst@example.com',
-    role: 'candidate',
-    companyName: 'Apex Analytics',
-    token: 'jwt_demo_session_candidate'
+  // Auth User State — Login is required before accessing portal
+  const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
+    const saved = sessionStorage.getItem('primeats_auth_user');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return null;
   });
   const [showLoginPortalModal, setShowLoginPortalModal] = useState(false);
 
@@ -170,6 +177,185 @@ export default function App() {
     })));
   }, [selectedJob]);
 
+  // Token Quota Management State
+  const [tokenState, setTokenState] = useState<TokenUsageState>(() => {
+    const saved = localStorage.getItem('resumeai_token_state');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return {
+      availableTokens: 25000,
+      totalAllocated: 25000,
+      usedTokens: 0,
+      tier: 'Pro Recruiter',
+      history: [
+        {
+          id: 'tok-init-1',
+          action: 'Provisioning Grant',
+          tokensDeducted: 0,
+          timestamp: new Date(Date.now() - 86400000).toISOString(),
+          targetName: 'Platform Subscription Quota',
+          category: 'system'
+        }
+      ]
+    };
+  });
+  const [showTokenModal, setShowTokenModal] = useState(false);
+
+  // Direct Candidate-Company Messages State
+  const [messages, setMessages] = useState<DirectMessage[]>(() => {
+    const saved = localStorage.getItem('resumeai_direct_messages');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return [
+      {
+        id: 'msg-1',
+        threadId: 'thread-job-data-analyst-usr-1',
+        senderId: 'rec-apex-1',
+        senderName: 'Apex Analytics Talent Team',
+        senderRole: 'recruiter',
+        recipientId: 'usr-1',
+        recipientName: 'Alex Rivera',
+        recipientRole: 'candidate',
+        jobId: 'job-data-analyst',
+        jobTitle: 'Senior Data Analyst',
+        companyName: 'Apex Analytics & FinTech',
+        content: 'Hi Alex! We reviewed your structured profile for Senior Data Analyst (89% ATS match). Your experience with Power BI and SQL pipelines stands out. Would you be free for a 20-min technical screen this week?',
+        timestamp: new Date(Date.now() - 7200000).toISOString(),
+        isRead: false,
+        candidateAtsScore: 89,
+        tags: ['Interview Invite', 'Senior Data Analyst']
+      },
+      {
+        id: 'msg-2',
+        threadId: 'thread-job-data-analyst-usr-1',
+        senderId: 'usr-1',
+        senderName: 'Alex Rivera',
+        senderRole: 'candidate',
+        recipientId: 'rec-apex-1',
+        recipientName: 'Apex Analytics Talent Team',
+        recipientRole: 'recruiter',
+        jobId: 'job-data-analyst',
+        jobTitle: 'Senior Data Analyst',
+        companyName: 'Apex Analytics & FinTech',
+        content: 'Thank you! Yes, I am available Thursday morning or Friday afternoon for the chat. Looking forward to discussing the pipeline architecture.',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        isRead: true,
+        candidateAtsScore: 89,
+        tags: ['Candidate Reply']
+      }
+    ];
+  });
+  
+  // Direct Message Modal Trigger State
+  const [activeMessagingJob, setActiveMessagingJob] = useState<JobRequirement | null>(null);
+  const [activeMessagingCandidate, setActiveMessagingCandidate] = useState<PipelineCandidate | null>(null);
+
+  // Sync token state to localStorage
+  useEffect(() => {
+    localStorage.setItem('resumeai_token_state', JSON.stringify(tokenState));
+  }, [tokenState]);
+
+  // Sync messages to localStorage
+  useEffect(() => {
+    localStorage.setItem('resumeai_direct_messages', JSON.stringify(messages));
+  }, [messages]);
+
+  // Token handlers
+  const handleDeductTokens = (amount: number, actionName: string, targetName: string, category: any): boolean => {
+    if (tokenState.availableTokens < amount) {
+      setShowTokenModal(true);
+      return false;
+    }
+    setTokenState(prev => ({
+      ...prev,
+      availableTokens: Math.max(0, prev.availableTokens - amount),
+      usedTokens: prev.usedTokens + amount,
+      history: [
+        {
+          id: `tok-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          action: actionName,
+          tokensDeducted: amount,
+          timestamp: new Date().toISOString(),
+          targetName,
+          category
+        },
+        ...prev.history
+      ]
+    }));
+    return true;
+  };
+
+  const handleTopUpTokens = (amount: number) => {
+    setTokenState(prev => ({
+      ...prev,
+      availableTokens: prev.availableTokens + amount,
+      totalAllocated: prev.totalAllocated + amount,
+      history: [
+        {
+          id: `tok-topup-${Date.now()}`,
+          action: `Token Quota Top-Up (+${amount.toLocaleString()})`,
+          tokensDeducted: 0,
+          timestamp: new Date().toISOString(),
+          targetName: 'Instant Top-Up Pack',
+          category: 'system'
+        },
+        ...prev.history
+      ]
+    }));
+  };
+
+  const handleResetTokens = () => {
+    setTokenState({
+      availableTokens: 25000,
+      totalAllocated: 25000,
+      usedTokens: 0,
+      tier: 'Pro Recruiter',
+      history: [
+        {
+          id: `tok-reset-${Date.now()}`,
+          action: 'Quota Reset to 25,000 Tokens',
+          tokensDeducted: 0,
+          timestamp: new Date().toISOString(),
+          targetName: 'System Reset',
+          category: 'system'
+        }
+      ]
+    });
+  };
+
+  // Messaging handler
+  const handleSendMessage = (msgData: Omit<DirectMessage, 'id' | 'timestamp' | 'isRead'>) => {
+    const newMsg: DirectMessage = {
+      ...msgData,
+      id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      timestamp: new Date().toISOString(),
+      isRead: false
+    };
+
+    setMessages(prev => [newMsg, ...prev]);
+
+    setNotifications(prev => [
+      {
+        id: `notif-msg-${Date.now()}`,
+        title: 'New Message Sent',
+        desc: `Sent to ${msgData.recipientName} regarding ${msgData.jobTitle}`,
+        time: 'Just now',
+        unread: true
+      },
+      ...prev
+    ]);
+
+    handleDeductTokens(2, 'Direct Message Dispatch', msgData.jobTitle, 'messaging');
+  };
+
+  // Unread messages count for current role
+  const unreadMessagesCount = useMemo(() => {
+    const myId = authUser?.id || (role === 'candidate' ? 'usr-1' : 'rec-1');
+    return messages.filter(m => m.recipientId === myId && !m.isRead).length;
+  }, [messages, authUser, role]);
+
   // Candidate Navigation Items
   const candidateNavItems = [
     { id: 'candidate-dashboard', label: 'Overview', icon: Home, badge: `${analysis.overallScore}%` },
@@ -180,15 +366,17 @@ export default function App() {
     { id: 'career-skill-gap', label: 'Skill Gap & Roadmap', icon: TrendingUp },
     { id: 'ai-interview', label: 'AI Interview Prep', icon: Bot },
     { id: 'job-tracker', label: 'Job Tracker', icon: Briefcase },
+    { id: 'messages', label: 'Company Messages', icon: MessageSquare, badge: unreadMessagesCount > 0 ? `${unreadMessagesCount}` : undefined },
   ];
 
   // Recruiter Navigation Items
   const recruiterNavItems = [
     { id: 'recruiter-dashboard', label: 'Recruiter Console', icon: Home },
-    { id: 'recruiter-bulk', label: 'High-Speed Bulk Screen', icon: Layers, badge: '500/s' },
+    { id: 'recruiter-bulk', label: 'High-Speed Bulk Screen', icon: Layers, badge: 'Max 600' },
     { id: 'candidate-ranking', label: 'Candidate Ranking', icon: Users },
     { id: 'candidate-pipeline', label: 'Hiring Pipeline', icon: Briefcase, badge: `${candidates.length}` },
     { id: 'job-manager', label: 'Job Requirements', icon: Sliders },
+    { id: 'messages', label: 'Candidate Inquiries', icon: MessageSquare, badge: unreadMessagesCount > 0 ? `${unreadMessagesCount}` : undefined },
     { id: 'recruiter-analytics', label: 'Recruitment Analytics', icon: BarChart3 },
   ];
 
@@ -318,6 +506,54 @@ export default function App() {
                 setActiveView('candidate-dashboard');
               }}
               setActiveView={handleSelectView}
+              onOpenMessageModal={(job) => setActiveMessagingJob(job)}
+              onApplyJob={(job) => {
+                const newScore = evaluateResumeAgainstJob(selectedResume, job);
+                const newApp: PipelineCandidate = {
+                  id: `app-cand-${Date.now()}`,
+                  candidateId: selectedResume.id,
+                  candidateName: selectedResume.fullName,
+                  candidateEmail: selectedResume.email,
+                  candidatePhone: selectedResume.phone,
+                  jobId: job.id,
+                  jobTitle: job.title,
+                  companyName: job.company,
+                  appliedDate: new Date().toISOString(),
+                  stage: 'applied',
+                  resume: selectedResume,
+                  atsAnalysis: newScore,
+                  atsScore: newScore,
+                  recruiterNotes: [],
+                  tags: ['Direct Portal Application'],
+                  recruiterRating: newScore.overallScore >= 80 ? 5 : 4
+                };
+                setCandidates(prev => [newApp, ...prev]);
+                setNotifications(prev => [
+                  {
+                    id: `notif-app-${Date.now()}`,
+                    title: 'Application Submitted',
+                    desc: `Successfully applied to ${job.title} at ${job.company}`,
+                    time: 'Just now',
+                    unread: true
+                  },
+                  ...prev
+                ]);
+              }}
+            />
+          );
+        case 'messages':
+          return (
+            <MessagingCenter
+              messages={messages}
+              currentRole={role}
+              currentUser={authUser}
+              jobs={jobs}
+              activeJob={selectedJob}
+              onSendMessage={handleSendMessage}
+              onSelectJobForContext={(j) => {
+                setSelectedJob(j);
+                setActiveView('job-tracker');
+              }}
             />
           );
         default:
@@ -351,6 +587,9 @@ export default function App() {
               activeJob={selectedJob}
               onScreeningComplete={handleScreeningComplete}
               setActiveView={handleSelectView}
+              tokenState={tokenState}
+              onDeductTokens={handleDeductTokens}
+              onOpenTokenModal={() => setShowTokenModal(true)}
             />
           );
         case 'candidate-ranking':
@@ -379,6 +618,7 @@ export default function App() {
               setCandidates={setCandidates}
               activeJob={selectedJob}
               onSelectCandidate={(c) => setSelectedCandidateDetail(c)}
+              onOpenMessageModal={(cand) => setActiveMessagingCandidate(cand)}
             />
           );
         case 'job-manager':
@@ -389,6 +629,21 @@ export default function App() {
               selectedJob={selectedJob}
               setSelectedJob={setSelectedJob}
               onJobChanged={runAnalysis}
+            />
+          );
+        case 'messages':
+          return (
+            <MessagingCenter
+              messages={messages}
+              currentRole={role}
+              currentUser={authUser}
+              jobs={jobs}
+              activeJob={selectedJob}
+              onSendMessage={handleSendMessage}
+              onSelectJobForContext={(j) => {
+                setSelectedJob(j);
+                setActiveView('job-manager');
+              }}
             />
           );
         case 'recruiter-analytics':
@@ -421,6 +676,7 @@ export default function App() {
           setAuthUser(user);
           setRole(user.role);
           setActiveView(user.role === 'candidate' ? 'candidate-dashboard' : 'recruiter-dashboard');
+          sessionStorage.setItem('primeats_auth_user', JSON.stringify(user));
           setShowLoginPortalModal(false);
         }}
         initialRole={role}
@@ -457,8 +713,13 @@ export default function App() {
         unreadNotifications={notifications.filter(n => n.unread).length}
         onToggleNotifications={() => setShowNotifications(!showNotifications)}
         authUser={authUser}
+        availableTokens={tokenState.availableTokens}
+        onOpenTokenModal={() => setShowTokenModal(true)}
+        unreadMessagesCount={unreadMessagesCount}
+        onOpenMessages={() => setActiveView('messages')}
         onLogout={() => {
           setAuthUser(null);
+          sessionStorage.removeItem('primeats_auth_user');
           setShowLoginPortalModal(true);
         }}
         onOpenLoginPortal={() => setShowLoginPortalModal(true)}
@@ -884,6 +1145,31 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* --- TOKEN & COMPUTE USAGE MODAL --- */}
+      <TokenUsageModal
+        isOpen={showTokenModal}
+        onClose={() => setShowTokenModal(false)}
+        tokenState={tokenState}
+        onTopUp={handleTopUpTokens}
+        onResetTokens={handleResetTokens}
+      />
+
+      {/* --- DIRECT CANDIDATE <-> COMPANY MESSAGING MODAL --- */}
+      <DirectMessagingModal
+        isOpen={!!activeMessagingJob || !!activeMessagingCandidate}
+        onClose={() => {
+          setActiveMessagingJob(null);
+          setActiveMessagingCandidate(null);
+        }}
+        targetJob={activeMessagingJob || (activeMessagingCandidate ? jobs.find(j => j.id === activeMessagingCandidate.jobId) || selectedJob : selectedJob)}
+        resume={selectedResume}
+        currentUser={authUser}
+        currentRole={role}
+        recipientName={activeMessagingCandidate?.resume.fullName}
+        recipientId={activeMessagingCandidate?.candidateId}
+        onSendMessage={handleSendMessage}
+      />
 
     </div>
   );
