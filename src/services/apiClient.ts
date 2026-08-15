@@ -1,13 +1,15 @@
 import { StructuredResume, JobRequirement, ATSScoreBreakdown, ScoringWeights } from '../types';
 import { evaluateResumeAgainstJob } from '../lib/atsEngine';
 
+const API_BASE = (import.meta as any).env?.VITE_API_URL || '';
+
 export async function analyzeResumeApi(
   resume: StructuredResume,
   job: JobRequirement,
   customWeights?: ScoringWeights
 ): Promise<ATSScoreBreakdown> {
   try {
-    const res = await fetch('/api/ats/analyze', {
+    const res = await fetch(`${API_BASE}/api/ats/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resume, job, customWeights }),
@@ -26,7 +28,7 @@ export async function analyzeResumeApi(
 
 export async function optimizeResumeApi(resume: StructuredResume, job: JobRequirement): Promise<any> {
   try {
-    const res = await fetch('/api/ats/optimize', {
+    const res = await fetch(`${API_BASE}/api/ats/optimize`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resume, job }),
@@ -57,7 +59,7 @@ export async function optimizeResumeApi(resume: StructuredResume, job: JobRequir
 
 export async function generateInterviewQuestionsApi(resume: StructuredResume, job: JobRequirement): Promise<any[]> {
   try {
-    const res = await fetch('/api/ats/generate-questions', {
+    const res = await fetch(`${API_BASE}/api/ats/generate-questions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resume, job }),
