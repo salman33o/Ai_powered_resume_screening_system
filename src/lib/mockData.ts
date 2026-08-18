@@ -2,6 +2,7 @@ import { JobRequirement, StructuredResume, CandidateApplication, ATSAuditRecord 
 import { evaluateResumeAgainstJob } from './atsEngine';
 
 export const SAMPLE_JOBS: JobRequirement[] = [
+  // --- ENGINEERING & TECH ---
   {
     id: 'job-data-analyst',
     title: 'Senior Data Analyst',
@@ -107,8 +108,699 @@ export const SAMPLE_JOBS: JobRequirement[] = [
       keywordsMatch: 5,
       certificationsMatch: 5
     }
+  },
+  {
+    id: 'job-frontend-assoc',
+    title: 'Associate Frontend Developer',
+    company: 'Veloce Digital Interfaces',
+    department: 'Web Engineering',
+    location: 'Chicago, IL (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Entry',
+    minExperienceYears: 1,
+    salaryRange: '$80,000 - $105,000',
+    summary: 'Develop interactive client-side web applications using React, TypeScript, and responsive CSS for high-traffic customer portals.',
+    requiredSkills: ['React', 'JavaScript', 'HTML/CSS', 'TypeScript', 'Git'],
+    preferredSkills: ['Next.js', 'Tailwind CSS', 'Redux', 'Jest', 'Figma'],
+    responsibilities: [
+      'Implement responsive UI components adhering to strict accessibility and design specifications',
+      'Integrate frontend views with RESTful backend APIs and manage local client state',
+      'Write unit tests for UI components to maintain high test coverage and zero regressions'
+    ],
+    educationRequirement: "Bachelor's degree in Computer Science, Web Development, or equivalent bootcamp certification",
+    requiredCertifications: [],
+    keywords: ['Frontend', 'React', 'JavaScript', 'TypeScript', 'CSS', 'UI Components', 'Responsive Design'],
+    published: true,
+    createdAt: '2026-08-11T08:00:00Z',
+    applicationsCount: 54,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 15,
+      responsibilitiesMatch: 25,
+      projectsMatch: 15,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-backend-sr',
+    title: 'Senior Backend Engineer',
+    company: 'Vanguard Systems',
+    department: 'Distributed Platform Services',
+    location: 'Seattle, WA (Remote)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 5,
+    salaryRange: '$155,000 - $190,000',
+    summary: 'Architect high-throughput microservices and distributed transaction engines utilizing Golang, Python, PostgreSQL, and Kafka.',
+    requiredSkills: ['Golang', 'Python', 'PostgreSQL', 'Docker', 'Git', 'Cloud Architecture'],
+    preferredSkills: ['Kubernetes', 'gRPC', 'Kafka', 'Redis', 'AWS'],
+    responsibilities: [
+      'Design fault-tolerant distributed services handling millions of concurrent financial transactions',
+      'Optimize database query execution and data partitioning schemes for high concurrency',
+      'Implement CI/CD pipeline automation and infrastructure as code'
+    ],
+    educationRequirement: "Bachelor's or Master's in Computer Science or Software Engineering",
+    requiredCertifications: ['AWS Certified Solutions Architect (Preferred)'],
+    keywords: ['Backend', 'Golang', 'Python', 'Microservices', 'PostgreSQL', 'Distributed Systems', 'Kafka'],
+    published: true,
+    createdAt: '2026-08-03T11:20:00Z',
+    applicationsCount: 71,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 15,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-devops-sr',
+    title: 'Lead DevOps & Cloud Engineer',
+    company: 'Aether Cloud Infrastructure',
+    department: 'Site Reliability & Infrastructure',
+    location: 'Denver, CO (Remote)',
+    type: 'Full-time',
+    seniority: 'Lead',
+    minExperienceYears: 6,
+    salaryRange: '$165,000 - $205,000',
+    summary: 'Lead enterprise multi-cloud infrastructure automation, Kubernetes orchestration, CI/CD pipelines, and zero-trust security postures.',
+    requiredSkills: ['AWS', 'Kubernetes', 'Docker', 'CI/CD', 'Git', 'Cloud Architecture'],
+    preferredSkills: ['Terraform', 'Helm', 'Prometheus', 'Golang', 'Linux'],
+    responsibilities: [
+      'Architect and oversee multi-region Kubernetes clusters across AWS and GCP environments',
+      'Standardize infrastructure-as-code automation and automated vulnerability scanning pipelines',
+      'Ensure 99.99% system availability through proactive telemetry, SLOs, and incident response automation'
+    ],
+    educationRequirement: "Bachelor's degree in Computer Science, Information Technology, or relevant domain",
+    requiredCertifications: ['Certified Kubernetes Administrator (CKA)', 'AWS Solutions Architect Professional'],
+    keywords: ['DevOps', 'Kubernetes', 'AWS', 'Terraform', 'CI/CD', 'Cloud Architecture', 'Infrastructure'],
+    published: true,
+    createdAt: '2026-08-04T13:00:00Z',
+    applicationsCount: 39,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 5,
+      certificationsMatch: 5
+    }
+  },
+  {
+    id: 'job-data-scientist',
+    title: 'Senior Data Scientist',
+    company: 'Quantis Predictive Labs',
+    department: 'Statistical Research',
+    location: 'Boston, MA (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$145,000 - $180,000',
+    summary: 'Develop statistical learning models, predictive customer lifetime value algorithms, and causal inference experiments.',
+    requiredSkills: ['Python', 'Machine Learning', 'Data Analysis', 'SQL', 'Deep Learning'],
+    preferredSkills: ['PyTorch', 'R', 'A/B Testing', 'Snowflake', 'Scikit-Learn'],
+    responsibilities: [
+      'Build end-to-end predictive machine learning models to forecast operational churn and revenue trends',
+      'Formulate and analyze large-scale multi-variate randomized experiments',
+      'Translate complex statistical models into actionable executive leadership recommendations'
+    ],
+    educationRequirement: "Master's or Ph.D. in Statistics, Mathematics, Data Science, or Computer Science",
+    requiredCertifications: [],
+    keywords: ['Data Science', 'Machine Learning', 'Python', 'Statistics', 'SQL', 'Predictive Modeling'],
+    published: true,
+    createdAt: '2026-08-06T15:30:00Z',
+    applicationsCount: 63,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-data-engineer',
+    title: 'Data Platform Engineer',
+    company: 'Nexus Stream Data',
+    department: 'Data Platform',
+    location: 'New York, NY (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$130,000 - $160,000',
+    summary: 'Build robust real-time ETL/ELT pipelines and scalable data lakehouse infrastructure utilizing Apache Spark, SQL, and Python.',
+    requiredSkills: ['Python', 'SQL', 'Big Data', 'PostgreSQL', 'Docker'],
+    preferredSkills: ['Spark', 'Snowflake', 'dbt', 'Airflow', 'Kafka'],
+    responsibilities: [
+      'Design, build, and optimize automated streaming and batch pipelines ingestion systems',
+      'Enforce data governance, schema migrations, and real-time data quality monitoring suites',
+      'Scale centralized data warehouse schemas for performant analytical querying'
+    ],
+    educationRequirement: "Bachelor's degree in Computer Science, Information Systems, or related quantitative field",
+    requiredCertifications: ['Databricks Certified Data Engineer (Preferred)'],
+    keywords: ['Data Engineering', 'SQL', 'Python', 'Spark', 'ETL', 'Pipelines', 'Snowflake'],
+    published: true,
+    createdAt: '2026-08-07T10:15:00Z',
+    applicationsCount: 47,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-sdet-qa',
+    title: 'SDET & QA Automation Engineer',
+    company: 'Precision Quality Labs',
+    department: 'Quality Engineering',
+    location: 'Remote (US)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$110,000 - $140,000',
+    summary: 'Develop automated test frameworks for web, API, and mobile applications to ensure zero-defect software deployments.',
+    requiredSkills: ['JavaScript', 'TypeScript', 'Python', 'Git', 'CI/CD'],
+    preferredSkills: ['Playwright', 'Cypress', 'Selenium', 'Postman', 'Docker'],
+    responsibilities: [
+      'Architect robust end-to-end automation test suites using Playwright and TypeScript',
+      'Implement API contract tests and performance load testing pipelines in CI/CD',
+      'Partner with software engineers to define test plans and triage defect reports'
+    ],
+    educationRequirement: "Bachelor's degree in Computer Science, Software Engineering, or equivalent experience",
+    requiredCertifications: ['ISTQB Certified Tester (Preferred)'],
+    keywords: ['QA', 'SDET', 'Automation', 'TypeScript', 'Playwright', 'Testing', 'CI/CD'],
+    published: true,
+    createdAt: '2026-08-09T09:00:00Z',
+    applicationsCount: 31,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 20,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-mobile-engineer',
+    title: 'Mobile Engineer (Flutter & Android)',
+    company: 'Apex Mobile Interactive',
+    department: 'Client Engineering',
+    location: 'Atlanta, GA (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$135,000 - $170,000',
+    summary: 'Engineer smooth, 60fps cross-platform mobile applications with Flutter and native Android integrations.',
+    requiredSkills: ['Flutter', 'Android', 'JavaScript', 'Git', 'HTML/CSS'],
+    preferredSkills: ['Dart', 'Kotlin', 'Firebase', 'State Management', 'REST APIs'],
+    responsibilities: [
+      'Architect cross-platform client mobile apps using Flutter and modern declarative UI standards',
+      'Integrate push notifications, background sync workers, and local SQLite data caching',
+      'Publish and maintain releases on Google Play Store and Apple App Store'
+    ],
+    educationRequirement: "Bachelor's in Computer Science, Software Engineering, or equivalent experience",
+    requiredCertifications: [],
+    keywords: ['Mobile', 'Flutter', 'Android', 'Dart', 'Kotlin', 'Cross-Platform', 'Mobile App'],
+    published: true,
+    createdAt: '2026-08-10T14:40:00Z',
+    applicationsCount: 45,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-cloud-architect',
+    title: 'Cloud Solutions Architect',
+    company: 'Horizon Cloud Advisors',
+    department: 'Enterprise Architecture',
+    location: 'San Jose, CA (Remote)',
+    type: 'Full-time',
+    seniority: 'Lead',
+    minExperienceYears: 7,
+    salaryRange: '$180,000 - $225,000',
+    summary: 'Lead cloud transformation, governance, enterprise security architecture, and disaster recovery strategies for Fortune 500 clients.',
+    requiredSkills: ['Cloud Architecture', 'AWS', 'Docker', 'Kubernetes', 'Problem Solving', 'Leadership'],
+    preferredSkills: ['Azure', 'GCP', 'Terraform', 'Security Architecture', 'Microservices'],
+    responsibilities: [
+      'Design high-availability, multi-region enterprise cloud landing zones and governance models',
+      'Guide executive stakeholders through legacy application modernization and cloud migrations',
+      'Establish enterprise architectural standards, cost optimization protocols, and compliance guardrails'
+    ],
+    educationRequirement: "Bachelor's or Master's degree in Computer Science, Information Systems, or Engineering",
+    requiredCertifications: ['AWS Certified Solutions Architect Professional', 'CISSP (Preferred)'],
+    keywords: ['Cloud Architect', 'AWS', 'Architecture', 'Enterprise', 'Cloud Migration', 'Security'],
+    published: true,
+    createdAt: '2026-08-02T16:00:00Z',
+    applicationsCount: 28,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 5,
+      certificationsMatch: 5
+    }
+  },
+  {
+    id: 'job-cybersecurity-analyst',
+    title: 'Cybersecurity & SOC Analyst',
+    company: 'Sentinel Defense Network',
+    department: 'Information Security',
+    location: 'Washington, DC (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$115,000 - $145,000',
+    summary: 'Monitor threat vectors, analyze SIEM telemetry, manage incident response protocols, and enforce security controls.',
+    requiredSkills: ['Problem Solving', 'Communication', 'Git', 'Cloud Architecture', 'Python'],
+    preferredSkills: ['SIEM', 'Splunk', 'Wireshark', 'Incident Response', 'Vulnerability Assessment'],
+    responsibilities: [
+      'Monitor and investigate security alerts across network perimeter and cloud endpoints',
+      'Conduct vulnerability scans, threat modeling exercises, and remediation tracking',
+      'Author formal incident post-mortems and refine defensive automation runbooks'
+    ],
+    educationRequirement: "Bachelor's degree in Cybersecurity, Information Assurance, Computer Science, or equivalent",
+    requiredCertifications: ['CompTIA Security+', 'Certified Information Systems Security Professional (CISSP)'],
+    keywords: ['Cybersecurity', 'SOC', 'Security', 'Incident Response', 'SIEM', 'Vulnerability Analysis'],
+    published: true,
+    createdAt: '2026-08-06T11:00:00Z',
+    applicationsCount: 35,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 2,
+      certificationsMatch: 3
+    }
+  },
+
+  // --- PRODUCT & DESIGN ---
+  {
+    id: 'job-product-manager-assoc',
+    title: 'Associate Product Manager',
+    company: 'Pulse Digital Labs',
+    department: 'Product Management',
+    location: 'San Francisco, CA (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Entry',
+    minExperienceYears: 1,
+    salaryRange: '$95,000 - $120,000',
+    summary: 'Drive product requirement documentation, user feedback synthesis, and agile sprint delivery for growth-oriented SaaS features.',
+    requiredSkills: ['Agile', 'Communication', 'Problem Solving', 'Data Analysis', 'Leadership'],
+    preferredSkills: ['Jira', 'SQL', 'User Research', 'Figma', 'A/B Testing'],
+    responsibilities: [
+      'Gather and analyze user feedback to write crisp Product Requirement Documents (PRDs)',
+      'Partner closely with design and engineering teams through sprint planning and daily standups',
+      'Track feature adoption metrics and present experiment findings to product leadership'
+    ],
+    educationRequirement: "Bachelor's degree in Business, Computer Science, Economics, or related discipline",
+    requiredCertifications: [],
+    keywords: ['Product Manager', 'APM', 'Agile', 'PRD', 'Product Strategy', 'Scrum', 'Data Analysis'],
+    published: true,
+    createdAt: '2026-08-11T12:00:00Z',
+    applicationsCount: 82,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 20,
+      responsibilitiesMatch: 25,
+      projectsMatch: 15,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-product-manager-lead',
+    title: 'Principal Product Manager',
+    company: 'Stratos Enterprise Software',
+    department: 'Product Leadership',
+    location: 'San Francisco, CA (Remote)',
+    type: 'Full-time',
+    seniority: 'Lead',
+    minExperienceYears: 7,
+    salaryRange: '$180,000 - $225,000',
+    summary: 'Define strategic multi-year product vision, align executive roadmaps, and lead cross-functional squads to drive enterprise ARR.',
+    requiredSkills: ['Leadership', 'Agile', 'Communication', 'Problem Solving', 'Data Analysis'],
+    preferredSkills: ['Roadmapping', 'SaaS Pricing', 'Executive Presentation', 'Customer Discovery'],
+    responsibilities: [
+      'Establish unified multi-year product strategy for core enterprise B2B platform products',
+      'Lead cross-functional teams of engineering managers, designers, and go-to-market teams',
+      'Drive customer Advisory Boards and negotiate high-impact strategic partnership integrations'
+    ],
+    educationRequirement: "Bachelor's or Master's degree (MBA preferred) in Business or Engineering",
+    requiredCertifications: [],
+    keywords: ['Product Management', 'Principal PM', 'Product Strategy', 'Roadmap', 'B2B SaaS', 'Leadership'],
+    published: true,
+    createdAt: '2026-08-01T15:00:00Z',
+    applicationsCount: 46,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 30,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-ux-ui-designer',
+    title: 'UI/UX Product Designer',
+    company: 'Canvas Craft Studios',
+    department: 'Design Systems & UX',
+    location: 'Los Angeles, CA (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$115,000 - $145,000',
+    summary: 'Create intuitive user journeys, wireframes, interactive prototypes, and design system components for complex web and mobile workflows.',
+    requiredSkills: ['HTML/CSS', 'Problem Solving', 'Communication', 'Agile'],
+    preferredSkills: ['Figma', 'Design Systems', 'User Research', 'Prototyping', 'Usability Testing'],
+    responsibilities: [
+      'Conduct user interviews, usability tests, and synthesize behavioral research into actionable flows',
+      'Produce high-fidelity interactive Figma prototypes and scalable component design systems',
+      'Collaborate with frontend developers to ensure design fidelity and micro-interaction polish'
+    ],
+    educationRequirement: "Bachelor's degree in Human-Computer Interaction (HCI), Graphic Design, or equivalent portfolio",
+    requiredCertifications: [],
+    keywords: ['UX Designer', 'UI Designer', 'Figma', 'Design System', 'Wireframing', 'User Research'],
+    published: true,
+    createdAt: '2026-08-07T13:30:00Z',
+    applicationsCount: 75,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 20,
+      responsibilitiesMatch: 25,
+      projectsMatch: 15,
+      educationMatch: 3,
+      keywordsMatch: 2,
+      certificationsMatch: 0
+    }
+  },
+
+  // --- BUSINESS & OPERATIONS ---
+  {
+    id: 'job-business-analyst',
+    title: 'Senior Business Systems Analyst',
+    company: 'Apex Enterprise Consulting',
+    department: 'Business Strategy',
+    location: 'Chicago, IL (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$120,000 - $150,000',
+    summary: 'Translate complex business requirements into technical system specifications, optimize ERP/CRM workflows, and lead process audits.',
+    requiredSkills: ['SQL', 'Data Analysis', 'Communication', 'Problem Solving', 'Agile'],
+    preferredSkills: ['Business Intelligence', 'Tableau', 'Visio', 'Process Mapping', 'Excel Modeling'],
+    responsibilities: [
+      'Bridge the gap between executive business stakeholders and technical software engineering squads',
+      'Document detailed business requirements (BRD), user stories, and acceptance criteria',
+      'Perform data validation queries in SQL and model financial process improvements'
+    ],
+    educationRequirement: "Bachelor's degree in Business Administration, Information Systems, or Finance",
+    requiredCertifications: ['CBAP (Certified Business Analysis Professional) (Preferred)'],
+    keywords: ['Business Analyst', 'Requirements Gathering', 'SQL', 'BRD', 'Process Optimization', 'Agile'],
+    published: true,
+    createdAt: '2026-08-04T10:00:00Z',
+    applicationsCount: 52,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-project-manager',
+    title: 'Technical Project Manager',
+    company: 'CoreWave Solutions',
+    department: 'Program Management Office',
+    location: 'Dallas, TX (Remote)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 4,
+    salaryRange: '$125,000 - $155,000',
+    summary: 'Manage software delivery milestones, cross-functional dependencies, project budgets, and risk mitigation across multi-team programs.',
+    requiredSkills: ['Agile', 'Leadership', 'Communication', 'Problem Solving'],
+    preferredSkills: ['PMP', 'Jira', 'Scrum Master', 'Risk Management', 'Budget Tracking'],
+    responsibilities: [
+      'Lead agile release planning, track sprint velocity, and unblock cross-functional engineering teams',
+      'Manage scope, schedule, and stakeholder communication for complex multi-quarter programs',
+      'Identify operational bottlenecks, mitigate project risks, and deliver status reports to leadership'
+    ],
+    educationRequirement: "Bachelor's degree in Business, Computer Science, or Management",
+    requiredCertifications: ['Project Management Professional (PMP)', 'Certified ScrumMaster (CSM)'],
+    keywords: ['Project Manager', 'PMP', 'Scrum', 'Agile', 'Program Management', 'Risk Management'],
+    published: true,
+    createdAt: '2026-08-08T11:00:00Z',
+    applicationsCount: 48,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 2,
+      certificationsMatch: 3
+    }
+  },
+
+  // --- MARKETING & SALES ---
+  {
+    id: 'job-digital-marketing',
+    title: 'Digital Marketing & Growth Specialist',
+    company: 'OmniReach Growth Agency',
+    department: 'Growth Marketing',
+    location: 'Miami, FL (Remote)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$90,000 - $120,000',
+    summary: 'Design and execute multi-channel paid acquisition campaigns, manage ad budgets across Google & Meta, and optimize conversion funnels.',
+    requiredSkills: ['Data Analysis', 'Communication', 'Problem Solving'],
+    preferredSkills: ['Google Ads', 'Meta Ads Manager', 'SEO', 'Google Analytics 4', 'A/B Testing', 'HubSpot'],
+    responsibilities: [
+      'Manage performance marketing campaigns across Google Ads, LinkedIn, and Meta to drive qualified MQLs',
+      'Perform continuous landing page A/B testing and attribution analysis to lower CAC by 20%+',
+      'Build automated analytics reporting funnels to calculate customer lifetime value and ROAS'
+    ],
+    educationRequirement: "Bachelor's degree in Marketing, Communications, Business, or related discipline",
+    requiredCertifications: ['Google Ads Certified', 'HubSpot Inbound Marketing'],
+    keywords: ['Digital Marketing', 'Paid Media', 'Google Ads', 'SEO', 'Growth Marketing', 'CAC', 'ROAS'],
+    published: true,
+    createdAt: '2026-08-09T16:00:00Z',
+    applicationsCount: 65,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-account-executive',
+    title: 'Enterprise Account Executive',
+    company: 'CloudGate SaaS Platforms',
+    department: 'Enterprise Sales',
+    location: 'New York, NY (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 5,
+    salaryRange: '$140,000 - $260,000 (OTE)',
+    summary: 'Drive full-cycle enterprise B2B sales cycles from discovery to contract negotiation, closing $100K+ ACV deals with C-level executives.',
+    requiredSkills: ['Communication', 'Leadership', 'Problem Solving'],
+    preferredSkills: ['MEDDPICC', 'Salesforce', 'Enterprise Sales', 'Contract Negotiation', 'Cold Outreach'],
+    responsibilities: [
+      'Execute enterprise sales strategies targeting Fortune 1000 technical decision makers',
+      'Manage complex multi-stakeholder procurement and legal contract negotiation cycles',
+      'Consistently exceed quarterly quota quotas through disciplined pipeline generation and MEDDPICC qualification'
+    ],
+    educationRequirement: "Bachelor's degree in Business, Communications, or equivalent sales track record",
+    requiredCertifications: [],
+    keywords: ['Account Executive', 'Enterprise Sales', 'B2B SaaS', 'MEDDPICC', 'Closing', 'Quota'],
+    published: true,
+    createdAt: '2026-08-05T14:00:00Z',
+    applicationsCount: 41,
+    scoringWeights: {
+      skillsMatch: 25,
+      experienceMatch: 35,
+      responsibilitiesMatch: 25,
+      projectsMatch: 5,
+      educationMatch: 5,
+      keywordsMatch: 5,
+      certificationsMatch: 0
+    }
+  },
+
+  // --- FINANCE & HR ---
+  {
+    id: 'job-financial-analyst',
+    title: 'Senior Financial Analyst',
+    company: 'Capital Peak Advisory',
+    department: 'Corporate FP&A',
+    location: 'Charlotte, NC (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$115,000 - $145,000',
+    summary: 'Build complex financial forecasting models, variance analyses, and annual operating budget presentations for executive leadership.',
+    requiredSkills: ['SQL', 'Data Analysis', 'Communication', 'Problem Solving'],
+    preferredSkills: ['Financial Modeling', 'Excel VBA', 'Power BI', 'DCF Valuation', 'Budgeting'],
+    responsibilities: [
+      'Develop three-statement financial forecasting models and capital expenditure forecasts',
+      'Analyze monthly budget-to-actual variances and provide strategic cost optimization recommendations',
+      'Prepare quarterly board presentation decks with clean financial KPI visualizations'
+    ],
+    educationRequirement: "Bachelor's in Finance, Accounting, Economics, or MBA",
+    requiredCertifications: ['CFA (Chartered Financial Analyst) Level 1+ or CPA (Preferred)'],
+    keywords: ['Financial Analyst', 'FP&A', 'Financial Modeling', 'Budgeting', 'Forecasting', 'Excel', 'CFA'],
+    published: true,
+    createdAt: '2026-08-03T14:30:00Z',
+    applicationsCount: 59,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-recruiter-ta',
+    title: 'Senior Technical Recruiter',
+    company: 'TalentScale Partners',
+    department: 'Talent Acquisition',
+    location: 'Seattle, WA (Remote)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$110,000 - $140,000',
+    summary: 'Lead full-cycle technical recruiting for specialized engineering, AI/ML, and product leadership roles in high-growth technology environments.',
+    requiredSkills: ['Communication', 'Leadership', 'Problem Solving'],
+    preferredSkills: ['ATS Management', 'Technical Sourcing', 'LinkedIn Recruiter', 'Offer Negotiation', 'Diversity Hiring'],
+    responsibilities: [
+      'Partner with engineering VPs and hiring managers to calibrate candidate scorecards and hiring standards',
+      'Build active candidate sourcing pipelines for niche software, ML, and distributed systems talent',
+      'Deliver world-class candidate experience and negotiate closing offer packages'
+    ],
+    educationRequirement: "Bachelor's degree in Human Resources, Communications, Business, or equivalent",
+    requiredCertifications: ['AIRS Certified Internet Recruiter (CIR) (Preferred)'],
+    keywords: ['Technical Recruiter', 'Talent Acquisition', 'Sourcing', 'ATS', 'Full-Cycle Recruiting', 'Hiring'],
+    published: true,
+    createdAt: '2026-08-07T11:00:00Z',
+    applicationsCount: 38,
+    scoringWeights: {
+      skillsMatch: 25,
+      experienceMatch: 30,
+      responsibilitiesMatch: 30,
+      projectsMatch: 5,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+
+  // --- HEALTHCARE & CLINICAL ---
+  {
+    id: 'job-registered-nurse',
+    title: 'Clinical Nurse Specialist & Informatics',
+    company: 'Providence Health Systems',
+    department: 'Clinical Quality & Informatics',
+    location: 'Portland, OR (On-site)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$105,000 - $135,000',
+    summary: 'Provide patient care expertise while optimizing electronic health records (EHR) workflows, clinical documentation, and hospital quality standards.',
+    requiredSkills: ['Communication', 'Problem Solving', 'Leadership'],
+    preferredSkills: ['EHR', 'Epic Systems', 'Clinical Informatics', 'Patient Care', 'Healthcare Compliance'],
+    responsibilities: [
+      'Deliver evidence-based clinical protocols and mentor nursing staff on critical care workflows',
+      'Collaborate with health IT analysts to refine Epic EHR clinical documentation templates',
+      'Monitor hospital quality metrics and ensure strict adherence to Joint Commission and HIPAA standards'
+    ],
+    educationRequirement: "Bachelor of Science in Nursing (BSN) or Master's in Nursing Informatics (MSN)",
+    requiredCertifications: ['Registered Nurse (RN) License', 'Informatics Nursing Certification (RN-BC) (Preferred)'],
+    keywords: ['Nurse', 'RN', 'Clinical Informatics', 'Epic', 'Healthcare', 'Patient Care', 'EHR'],
+    published: true,
+    createdAt: '2026-08-02T09:00:00Z',
+    applicationsCount: 22,
+    scoringWeights: {
+      skillsMatch: 25,
+      experienceMatch: 30,
+      responsibilitiesMatch: 25,
+      projectsMatch: 5,
+      educationMatch: 5,
+      keywordsMatch: 5,
+      certificationsMatch: 5
+    }
+  },
+  {
+    id: 'job-clinical-data-coord',
+    title: 'Clinical Data Management Coordinator',
+    company: 'BioVance Clinical Trials',
+    department: 'Biometrics & Clinical Research',
+    location: 'Raleigh, NC (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$85,000 - $115,000',
+    summary: 'Coordinate clinical trial electronic data capture (EDC), manage query resolution workflows, and validate data integrity for FDA regulatory submissions.',
+    requiredSkills: ['Data Analysis', 'SQL', 'Problem Solving', 'Communication'],
+    preferredSkills: ['EDC', 'Medidata Rave', 'GCP Compliance', 'CDISC SDTM', 'Clinical Trials'],
+    responsibilities: [
+      'Design and validate Electronic Case Report Forms (eCRF) in compliance with clinical trial protocols',
+      'Execute automated data discrepancy checks and manage clinical investigator site queries',
+      'Prepare clean, locked clinical databases ready for statistical analysis and FDA submission'
+    ],
+    educationRequirement: "Bachelor's degree in Life Sciences, Health Informatics, Statistics, or related discipline",
+    requiredCertifications: ['Certified Clinical Data Manager (CCDM) (Preferred)'],
+    keywords: ['Clinical Data', 'EDC', 'Clinical Trials', 'GCP', 'Medidata Rave', 'Data Management', 'FDA'],
+    published: true,
+    createdAt: '2026-08-06T13:00:00Z',
+    applicationsCount: 29,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
   }
 ];
+
 
 export const SAMPLE_CANDIDATE_RESUMES: StructuredResume[] = [
   {

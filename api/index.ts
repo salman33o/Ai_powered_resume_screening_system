@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import { evaluateResumeAgainstJob } from '../src/lib/atsEngine';
 import { JobRequirement, StructuredResume } from '../src/types';
@@ -23,8 +23,10 @@ function getGeminiClient(): GoogleGenAI | null {
   return geminiClient;
 }
 
+const apiRouter = Router();
+
 // Health check
-app.get('/api/health', (req: Request, res: Response) => {
+apiRouter.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     engine: 'ATS-Hybrid-v2.6',
@@ -34,8 +36,8 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// POST /api/ats/analyze
-app.post('/api/ats/analyze', async (req: Request, res: Response) => {
+// POST /ats/analyze
+apiRouter.post('/ats/analyze', async (req: Request, res: Response) => {
   try {
     const { resume, job, customWeights } = req.body as {
       resume: StructuredResume;
@@ -96,8 +98,8 @@ Provide a concise 3-paragraph executive analysis:
   }
 });
 
-// POST /api/ats/optimize
-app.post('/api/ats/optimize', async (req: Request, res: Response) => {
+// POST /ats/optimize
+apiRouter.post('/ats/optimize', async (req: Request, res: Response) => {
   try {
     const { resume, job } = req.body as { resume: StructuredResume; job: JobRequirement };
     if (!resume || !job) {
@@ -188,8 +190,8 @@ Return a JSON object with:
   }
 });
 
-// POST /api/ats/generate-questions
-app.post('/api/ats/generate-questions', async (req: Request, res: Response) => {
+// POST /ats/generate-questions
+apiRouter.post('/ats/generate-questions', async (req: Request, res: Response) => {
   try {
     const { resume, job } = req.body as { resume: StructuredResume; job: JobRequirement };
     const ai = getGeminiClient();
@@ -272,4 +274,9 @@ Return JSON array:
   }
 });
 
+// Mount on both /api and / to handle Vercel rewrites smoothly
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
+
 export default app;
+

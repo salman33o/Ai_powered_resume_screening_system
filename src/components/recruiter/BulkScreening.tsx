@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { generateBulkResumes } from '../../lib/mockData';
 import { evaluateResumeAgainstJob } from '../../lib/atsEngine';
+import { parseUploadedResumeFile } from '../../lib/resumeParser';
+import JSZip from 'jszip';
 
 interface BulkScreeningProps {
   activeJob: JobRequirement;
@@ -46,7 +48,8 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
 }) => {
   const [sourceMode, setSourceMode] = useState<'upload' | 'synthetic'>('synthetic');
   const [batchSize, setBatchSize] = useState<number>(100);
-  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string; content?: string }[]>([]);
+  const [uploadedRawFiles, setUploadedRawFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string }[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [activeWorkers, setActiveWorkers] = useState(8);
@@ -57,50 +60,76 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
 
   const MAX_LIMIT = 600;
 
-  // Handle uploaded files
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const fileList: { name: string; size: string }[] = [];
-    const countToTake = Math.min(MAX_LIMIT, files.length);
+  /**
+   * Helper to process incoming FileList / File array, extracting .zip archives if present
+   */
+  const processIncomingFiles = async (fileList: FileList | File[]) => {
+    const rawFiles: File[] = [];
+    const countToTake = Math.min(MAX_LIMIT, fileList.length);
 
     for (let i = 0; i < countToTake; i++) {
-      const f = files[i];
-      const sizeKB = Math.round(f.size / 1024);
-      fileList.push({
-        name: f.name,
-        size: `${sizeKB} KB`
-      });
+      const f = fileList[i];
+      const isZip = f.name.toLowerCase().endsWith('.zip') || f.type.includes('zip');
+
+      if (isZip) {
+        try {
+          const zip = await JSZip.loadAsync(f);
+          const zipEntries = Object.keys(zip.files);
+          for (const filename of zipEntries) {
+            const entry = zip.files[filename];
+            if (!entry.dir && !filename.startsWith('__MACOSX') && !filename.startsWith('.')) {
+              const lowerName = filename.toLowerCase();
+              if (
+                lowerName.endsWith('.pdf') ||
+                lowerName.endsWith('.docx') ||
+                lowerName.endsWith('.doc') ||
+                lowerName.endsWith('.txt') ||
+                lowerName.endsWith('.json')
+              ) {
+                const blob = await entry.async('blob');
+                const baseName = filename.split('/').pop() || filename;
+                const unzippedFile = new File([blob], baseName, { type: blob.type || 'application/octet-stream' });
+                rawFiles.push(unzippedFile);
+                if (rawFiles.length >= MAX_LIMIT) break;
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Failed to unpack ZIP archive:', err);
+        }
+      } else {
+        rawFiles.push(f);
+      }
+      if (rawFiles.length >= MAX_LIMIT) break;
     }
 
-    setUploadedFiles(fileList);
-    setBatchSize(fileList.length);
+    const displayList = rawFiles.map(f => ({
+      name: f.name,
+      size: `${Math.round(f.size / 1024)} KB`
+    }));
+
+    setUploadedRawFiles(rawFiles);
+    setUploadedFiles(displayList);
+    setBatchSize(rawFiles.length);
   };
 
-  const handleDropFiles = (e: React.DragEvent) => {
+  // Handle uploaded files via input
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    await processIncomingFiles(files);
+  };
+
+  const handleDropFiles = async (e: React.DragEvent) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (!files || files.length === 0) return;
-
-    const fileList: { name: string; size: string }[] = [];
-    const countToTake = Math.min(MAX_LIMIT, files.length);
-
-    for (let i = 0; i < countToTake; i++) {
-      const f = files[i];
-      const sizeKB = Math.round(f.size / 1024);
-      fileList.push({
-        name: f.name,
-        size: `${sizeKB} KB`
-      });
-    }
-
-    setUploadedFiles(fileList);
-    setBatchSize(fileList.length);
+    await processIncomingFiles(files);
   };
 
-  const startScreeningJob = () => {
-    const totalToScreen = sourceMode === 'upload' && uploadedFiles.length > 0 ? uploadedFiles.length : batchSize;
+  const startScreeningJob = async () => {
+    const isUpload = sourceMode === 'upload' && uploadedRawFiles.length > 0;
+    const totalToScreen = isUpload ? uploadedRawFiles.length : batchSize;
     
     // Check token balance
     const tokensRequired = totalToScreen; // 1 token per resume
@@ -121,68 +150,100 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
     setProcessedCount(0);
     setScreenedResults([]);
 
-    // Generate or prepare resumes up to 600
-    const resumes = generateBulkResumes(totalToScreen);
-    
-    // If files were uploaded, adapt names
-    if (sourceMode === 'upload' && uploadedFiles.length > 0) {
-      uploadedFiles.forEach((file, idx) => {
-        if (resumes[idx]) {
-          const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
-          resumes[idx].fullName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-          resumes[idx].email = `${cleanName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
-        }
-      });
-    }
-
     const startTime = performance.now();
-    let current = 0;
-    const chunkStep = Math.max(10, Math.floor(resumes.length / 25));
 
-    const interval = setInterval(() => {
-      current += chunkStep;
-      if (current >= resumes.length) {
-        current = resumes.length;
-        clearInterval(interval);
-
-        // Process all via deterministic engine
-        const processed: PipelineCandidate[] = resumes.map((r, idx) => {
-          const atsScore = evaluateResumeAgainstJob(r, activeJob);
+    if (isUpload) {
+      // Real file processing pipeline
+      const processed: PipelineCandidate[] = [];
+      for (let idx = 0; idx < uploadedRawFiles.length; idx++) {
+        const file = uploadedRawFiles[idx];
+        try {
+          const parsedResume = await parseUploadedResumeFile(file);
+          const atsScore = evaluateResumeAgainstJob(parsedResume, activeJob);
           let stage: any = 'applied';
           if (atsScore.overallScore >= 80) stage = 'shortlisted';
           else if (atsScore.overallScore >= 60) stage = 'screening';
 
-          return {
+          processed.push({
             id: `cand-bulk-${Date.now()}-${idx}`,
-            candidateId: r.id,
-            candidateName: r.fullName,
-            candidateEmail: r.email,
-            candidatePhone: r.phone,
+            candidateId: parsedResume.id,
+            candidateName: parsedResume.fullName,
+            candidateEmail: parsedResume.email,
+            candidatePhone: parsedResume.phone,
             jobId: activeJob.id,
             jobTitle: activeJob.title,
             companyName: activeJob.company,
             appliedDate: new Date(Date.now() - idx * 3600000).toISOString(),
             stage,
-            resume: r,
+            resume: parsedResume,
             atsAnalysis: atsScore,
             atsScore,
             recruiterNotes: [],
             tags: atsScore.overallScore >= 80 ? ['High Match', 'Auto-Shortlist'] : ['Processed'],
             recruiterRating: atsScore.overallScore >= 85 ? 5 : atsScore.overallScore >= 70 ? 4 : 3
-          };
-        });
-
-        processed.sort((a, b) => b.atsScore.overallScore - a.atsScore.overallScore);
-        setScreenedResults(processed);
-        setProcessedCount(resumes.length);
-        setIsProcessing(false);
-        const elapsed = (performance.now() - startTime) / 1000;
-        setThroughput(Math.round(resumes.length / (elapsed || 0.1)));
-        onScreeningComplete(processed);
-      } else {
-        setProcessedCount(current);
+          });
+        } catch (err) {
+          console.error(`Error processing file ${file.name}:`, err);
+        }
+        setProcessedCount(idx + 1);
       }
-    }, 80);
+
+      processed.sort((a, b) => b.atsScore.overallScore - a.atsScore.overallScore);
+      setScreenedResults(processed);
+      setIsProcessing(false);
+      const elapsed = (performance.now() - startTime) / 1000;
+      setThroughput(Math.round(processed.length / (elapsed || 0.1)));
+      onScreeningComplete(processed);
+    } else {
+      // Fast synthetic batch pipeline (Demo / Synthetic data mode)
+      const resumes = generateBulkResumes(totalToScreen);
+      let current = 0;
+      const chunkStep = Math.max(10, Math.floor(resumes.length / 25));
+
+      const interval = setInterval(() => {
+        current += chunkStep;
+        if (current >= resumes.length) {
+          current = resumes.length;
+          clearInterval(interval);
+
+          const processed: PipelineCandidate[] = resumes.map((r, idx) => {
+            const atsScore = evaluateResumeAgainstJob(r, activeJob);
+            let stage: any = 'applied';
+            if (atsScore.overallScore >= 80) stage = 'shortlisted';
+            else if (atsScore.overallScore >= 60) stage = 'screening';
+
+            return {
+              id: `cand-bulk-${Date.now()}-${idx}`,
+              candidateId: r.id,
+              candidateName: r.fullName,
+              candidateEmail: r.email,
+              candidatePhone: r.phone,
+              jobId: activeJob.id,
+              jobTitle: activeJob.title,
+              companyName: activeJob.company,
+              appliedDate: new Date(Date.now() - idx * 3600000).toISOString(),
+              stage,
+              resume: r,
+              atsAnalysis: atsScore,
+              atsScore,
+              recruiterNotes: [],
+              tags: atsScore.overallScore >= 80 ? ['High Match', 'Auto-Shortlist'] : ['Processed'],
+              recruiterRating: atsScore.overallScore >= 85 ? 5 : atsScore.overallScore >= 70 ? 4 : 3
+            };
+          });
+
+          processed.sort((a, b) => b.atsScore.overallScore - a.atsScore.overallScore);
+          setScreenedResults(processed);
+          setProcessedCount(resumes.length);
+          setIsProcessing(false);
+          const elapsed = (performance.now() - startTime) / 1000;
+          setThroughput(Math.round(resumes.length / (elapsed || 0.1)));
+          onScreeningComplete(processed);
+        } else {
+          setProcessedCount(current);
+        }
+      }, 80);
+    }
   };
 
   const exportToCSV = () => {
@@ -309,7 +370,7 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
                     {uploadedFiles.length} Resumes Ready for Ingestion
                   </span>
                   <button 
-                    onClick={() => { setUploadedFiles([]); setBatchSize(100); }}
+                    onClick={() => { setUploadedRawFiles([]); setUploadedFiles([]); setBatchSize(100); }}
                     className="text-rose-400 hover:underline cursor-pointer"
                   >
                     Clear Files

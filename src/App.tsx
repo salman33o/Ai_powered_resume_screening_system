@@ -685,15 +685,11 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-[#0B1420] text-[#E6EAF0] flex flex-col selection:bg-teal-500/20 selection:text-teal-200">
       
       {/* Top Main Navigation */}
       <Navbar
         currentRole={role}
-        setRole={(newRole) => {
-          setRole(newRole);
-          setActiveView(newRole === 'candidate' ? 'candidate-dashboard' : 'recruiter-dashboard');
-        }}
         isMobileView={isMobileView}
         setIsMobileView={setIsMobileView}
         activeView={activeView}
@@ -739,44 +735,40 @@ export default function App() {
         </main>
       ) : (
         // Standard Desktop Console Layout
-        <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
             {/* Desktop Left Sidebar Navigation */}
-            <aside className="lg:col-span-3 space-y-4 sticky top-20">
+            <aside className="lg:col-span-3 space-y-3.5 sticky top-16">
               
               {/* Profile / Persona Summary Card */}
-              <div className="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 shadow-md">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-md ${
-                    role === 'candidate' 
-                      ? 'bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-500/20' 
-                      : 'bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20'
-                  }`}>
+              <div className="bg-[#131F30] rounded-lg p-3.5 border border-[#223348]">
+                <div className="flex items-center space-x-3 mb-2.5">
+                  <div className="w-8 h-8 rounded bg-[#0E1A29] border border-[#223348] flex items-center justify-center font-mono font-bold text-xs text-teal-400">
                     {role === 'candidate' ? selectedResume.fullName.charAt(0) : 'HR'}
                   </div>
                   <div className="overflow-hidden">
-                    <h2 className="text-xs font-bold text-white truncate">
+                    <h2 className="text-xs font-bold text-[#E6EAF0] truncate">
                       {role === 'candidate' ? selectedResume.fullName : 'Lead Talent Partner'}
                     </h2>
-                    <p className="text-[11px] text-slate-400 truncate">
+                    <p className="text-[11px] text-[#8A97A8] truncate">
                       {role === 'candidate' ? selectedResume.versionName.split('—')[1]?.trim() || selectedResume.location : selectedJob.company}
                     </p>
                   </div>
                 </div>
 
                 {/* Active Match Badge */}
-                <div className="bg-slate-950/80 rounded-xl p-2.5 border border-slate-800 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Target Role:</span>
-                  <span className="font-semibold text-white truncate max-w-[130px]" title={selectedJob.title}>
+                <div className="bg-[#0E1A29] rounded p-2 border border-[#223348] flex items-center justify-between text-xs">
+                  <span className="text-[#8A97A8]">Target Job:</span>
+                  <span className="font-semibold text-[#E6EAF0] truncate max-w-[130px]" title={selectedJob.title}>
                     {selectedJob.title}
                   </span>
                 </div>
 
                 {role === 'candidate' && (
-                  <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                    <span className="text-slate-400">ATS Score:</span>
-                    <span className="font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
+                  <div className="mt-2 pt-2 border-t border-[#223348] flex items-center justify-between text-xs font-mono">
+                    <span className="text-[#8A97A8]">ATS Score:</span>
+                    <span className="font-bold text-teal-400 bg-[#0E1A29] px-2 py-0.5 rounded border border-[#223348]">
                       {analysis.overallScore}% ({analysis.confidenceScore}% conf)
                     </span>
                   </div>
@@ -784,8 +776,8 @@ export default function App() {
               </div>
 
               {/* Navigation Menu Links */}
-              <nav className="bg-slate-900/90 rounded-2xl p-2.5 border border-slate-800 shadow-md space-y-1">
-                <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <nav className="bg-[#131F30] rounded-lg p-2 border border-[#223348] space-y-1">
+                <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">
                   {role === 'candidate' ? 'Candidate Modules' : 'Recruitment Operations'}
                 </div>
                 {currentNavItems.map((item) => {
@@ -795,21 +787,21 @@ export default function App() {
                     <button
                       key={item.id}
                       onClick={() => handleSelectView(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded text-xs font-medium transition-colors ${
                         isActive
-                          ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20 font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                          ? 'bg-[#17263B] text-teal-300 border border-teal-500/30'
+                          : 'text-[#8A97A8] hover:bg-[#0E1A29] hover:text-[#E6EAF0]'
                       }`}
                     >
-                      <div className="flex items-center space-x-2.5">
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <div className="flex items-center space-x-2">
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-teal-400' : 'text-[#8A97A8]'}`} />
                         <span>{item.label}</span>
                       </div>
                       {item.badge && (
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                        <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
                           isActive 
-                            ? 'bg-white/20 text-white' 
-                            : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                            ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40' 
+                            : 'bg-[#0E1A29] text-[#8A97A8] border border-[#223348]'
                         }`}>
                           {item.badge}
                         </span>
@@ -820,30 +812,30 @@ export default function App() {
               </nav>
 
               {/* Quick Actions Card */}
-              <div className="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 shadow-md space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Quick Utilities
+              <div className="bg-[#131F30] rounded-lg p-3 border border-[#223348] space-y-2">
+                <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">
+                  Specification Utilities
                 </p>
                 <button
                   onClick={() => exportATSReportPDF(selectedResume, selectedJob, analysis)}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center justify-center space-x-1.5 transition-colors"
+                  className="w-full py-1.5 px-2.5 rounded bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] text-xs font-medium border border-[#223348] flex items-center justify-center space-x-1.5 transition-colors"
                 >
-                  <Download className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Download Score PDF</span>
+                  <Download className="w-3.5 h-3.5 text-teal-400" />
+                  <span>Download Spec PDF</span>
                 </button>
                 <button
                   onClick={() => exportResumePDF(selectedResume)}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center justify-center space-x-1.5 transition-colors"
+                  className="w-full py-1.5 px-2.5 rounded bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] text-xs font-medium border border-[#223348] flex items-center justify-center space-x-1.5 transition-colors"
                 >
-                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                  <FileText className="w-3.5 h-3.5 text-teal-400" />
                   <span>Export ATS Resume</span>
                 </button>
                 <button
                   onClick={() => setShowAuditModal(true)}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center justify-center space-x-1.5 transition-colors"
+                  className="w-full py-1.5 px-2.5 rounded bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] text-xs font-medium border border-[#223348] flex items-center justify-center space-x-1.5 transition-colors"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Explainability Audit</span>
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+                  <span>Audit Verification</span>
                 </button>
               </div>
 

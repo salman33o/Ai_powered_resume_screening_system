@@ -19,13 +19,11 @@ import {
   LogOut,
   KeyRound,
   Zap,
-  Coins,
   MessageSquare
 } from 'lucide-react';
 
 interface NavbarProps {
   currentRole: UserRole;
-  setRole: (role: UserRole) => void;
   isMobileView: boolean;
   setIsMobileView: (val: boolean) => void;
   activeView: string;
@@ -51,7 +49,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentRole,
-  setRole,
   isMobileView,
   setIsMobileView,
   activeView,
@@ -74,43 +71,39 @@ export const Navbar: React.FC<NavbarProps> = ({
   unreadMessagesCount = 0,
   onOpenMessages
 }) => {
-  const [showPersonaMenu, setShowPersonaMenu] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl">
+    <header className="sticky top-0 z-40 bg-[#0B1420] border-b border-[#223348] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           
           {/* Logo & Brand */}
           <div 
-            className="flex items-center space-x-3 cursor-pointer group" 
+            className="flex items-center space-x-3 cursor-pointer" 
             onClick={() => setActiveView(currentRole === 'candidate' ? 'candidate-dashboard' : 'recruiter-dashboard')}
           >
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/25 group-hover:shadow-indigo-500/40 transition-all duration-300">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-indigo-400 group-hover:scale-110 transition-transform" />
-              </div>
+            <div className="w-8 h-8 rounded-lg bg-[#131F30] border border-[#223348] flex items-center justify-center text-teal-400 font-mono font-bold text-xs">
+              ATS
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-xl text-white font-display tracking-tight group-hover:text-indigo-300 transition-colors">
-                  ResumeAI
+                <span className="font-bold text-base text-[#E6EAF0] tracking-tight font-display">
+                  PrimeATS
                 </span>
-                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 glow-border-indigo">
-                  v4.0 Pro
+                <span className="text-[10px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-[#131F30] text-teal-400 border border-[#223348]">
+                  v4.2 Spec
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">Explainable ATS & Hybrid Screening Platform</p>
             </div>
           </div>
 
           {/* Quick Context Selectors */}
-          <div className="hidden lg:flex items-center space-x-3 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
+          <div className="hidden lg:flex items-center space-x-2 bg-[#0E1A29] p-1 rounded-lg border border-[#223348]">
             {currentRole === 'candidate' ? (
-              <div className="flex items-center space-x-2 px-2.5">
-                <FileText className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs text-slate-400 font-medium">Resume:</span>
+              <div className="flex items-center space-x-1.5 px-2">
+                <FileText className="w-3.5 h-3.5 text-teal-400" />
+                <span className="text-xs text-[#8A97A8] font-medium">Resume:</span>
                 <select
                   value={selectedResume.id}
                   onChange={(e) => {
@@ -118,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     if (found) setSelectedResume(found);
                   }}
                   aria-label="Active Candidate Resume"
-                  className="bg-slate-950 text-xs font-semibold text-slate-200 rounded-xl px-2.5 py-1.5 border border-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                  className="bg-[#131F30] text-xs font-mono text-[#E6EAF0] rounded px-2 py-1 border border-[#223348] focus:outline-none focus:border-teal-500 cursor-pointer"
                 >
                   {resumes.map(r => (
                     <option key={r.id} value={r.id}>
@@ -129,9 +122,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : null}
 
-            <div className="flex items-center space-x-2 px-2.5 border-l border-slate-800">
-              <Briefcase className="w-4 h-4 text-indigo-400" />
-              <span className="text-xs text-slate-400 font-medium">Target Job:</span>
+            <div className="flex items-center space-x-1.5 px-2 border-l border-[#223348]">
+              <Briefcase className="w-3.5 h-3.5 text-teal-400" />
+              <span className="text-xs text-[#8A97A8] font-medium">Target Job:</span>
               <select
                 value={selectedJob.id}
                 onChange={(e) => {
@@ -139,7 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (found) setSelectedJob(found);
                 }}
                 aria-label="Target Job Position"
-                className="bg-slate-950 text-xs font-semibold text-slate-200 rounded-xl px-2.5 py-1.5 border border-slate-800 focus:outline-none focus:border-indigo-500 cursor-pointer max-w-[200px] truncate"
+                className="bg-[#131F30] text-xs font-mono text-[#E6EAF0] rounded px-2 py-1 border border-[#223348] focus:outline-none focus:border-teal-500 cursor-pointer max-w-[220px] truncate"
               >
                 {jobs.map(j => (
                   <option key={j.id} value={j.id}>
@@ -151,92 +144,44 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2.5">
             
             {/* View Mode Toggle: Desktop vs Android App Frame */}
-            <div className="flex items-center bg-slate-900/80 p-1 rounded-2xl border border-slate-800">
+            <div className="flex items-center bg-[#0E1A29] p-0.5 rounded-lg border border-[#223348]">
               <button
                 onClick={() => setIsMobileView(false)}
                 title="Desktop Web Console View"
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition-colors ${
                   !isMobileView
-                    ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#17263B] text-[#E6EAF0] border border-[#223348]'
+                    : 'text-[#8A97A8] hover:text-[#E6EAF0]'
                 }`}
               >
-                <Monitor className="w-4 h-4" />
+                <Monitor className="w-3.5 h-3.5" />
                 <span className="hidden md:inline">Desktop</span>
               </button>
               <button
                 onClick={() => setIsMobileView(true)}
                 title="Android App Preview (Flutter / Material 3)"
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all ${
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition-colors ${
                   isMobileView
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/30'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#17263B] text-teal-300 border border-teal-500/40'
+                    : 'text-[#8A97A8] hover:text-[#E6EAF0]'
                 }`}
               >
-                <Smartphone className="w-4 h-4" />
+                <Smartphone className="w-3.5 h-3.5" />
                 <span className="hidden md:inline">Android App</span>
               </button>
             </div>
 
-            {/* Role Switcher Pill */}
-            <div className="relative">
-              <button
-                onClick={() => setShowPersonaMenu(!showPersonaMenu)}
-                className="flex items-center space-x-2 bg-slate-900/80 hover:bg-slate-800 px-3.5 py-1.5 rounded-2xl border border-slate-800 transition-all text-xs font-semibold text-slate-200 shadow-sm"
-              >
-                <UserCheck className="w-4 h-4 text-cyan-400" />
-                <span className="capitalize">{currentRole} Mode</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              </button>
-
-              {showPersonaMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in duration-150">
-                  <div className="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800/80 mb-1">
-                    Switch Active View Mode
-                  </div>
-                  
-                  <button
-                    onClick={() => {
-                      setRole('candidate');
-                      setShowPersonaMenu(false);
-                      setActiveView('candidate-dashboard');
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between transition-colors ${
-                      currentRole === 'candidate'
-                        ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                        : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <UserCheck className="w-4 h-4 text-indigo-400" />
-                      <span>Candidate View</span>
-                    </div>
-                    {currentRole === 'candidate' && <span className="w-2 h-2 rounded-full bg-indigo-400"></span>}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setRole('recruiter');
-                      setShowPersonaMenu(false);
-                      setActiveView('recruiter-dashboard');
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between transition-colors mt-1 ${
-                      currentRole === 'recruiter'
-                        ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
-                        : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Briefcase className="w-4 h-4 text-emerald-400" />
-                      <span>Recruiter View</span>
-                    </div>
-                    {currentRole === 'recruiter' && <span className="w-2 h-2 rounded-full bg-emerald-400"></span>}
-                  </button>
-                </div>
+            {/* Static Role Indicator (Locked to authenticated role) */}
+            <div className="flex items-center space-x-1.5 bg-[#0E1A29] px-3 py-1.5 rounded-lg border border-[#223348] text-xs font-semibold text-[#8A97A8]">
+              {currentRole === 'recruiter' ? (
+                <Briefcase className="w-3.5 h-3.5 text-teal-400" />
+              ) : (
+                <UserCheck className="w-3.5 h-3.5 text-teal-400" />
               )}
+              <span className="capitalize text-[#E6EAF0]">{currentRole} Mode</span>
             </div>
 
             {/* Logged in User Profile Dropdown / Login Portal Launcher */}
@@ -244,18 +189,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               {authUser ? (
                 <button
                   onClick={() => setShowUserDropdown(!showUserDropdown)}
-                  className="flex items-center space-x-2 bg-slate-900/80 hover:bg-slate-800 px-3 py-1.5 rounded-2xl border border-slate-800 transition-all text-xs font-semibold text-slate-200"
+                  className="flex items-center space-x-2 bg-[#0E1A29] hover:bg-[#131F30] px-2.5 py-1.5 rounded-lg border border-[#223348] transition-colors text-xs font-medium text-[#E6EAF0]"
                 >
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center font-bold text-[11px] text-white shadow-sm">
+                  <div className="w-5 h-5 rounded bg-teal-600/30 border border-teal-500/40 flex items-center justify-center font-mono font-bold text-[10px] text-teal-300">
                     {authUser.name.charAt(0)}
                   </div>
-                  <span className="hidden sm:inline max-w-[120px] truncate">{authUser.name}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="hidden sm:inline max-w-[110px] truncate">{authUser.name}</span>
+                  <ChevronDown className="w-3 h-3 text-[#8A97A8]" />
                 </button>
               ) : (
                 <button
                   onClick={onOpenLoginPortal}
-                  className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold flex items-center space-x-1.5 transition-all shadow-md shadow-indigo-600/25"
+                  className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-slate-950 text-xs font-bold flex items-center space-x-1.5 transition-colors"
                 >
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>Login Portal</span>
@@ -263,11 +208,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
 
               {showUserDropdown && authUser && (
-                <div className="absolute right-0 mt-2 w-60 bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-800 shadow-2xl p-3 z-50 animate-in fade-in duration-150">
-                  <div className="border-b border-slate-800/80 pb-2 mb-2">
-                    <p className="font-bold text-xs text-white">{authUser.name}</p>
-                    <p className="text-[11px] text-slate-400 truncate">{authUser.email}</p>
-                    <span className="inline-block text-[10px] font-extrabold uppercase px-2 py-0.5 mt-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <div className="absolute right-0 mt-1.5 w-60 bg-[#131F30] rounded-lg border border-[#223348] shadow-lg p-2.5 z-50 animate-in fade-in duration-100">
+                  <div className="border-b border-[#223348] pb-2 mb-2">
+                    <p className="font-semibold text-xs text-[#E6EAF0]">{authUser.name}</p>
+                    <p className="text-[11px] text-[#8A97A8] truncate font-mono">{authUser.email}</p>
+                    <span className="inline-block text-[10px] font-mono uppercase px-1.5 py-0.5 mt-1 rounded bg-[#0E1A29] text-teal-400 border border-[#223348]">
                       {authUser.role} Session Active
                     </span>
                   </div>
@@ -277,9 +222,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setShowUserDropdown(false);
                       onOpenLoginPortal();
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center space-x-2 transition-colors mb-1"
+                    className="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium text-[#8A97A8] hover:text-[#E6EAF0] hover:bg-[#17263B] flex items-center space-x-2 transition-colors mb-1"
                   >
-                    <KeyRound className="w-4 h-4 text-cyan-400" />
+                    <KeyRound className="w-3.5 h-3.5 text-teal-400" />
                     <span>Switch Auth Account</span>
                   </button>
 
@@ -288,9 +233,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setShowUserDropdown(false);
                       onLogout();
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2 transition-colors"
+                    className="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium text-rose-400 hover:bg-rose-950/30 flex items-center space-x-2 transition-colors"
                   >
-                    <LogOut className="w-4 h-4 text-rose-400" />
+                    <LogOut className="w-3.5 h-3.5 text-rose-400" />
                     <span>Sign Out</span>
                   </button>
                 </div>
@@ -300,27 +245,26 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Token Quota Badge & Modal Trigger */}
             <button
               onClick={onOpenTokenModal}
-              title="View & Top Up AI Token Quota"
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs transition-all cursor-pointer glow-border-amber shadow-sm"
+              title="View AI Token Quota"
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-[#0E1A29] hover:bg-[#131F30] border border-[#223348] text-[#E6EAF0] font-mono text-xs transition-colors cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400" />
               <span>{availableTokens.toLocaleString()}</span>
-              <span className="text-[10px] text-amber-400/70 font-normal hidden sm:inline">Tokens</span>
             </button>
 
             {/* Direct Messages Center Trigger */}
             <button
               onClick={onOpenMessages || (() => setActiveView('messages'))}
-              title="Direct Candidate-Company Messages"
-              className={`relative p-2 rounded-xl border transition-all cursor-pointer ${
+              title="Direct Messages"
+              className={`relative p-2 rounded-lg border transition-colors cursor-pointer ${
                 activeView === 'messages' 
-                  ? 'bg-indigo-600/20 border-indigo-500/40 text-indigo-300' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900 border-transparent hover:border-slate-800'
+                  ? 'bg-[#17263B] border-teal-500/40 text-teal-300' 
+                  : 'text-[#8A97A8] hover:text-[#E6EAF0] bg-[#0E1A29] border-[#223348]'
               }`}
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-3.5 h-3.5" />
               {unreadMessagesCount > 0 && (
-                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px] animate-pulse">
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded bg-teal-500 text-slate-950 font-mono font-bold text-[9px]">
                   {unreadMessagesCount}
                 </span>
               )}
@@ -329,30 +273,30 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* ATS Audit Logs Button */}
             <button
               onClick={onOpenAudit}
-              title="Inspect ATS Audit Trail & Model Logs"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-colors"
+              title="Inspect ATS Audit Trail"
+              className="p-2 rounded-lg text-[#8A97A8] hover:text-[#E6EAF0] bg-[#0E1A29] border border-[#223348] transition-colors"
             >
-              <Layers className="w-4 h-4" />
+              <Layers className="w-3.5 h-3.5" />
             </button>
 
             {/* Privacy & Security Compliance */}
             <button
               onClick={onOpenPrivacy}
-              title="Privacy & Bias Protection Controls"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-colors"
+              title="Privacy & Bias Protection"
+              className="p-2 rounded-lg text-[#8A97A8] hover:text-[#E6EAF0] bg-[#0E1A29] border border-[#223348] transition-colors"
             >
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="w-3.5 h-3.5" />
             </button>
 
             {/* Notifications Button */}
             <button
               onClick={onToggleNotifications}
-              className="relative p-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-colors"
+              className="relative p-2 rounded-lg text-[#8A97A8] hover:text-[#E6EAF0] bg-[#0E1A29] border border-[#223348] transition-colors"
               title="Notifications"
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-3.5 h-3.5" />
               {unreadNotifications > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-teal-400"></span>
               )}
             </button>
 
@@ -363,3 +307,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+

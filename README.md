@@ -1,73 +1,56 @@
-# ⚡ ResumeAI — AI-Powered Resume Screening & Job Matching System
+# ⚡ PrimeATS — AI-Powered Resume Screening & Job Matching Platform
 
-A full-stack, production-ready AI application that analyzes resumes against job descriptions, calculates semantic & component ATS matching scores, identifies skill gaps, generates tailored interview preparation questions, and provides recruiter bulk resume screening with candidate rankings.
+A full-stack, production-ready ATS platform that evaluates resumes against job specifications, calculates deterministic 7-factor matching scores, identifies skill gaps, generates AI-assisted interview preparation questions, and provides recruiter bulk screening with applicant ranking.
 
-Built with **FastAPI**, **Google Gemini 1.5 Flash**, **SQLAlchemy (SQLite/PostgreSQL)**, and **Flutter (Android Mobile Client)**.
+Built with **React + Vite + TypeScript**, **Express / Vercel Serverless Functions**, **pdfjs-dist**, **Mammoth**, **JSZip**, and **Google Gemini AI**.
 
 ---
 
-## 🌟 Features
+## 🚀 Deployment (Vercel)
+
+This application is configured for continuous deployment on **Vercel**.
+
+1. Connect your repository to **Vercel**.
+2. Set the following environment variable in the Vercel project settings:
+   - `GEMINI_API_KEY` (Optional for AI explanation enhancements)
+3. Framework Preset: **Vite**
+4. Build Command: `vite build` (defined in `vercel.json` and `package.json`)
+5. Output Directory: `dist`
+
+API routes are served serverlessly via `api/index.ts` mounted at `/api`.
+
+---
+
+## 🌟 Key Capabilities
 
 ### 👤 Candidate Portal
-- 📄 **Multi-Format Parsing**: Extracts text, contact info, and skills from `.pdf`, `.docx`, and `.txt` files.
-- 🎯 **ATS Semantic & Component Matching**: Computes hybrid similarity scores using TF-IDF cosine matching & skill taxonomy.
-- 🤖 **Google Gemini 1.5 Flash AI**: Generates ATS score explanations, resume optimization tips, and tailored interview prep questions.
-- 📊 **Skill Gap Analysis**: Identifies missing skills against target job descriptions and generates actionable learning roadmaps.
+- 📄 **Native Multi-Format Parsing**: Extracts text directly from `.pdf` (via `pdfjs-dist`), `.docx` (via `mammoth`), `.txt`, and `.json` in-browser with zero placeholder substitution.
+- 🎯 **Deterministic 7-Factor ATS Matching**: Weighted scoring across Skills Alignment, Experience Depth, Responsibilities Context, Projects Evidence, Education, Keywords, and Certifications.
+- 📊 **Skill Gap Analysis**: Identifies missing competencies against 23+ industry job requirements and provides actionable roadmaps.
+- 🤖 **AI Interview Prep**: Generates role-specific behavioral and technical interview questions.
 
-### 👔 Recruiter ATS Portal
-- 🚀 **Bulk Resume Screening**: Asynchronous batch processing queue for screening high volumes of resumes.
-- 🏆 **Applicant Ranking**: Ranks candidates based on ATS match scores and weighted criteria.
-- ⚙️ **Custom Weightings**: Configure custom weights for Skills, Experience, Responsibilities, Projects, and Education per job posting.
-- 📝 **Job Management**: Create and publish custom job descriptions directly from the mobile app.
-
----
-
-## 🛠️ System Architecture & Quickstart
-
-### 1. Backend Setup (FastAPI + SQLAlchemy)
-
-```bash
-# Navigate to backend directory
-cd backend
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Start FastAPI dev server
-uvicorn api_bridge:app --reload --port 8000
-```
-
-*Interactive Swagger API documentation available at `http://localhost:8000/docs`*
-
-### 2. Mobile App Setup (Flutter Android)
-
-```bash
-# Navigate to Android application directory
-cd android_app
-
-# Install Flutter dependencies
-flutter pub get
-
-# Run Flutter application
-flutter run
-```
+### 👔 Recruiter Operations
+- 🚀 **Bulk Screening & ZIP Extraction**: Batch screens multiple `.pdf`/`.docx` resumes or uploaded `.zip` archives with ranking.
+- ⚙️ **Custom Weights & Calibration**: Adjust component weighting per job posting.
+- 🔒 **Role-Locked Security & Audit Trails**: Session-locked authentication with explainable ATS audit logs.
 
 ---
 
-## 🔌 API Endpoints Summary
+## 🛠️ Local Development
 
-- `POST /api/auth/register` — Candidate & Recruiter user registration
-- `POST /api/auth/login` — User authentication returning JWT bearer token
-- `GET /api/jobs` — Fetch published job postings
-- `POST /api/candidate/analyze-resume` — Upload resume file (PDF/DOCX) & calculate hybrid ATS score with Gemini explainability
-- `POST /api/candidate/analyze-resume-text` — Analyze pasted resume text against job description
-- `POST /api/candidate/skill-gap` — Compute candidate skill coverage % and missing skills
-- `POST /api/candidate/interview-questions` — Generate tailored technical & behavioral interview questions
-- `POST /api/recruiter/jobs` — Create new job posting with custom screening weights
-- `POST /api/recruiter/bulk-screen/{job_id}` — Asynchronous bulk resume screening
-- `GET /api/recruiter/candidate-ranking/{job_id}` — Ranked applicant list for job posting
+```bash
+# Install dependencies
+npm install
+
+# Start local Vite development server
+npm run dev
+
+# Build for production
+npm run build
+```
 
 ---
 
 ## 📄 License
 MIT License. Free for personal and commercial use.
+
