@@ -1,6 +1,115 @@
 import { JobRequirement, StructuredResume, CandidateApplication, ATSAuditRecord, InterviewQuestionItem } from '../types';
 import { evaluateResumeAgainstJob } from './atsEngine';
 
+export interface SectorTaxonomy {
+  sector: string;
+  id: string;
+  roles: string[];
+}
+
+export const INDUSTRY_SECTOR_TAXONOMY: SectorTaxonomy[] = [
+  {
+    sector: 'IT & Software',
+    id: 'it-software',
+    roles: ['Software Developer', 'Software Engineer', 'Python Developer', 'Java Developer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer']
+  },
+  {
+    sector: 'Data & AI',
+    id: 'data-ai',
+    roles: ['Data Analyst', 'Data Scientist', 'Data Engineer', 'AI Engineer', 'Machine Learning Engineer', 'BI Analyst', 'BI Developer']
+  },
+  {
+    sector: 'Cybersecurity',
+    id: 'cybersecurity',
+    roles: ['Cybersecurity Analyst', 'Security Engineer', 'SOC Analyst', 'Ethical Hacker', 'Penetration Tester']
+  },
+  {
+    sector: 'Cloud & DevOps',
+    id: 'cloud-devops',
+    roles: ['Cloud Engineer', 'DevOps Engineer', 'AWS Engineer', 'Azure Engineer', 'SRE']
+  },
+  {
+    sector: 'Business & Management',
+    id: 'business-management',
+    roles: ['Business Analyst', 'Management Consultant', 'Project Coordinator', 'Project Manager', 'Operations Analyst']
+  },
+  {
+    sector: 'Finance',
+    id: 'finance',
+    roles: ['Financial Analyst', 'Investment Analyst', 'Credit Analyst', 'Risk Analyst', 'Accountant', 'Banking Officer']
+  },
+  {
+    sector: 'Marketing',
+    id: 'marketing',
+    roles: ['Digital Marketing Executive', 'SEO Specialist', 'Marketing Analyst', 'Social Media Manager', 'Brand Manager']
+  },
+  {
+    sector: 'HR',
+    id: 'hr',
+    roles: ['HR Executive', 'HR Analyst', 'Recruiter', 'Talent Acquisition Specialist', 'HR Business Partner']
+  },
+  {
+    sector: 'Engineering',
+    id: 'engineering',
+    roles: ['Mechanical Engineer', 'Civil Engineer', 'Electrical Engineer', 'Electronics Engineer', 'Manufacturing Engineer']
+  },
+  {
+    sector: 'Healthcare',
+    id: 'healthcare',
+    roles: ['Healthcare Data Analyst', 'Clinical Research Associate', 'Medical Coder', 'Hospital Administrator']
+  },
+  {
+    sector: 'Manufacturing',
+    id: 'manufacturing',
+    roles: ['Production Engineer', 'Quality Engineer', 'Process Engineer', 'Industrial Engineer']
+  },
+  {
+    sector: 'Automobile',
+    id: 'automobile',
+    roles: ['Automotive Engineer', 'EV Engineer', 'Automotive Software Engineer', 'Automotive Test Engineer']
+  },
+  {
+    sector: 'Textile',
+    id: 'textile',
+    roles: ['Textile Engineer', 'Fashion Designer', 'Merchandiser', 'Garment Technologist', 'Textile Quality Analyst']
+  },
+  {
+    sector: 'Construction',
+    id: 'construction',
+    roles: ['Civil Engineer', 'Site Engineer', 'Structural Engineer', 'Planning Engineer', 'Quantity Surveyor']
+  },
+  {
+    sector: 'Logistics',
+    id: 'logistics',
+    roles: ['Supply Chain Analyst', 'Logistics Executive', 'Procurement Executive', 'Operations Analyst']
+  },
+  {
+    sector: 'E-commerce',
+    id: 'ecommerce',
+    roles: ['E-commerce Executive', 'E-commerce Analyst', 'Marketplace Manager', 'Catalog Specialist']
+  },
+  {
+    sector: 'Media',
+    id: 'media',
+    roles: ['Content Writer', 'Graphic Designer', 'Video Editor', 'UI/UX Designer', 'Journalist']
+  },
+  {
+    sector: 'Sales',
+    id: 'sales',
+    roles: ['Sales Executive', 'Business Development Executive', 'Account Executive', 'Sales Engineer']
+  },
+  {
+    sector: 'Education',
+    id: 'education',
+    roles: ['Teacher', 'Lecturer', 'Academic Counselor', 'Instructional Designer']
+  },
+  {
+    sector: 'Research',
+    id: 'research',
+    roles: ['Research Assistant', 'Research Associate', 'Research Scientist', 'R&D Engineer']
+  }
+];
+
 export const SAMPLE_JOBS: JobRequirement[] = [
   // ==========================================
   // 1. INFORMATION TECHNOLOGY & AI (IT / AI)

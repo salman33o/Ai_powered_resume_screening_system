@@ -96,6 +96,7 @@ export interface JobRequirement {
   title: string;
   company: string;
   department?: string;
+  sector?: string;
   location: string;
   type: 'Full-time' | 'Part-time' | 'Contract' | 'Remote' | 'Hybrid';
   seniority: 'Entry' | 'Mid' | 'Senior' | 'Lead' | 'Staff';

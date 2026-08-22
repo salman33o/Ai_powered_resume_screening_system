@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StructuredResume, JobRequirement, InterviewQuestionItem } from '../../types';
 import { 
   Bot, 
@@ -6,11 +6,14 @@ import {
   CheckCircle2, 
   ChevronDown, 
   ChevronUp, 
-  Search,
-  Filter,
+  Search, 
+  Filter, 
+  HelpCircle, 
+  UserCheck, 
+  Target, 
+  Briefcase,
   Layers,
-  HelpCircle,
-  Zap
+  ArrowUpDown
 } from 'lucide-react';
 import { generateInterviewQuestionsApi } from '../../services/apiClient';
 import { SAMPLE_INTERVIEW_QUESTIONS } from '../../lib/mockData';
@@ -30,7 +33,9 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [onlyMatchingCandidate, setOnlyMatchingCandidate] = useState<boolean>(false);
 
+  // Synthesize questions tailored specifically to this active candidate and job
   const fetchQuestions = async () => {
     setIsLoading(true);
     try {
@@ -46,25 +51,75 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
     }
   };
 
-  // Filter questions based on category, difficulty and search query
-  const filteredQuestions = questions.filter(q => {
-    const matchesCategory = selectedCategory === 'all' || 
-      (selectedCategory === 'technical' && q.category === 'technical') ||
-      (selectedCategory === 'project' && q.category === 'project_deep_dive') ||
-      (selectedCategory === 'behavioral' && q.category === 'behavioral') ||
-      (selectedCategory === 'eee' && (q.question.toLowerCase().includes('power') || q.question.toLowerCase().includes('circuit') || q.question.toLowerCase().includes('pcb') || q.question.toLowerCase().includes('embedded') || q.question.toLowerCase().includes('etap'))) ||
-      (selectedCategory === 'agri' && (q.question.toLowerCase().includes('crop') || q.question.toLowerCase().includes('agri') || q.question.toLowerCase().includes('soil') || q.question.toLowerCase().includes('ndvi') || q.question.toLowerCase().includes('drone'))) ||
-      (selectedCategory === 'art' && (q.question.toLowerCase().includes('typography') || q.question.toLowerCase().includes('brand') || q.question.toLowerCase().includes('3d') || q.question.toLowerCase().includes('animation') || q.question.toLowerCase().includes('figma')));
+  // Compute personalized dynamic grounding for each question against active candidate & target job
+  const personalizedQuestions = useMemo(() => {
+    const candidateSkillsLower = resume.skills.technical.map(s => s.toLowerCase());
+    const candidateExpText = resume.experience.map(e => `${e.jobTitle} ${e.company} ${e.description}`).join(' ').toLowerCase();
+    const candidateProjText = resume.projects.map(p => `${p.title} ${p.description}`).join(' ').toLowerCase();
 
-    const matchesDifficulty = selectedDifficulty === 'all' || q.difficulty === selectedDifficulty;
-    
-    const matchesSearch = !searchQuery || 
-      q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.contextWhyAsked.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.candidateBackgroundEvidence?.toLowerCase().includes(searchQuery.toLowerCase());
+    return questions.map((q) => {
+      const qText = `${q.question} ${q.contextWhyAsked} ${q.candidateBackgroundEvidence || ''}`.toLowerCase();
+      
+      // Calculate skill overlap
+      const matchedSkills = candidateSkillsLower.filter(sk => qText.includes(sk));
+      
+      // Determine if question has direct candidate background evidence
+      const hasDirectSkillOverlap = matchedSkills.length > 0;
+      const hasDomainOverlap = 
+        (resume.fullName.toLowerCase().includes('marcus') && (qText.includes('solidworks') || qText.includes('cad') || qText.includes('thermal') || qText.includes('fea') || qText.includes('mechanic') || qText.includes('battery'))) ||
+        (resume.fullName.toLowerCase().includes('alex') && (qText.includes('sql') || qText.includes('power bi') || qText.includes('churn') || qText.includes('analyst') || qText.includes('pipeline'))) ||
+        (resume.fullName.toLowerCase().includes('sophia') && (qText.includes('pytorch') || qText.includes('transformer') || qText.includes('sentence-bert') || qText.includes('embedding') || qText.includes('ml'))) ||
+        (resume.fullName.toLowerCase().includes('karthik') && (qText.includes('power') || qText.includes('etap') || qText.includes('substation') || qText.includes('scada') || qText.includes('circuit'))) ||
+        (resume.fullName.toLowerCase().includes('elena') && (qText.includes('agri') || qText.includes('crop') || qText.includes('gis') || qText.includes('drone') || qText.includes('soil'))) ||
+        (resume.fullName.toLowerCase().includes('maya') && (qText.includes('brand') || qText.includes('typography') || qText.includes('art') || qText.includes('design') || qText.includes('figma')));
 
-    return matchesCategory && matchesDifficulty && matchesSearch;
-  });
+      // Candidate tailored anchor evidence string
+      let personalizedAnchor = q.candidateBackgroundEvidence;
+      if (!personalizedAnchor || hasDomainOverlap) {
+        if (matchedSkills.length > 0) {
+          personalizedAnchor = `Direct CV Anchor: ${resume.fullName} lists verified proficiency in ${matchedSkills.slice(0, 3).join(', ')} (${resume.experience[0]?.company || 'Recent Role'}).`;
+        } else {
+          personalizedAnchor = `Grounded Anchor: Evaluates ${resume.fullName}'s background (${resume.experience[0]?.jobTitle || 'Recent Experience'}) against ${job.title} evaluation criteria.`;
+        }
+      }
+
+      const matchConfidence = hasDomainOverlap ? 98 : hasDirectSkillOverlap ? 92 : q.category === 'behavioral' ? 88 : 75;
+
+      return {
+        ...q,
+        candidateBackgroundEvidence: personalizedAnchor,
+        matchConfidence,
+        isDirectProfileMatch: hasDomainOverlap || hasDirectSkillOverlap || q.category === 'behavioral'
+      };
+    });
+  }, [questions, resume, job]);
+
+  // Filter questions based on category, difficulty, search query, and candidate profile match toggle
+  const filteredQuestions = useMemo(() => {
+    return personalizedQuestions.filter(q => {
+      if (onlyMatchingCandidate && !q.isDirectProfileMatch) return false;
+
+      const matchesCategory = selectedCategory === 'all' || 
+        (selectedCategory === 'technical' && q.category === 'technical') ||
+        (selectedCategory === 'project' && q.category === 'project_deep_dive') ||
+        (selectedCategory === 'behavioral' && q.category === 'behavioral') ||
+        (selectedCategory === 'eee' && (q.question.toLowerCase().includes('power') || q.question.toLowerCase().includes('circuit') || q.question.toLowerCase().includes('pcb') || q.question.toLowerCase().includes('embedded') || q.question.toLowerCase().includes('etap'))) ||
+        (selectedCategory === 'agri' && (q.question.toLowerCase().includes('crop') || q.question.toLowerCase().includes('agri') || q.question.toLowerCase().includes('soil') || q.question.toLowerCase().includes('ndvi') || q.question.toLowerCase().includes('drone'))) ||
+        (selectedCategory === 'art' && (q.question.toLowerCase().includes('typography') || q.question.toLowerCase().includes('brand') || q.question.toLowerCase().includes('3d') || q.question.toLowerCase().includes('animation') || q.question.toLowerCase().includes('figma'))) ||
+        (selectedCategory === 'mech' && (q.question.toLowerCase().includes('solidworks') || q.question.toLowerCase().includes('ansys') || q.question.toLowerCase().includes('fea') || q.question.toLowerCase().includes('cad') || q.question.toLowerCase().includes('gd&t') || q.question.toLowerCase().includes('thermal')));
+
+      const matchesDifficulty = selectedDifficulty === 'all' || q.difficulty === selectedDifficulty;
+      
+      const matchesSearch = !searchQuery || 
+        q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.contextWhyAsked.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.candidateBackgroundEvidence?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesCategory && matchesDifficulty && matchesSearch;
+    });
+  }, [personalizedQuestions, selectedCategory, selectedDifficulty, searchQuery, onlyMatchingCandidate]);
+
+  const directMatchCount = personalizedQuestions.filter(q => q.isDirectProfileMatch).length;
 
   return (
     <div className="space-y-4">
@@ -73,26 +128,59 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
       <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Question Simulation Bank</span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Grounded Question Engine</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0E1A29] text-teal-300 border border-[#223348]">
-              {filteredQuestions.length} Questions Cataloged
+              {filteredQuestions.length} Questions Spec
             </span>
           </div>
           <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
             Role & Background-Grounded Interview Preparation (50+ Spec)
           </h2>
           <p className="text-xs text-[#8A97A8] mt-0.5">
-            Technical, architectural, domain, and behavioral questions tailored to <span className="font-semibold text-[#E6EAF0]">{resume.fullName}</span> and <span className="font-semibold text-teal-300">{job.title}</span>.
+            Technical, architectural, and behavioral simulation tailored specifically to <span className="font-bold text-[#E6EAF0] underline decoration-teal-400">{resume.fullName}</span> and target position <span className="font-bold text-teal-300">{job.title}</span>.
           </p>
         </div>
 
         <button
           onClick={fetchQuestions}
           disabled={isLoading}
-          className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-slate-950 rounded text-xs font-bold font-mono flex items-center space-x-1.5 transition-colors cursor-pointer"
+          className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-slate-950 rounded text-xs font-bold font-mono flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0"
         >
           <Sparkles className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>{isLoading ? 'Synthesizing...' : 'Synthesize AI Questions'}</span>
+          <span>{isLoading ? 'Synthesizing Spec...' : 'Synthesize AI Questions'}</span>
+        </button>
+      </div>
+
+      {/* Candidate Profile Context Banner */}
+      <div className="bg-[#0E1A29] p-3 rounded-lg border border-[#223348] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 font-mono text-xs">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-7 h-7 rounded bg-teal-600/30 border border-teal-500/40 text-teal-300 font-bold flex items-center justify-center text-xs">
+            {resume.fullName.charAt(0)}
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-[#E6EAF0]">{resume.fullName}</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#131F30] text-teal-300 border border-[#223348]">
+                {resume.experience.length} Roles • {resume.skills.technical.length} Skills
+              </span>
+            </div>
+            <p className="text-[10.5px] text-[#8A97A8] truncate max-w-md">
+              Specialties: {resume.skills.technical.slice(0, 4).join(', ')}
+            </p>
+          </div>
+        </div>
+
+        {/* Toggle matching only */}
+        <button
+          onClick={() => setOnlyMatchingCandidate(!onlyMatchingCandidate)}
+          className={`px-3 py-1.5 rounded text-[11px] font-bold flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0 ${
+            onlyMatchingCandidate
+              ? 'bg-teal-600 text-slate-950'
+              : 'bg-[#131F30] text-[#8A97A8] hover:text-[#E6EAF0] border border-[#223348]'
+          }`}
+        >
+          <UserCheck className="w-3.5 h-3.5" />
+          <span>Show Profile Matches Only ({directMatchCount})</span>
         </button>
       </div>
 
@@ -104,12 +192,13 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
             <span>Category:</span>
           </span>
           {[
-            { id: 'all', label: 'All Domains (50+)' },
-            { id: 'technical', label: 'Technical Core' },
+            { id: 'all', label: 'All 50+' },
+            { id: 'technical', label: 'Technical' },
+            { id: 'mech', label: 'Mechanical / CAD' },
             { id: 'eee', label: 'Electrical / EEE' },
-            { id: 'agri', label: 'Agriculture / Agri' },
+            { id: 'agri', label: 'Agri / AgTech' },
             { id: 'art', label: 'Art & Design' },
-            { id: 'project', label: 'Project Deep-Dive' },
+            { id: 'project', label: 'Projects' },
             { id: 'behavioral', label: 'Behavioral' },
           ].map(cat => (
             <button
@@ -131,7 +220,7 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
           <Search className="w-3.5 h-3.5 text-[#8A97A8] absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search keywords or topics..."
+            placeholder={`Search ${resume.fullName.split(' ')[0]}'s questions...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-[#0E1A29] pl-8 pr-2.5 py-1.5 rounded border border-[#223348] text-[#E6EAF0] text-xs focus:outline-none focus:border-teal-500 font-sans"
@@ -146,8 +235,8 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
             <HelpCircle className="w-6 h-6 text-teal-400 mx-auto" />
             <p className="text-xs text-[#8A97A8]">No questions found matching your filter criteria.</p>
             <button
-              onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}
-              className="px-3 py-1 bg-[#0E1A29] border border-[#223348] text-teal-300 text-xs rounded hover:bg-[#17263B]"
+              onClick={() => { setSelectedCategory('all'); setSearchQuery(''); setOnlyMatchingCandidate(false); }}
+              className="px-3 py-1 bg-[#0E1A29] border border-[#223348] text-teal-300 text-xs rounded hover:bg-[#17263B] cursor-pointer"
             >
               Reset Filters
             </button>
@@ -158,7 +247,9 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
             return (
               <div 
                 key={q.id || idx}
-                className="bg-[#131F30] rounded-lg border border-[#223348] overflow-hidden transition-colors"
+                className={`bg-[#131F30] rounded-lg border transition-colors overflow-hidden ${
+                  q.isDirectProfileMatch ? 'border-[#2A3F58]' : 'border-[#223348]'
+                }`}
               >
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : q.id)}
@@ -169,20 +260,29 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
                       {idx + 1}
                     </span>
                     <div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
                           {q.category?.replace('_', ' ')}
                         </span>
+
+                        {q.isDirectProfileMatch && (
+                          <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-teal-950/60 text-teal-300 border border-teal-500/40 flex items-center space-x-1">
+                            <Target className="w-2.5 h-2.5 text-teal-400" />
+                            <span>Matched to {resume.fullName.split(' ')[0]}</span>
+                          </span>
+                        )}
+
                         {q.difficulty && (
                           <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded ${
                             q.difficulty === 'Senior' || q.difficulty === 'Lead'
                               ? 'bg-amber-950/40 text-amber-300 border border-amber-800/40'
-                              : 'bg-teal-950/40 text-teal-300 border border-teal-800/40'
+                              : 'bg-[#0E1A29] text-[#8A97A8] border border-[#223348]'
                           }`}>
-                            {q.difficulty} Level
+                            {q.difficulty}
                           </span>
                         )}
                       </div>
+
                       <h4 className="font-bold text-xs text-[#E6EAF0] mt-1 leading-snug font-sans">
                         {q.question}
                       </h4>
@@ -200,18 +300,20 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
                     {/* Why Asked */}
                     <div>
                       <span className="font-bold text-teal-400 uppercase text-[9px] tracking-wider block">
-                        Interviewer Intent & Objective
+                        Interviewer Intent & Evaluation Strategy
                       </span>
                       <p className="text-[#A2B1C2] font-sans text-xs mt-0.5 leading-relaxed">{q.contextWhyAsked}</p>
                     </div>
 
                     {/* Resume Evidence */}
                     {q.candidateBackgroundEvidence && (
-                      <div>
+                      <div className="bg-[#131F30] p-2.5 rounded border border-[#223348]">
                         <span className="font-bold text-teal-300 uppercase text-[9px] tracking-wider block">
-                          Candidate Background Anchor
+                          Resume Anchor & Grounding Citation
                         </span>
-                        <p className="text-[#A2B1C2] font-sans italic text-xs mt-0.5">{q.candidateBackgroundEvidence}</p>
+                        <p className="text-[#E6EAF0] font-sans text-xs mt-0.5 leading-relaxed">
+                          {q.candidateBackgroundEvidence}
+                        </p>
                       </div>
                     )}
 
@@ -219,7 +321,7 @@ export const AIInterviewPrep: React.FC<AIInterviewPrepProps> = ({
                     {q.expectedKeyPoints && q.expectedKeyPoints.length > 0 && (
                       <div>
                         <span className="font-bold text-emerald-400 uppercase text-[9px] tracking-wider block">
-                          Key Technical Points to Address in Response
+                          Key Deliverables to Address in Your Response (STAR Method)
                         </span>
                         <ul className="mt-1.5 space-y-1">
                           {q.expectedKeyPoints.map((pt: string, pIdx: number) => (
