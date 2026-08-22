@@ -45,6 +45,7 @@ interface NavbarProps {
   onOpenTokenModal?: () => void;
   unreadMessagesCount?: number;
   onOpenMessages?: () => void;
+  setRole?: (role: UserRole) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -69,9 +70,15 @@ export const Navbar: React.FC<NavbarProps> = ({
   availableTokens = 25000,
   onOpenTokenModal,
   unreadMessagesCount = 0,
-  onOpenMessages
+  onOpenMessages,
+  setRole
 }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+
+  const handleSwitchRole = (newRole: UserRole) => {
+    if (setRole) setRole(newRole);
+    setActiveView(newRole === 'candidate' ? 'candidate-dashboard' : 'recruiter-dashboard');
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-[#0B1420] border-b border-[#223348] shadow-sm">
@@ -151,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => setIsMobileView(false)}
                 title="Desktop Web Console View"
-                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition-colors ${
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition-colors cursor-pointer ${
                   !isMobileView
                     ? 'bg-[#17263B] text-[#E6EAF0] border border-[#223348]'
                     : 'text-[#8A97A8] hover:text-[#E6EAF0]'
@@ -163,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => setIsMobileView(true)}
                 title="Android App Preview (Flutter / Material 3)"
-                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition-colors ${
+                className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition-colors cursor-pointer ${
                   isMobileView
                     ? 'bg-[#17263B] text-teal-300 border border-teal-500/40'
                     : 'text-[#8A97A8] hover:text-[#E6EAF0]'
@@ -174,14 +181,30 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
 
-            {/* Static Role Indicator (Locked to authenticated role) */}
-            <div className="flex items-center space-x-1.5 bg-[#0E1A29] px-3 py-1.5 rounded-lg border border-[#223348] text-xs font-semibold text-[#8A97A8]">
-              {currentRole === 'recruiter' ? (
-                <Briefcase className="w-3.5 h-3.5 text-teal-400" />
-              ) : (
-                <UserCheck className="w-3.5 h-3.5 text-teal-400" />
-              )}
-              <span className="capitalize text-[#E6EAF0]">{currentRole} Mode</span>
+            {/* Interactive Role Switcher Toggle */}
+            <div className="flex items-center bg-[#0E1A29] p-0.5 rounded-lg border border-[#223348]">
+              <button
+                onClick={() => handleSwitchRole('candidate')}
+                className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer ${
+                  currentRole === 'candidate'
+                    ? 'bg-teal-600 text-slate-950 font-bold'
+                    : 'text-[#8A97A8] hover:text-[#E6EAF0]'
+                }`}
+              >
+                <UserCheck className="w-3.5 h-3.5" />
+                <span>Candidate</span>
+              </button>
+              <button
+                onClick={() => handleSwitchRole('recruiter')}
+                className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center space-x-1 transition-colors cursor-pointer ${
+                  currentRole === 'recruiter'
+                    ? 'bg-teal-600 text-slate-950 font-bold'
+                    : 'text-[#8A97A8] hover:text-[#E6EAF0]'
+                }`}
+              >
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>Recruiter</span>
+              </button>
             </div>
 
             {/* Logged in User Profile Dropdown / Login Portal Launcher */}

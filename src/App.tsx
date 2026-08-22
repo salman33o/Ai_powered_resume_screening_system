@@ -729,6 +729,7 @@ export default function App() {
           setShowLoginPortalModal(true);
         }}
         onOpenLoginPortal={() => setShowLoginPortalModal(true)}
+        setRole={setRole}
       />
 
       {/* Main Content Body */}
