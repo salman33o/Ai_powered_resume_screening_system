@@ -6,11 +6,11 @@ import {
   CheckCircle2, 
   Trash2, 
   Edit, 
-  Save,
-  DollarSign,
-  MapPin,
-  Clock,
-  Layers
+  Save, 
+  DollarSign, 
+  MapPin, 
+  Clock, 
+  Layers 
 } from 'lucide-react';
 
 interface JobManagerProps {
@@ -81,42 +81,42 @@ export const JobManager: React.FC<JobManagerProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Header */}
-      <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Position Architect</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              {jobs.length} Active Openings
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Position Architecture</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
+              {jobs.length} Active Positions
             </span>
           </div>
-          <h2 className="text-xl font-bold text-white mt-1">
-            Job Requisitions & ATS Scoring Criteria
+          <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
+            Job Requisitions & Evaluation Criteria
           </h2>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Configure required competencies, responsibilities, and deterministic weighting rules for automated screening.
+          <p className="text-xs text-[#8A97A8] mt-0.5">
+            Define mandatory competencies, responsibilities, and deterministic weighting rules for automated screening.
           </p>
         </div>
 
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2">
           <button
             onClick={handleCreateNewJob}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-md shadow-emerald-600/20"
+            className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-slate-950 rounded text-xs font-bold font-mono flex items-center space-x-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Create New Job Post</span>
+            <span>Create Position</span>
           </button>
         </div>
       </div>
 
       {/* Main Grid: Job Cards vs Active Job Detail Editor */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
         {/* Left 4 Cols: Openings Selector */}
-        <div className="lg:col-span-4 space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Requisitions</h3>
+        <div className="lg:col-span-4 space-y-2.5">
+          <h3 className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">Position Catalog</h3>
           {jobs.map((job) => {
             const isSelected = job.id === selectedJob.id;
             return (
@@ -128,24 +128,24 @@ export const JobManager: React.FC<JobManagerProps> = ({
                   setIsEditing(false);
                   onJobChanged();
                 }}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                className={`p-3 rounded-lg border transition-colors cursor-pointer ${
                   isSelected 
-                    ? 'bg-slate-900 border-emerald-500 shadow-md shadow-emerald-500/10'
-                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                    ? 'bg-[#17263B] border-teal-500/40' 
+                    : 'bg-[#131F30] border-[#223348] hover:border-[#334A66]'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white text-xs">{job.title}</span>
+                  <span className="font-bold text-[#E6EAF0] text-xs font-display">{job.title}</span>
                   {isSelected && (
-                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                      Active Target
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#0E1A29] text-teal-400 border border-teal-500/30">
+                      Active
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">{job.company} • {job.location}</p>
-                <div className="flex flex-wrap gap-1 mt-2">
+                <p className="text-[11px] font-mono text-[#8A97A8] mt-0.5">{job.company} • {job.location}</p>
+                <div className="flex flex-wrap gap-1 mt-1.5 font-mono">
                   {job.requiredSkills.slice(0, 3).map((s, idx) => (
-                    <span key={idx} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                    <span key={idx} className="text-[9px] px-1.5 py-0.2 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
                       {s}
                     </span>
                   ))}
@@ -157,98 +157,98 @@ export const JobManager: React.FC<JobManagerProps> = ({
 
         {/* Right 8 Cols: Job Editor Form */}
         <div className="lg:col-span-8">
-          <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4 shadow-md text-xs">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-3.5 text-xs">
+            <div className="flex items-center justify-between border-b border-[#223348] pb-2.5">
               <div>
-                <h3 className="font-bold text-white text-sm">{editJob.title}</h3>
-                <p className="text-slate-400 text-[11px]">{editJob.company} • {editJob.department}</p>
+                <h3 className="font-bold text-[#E6EAF0] text-sm font-display">{editJob.title}</h3>
+                <p className="text-[#8A97A8] font-mono text-[11px]">{editJob.company} • {editJob.department}</p>
               </div>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center space-x-1.5 transition-all shadow-md shadow-emerald-600/20"
+                className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-slate-950 font-bold font-mono rounded flex items-center space-x-1.5 transition-colors cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>Save Job Profile</span>
+                <span>Save Criteria</span>
               </button>
             </div>
 
             {/* Form Inputs */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5 font-mono">
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Position Title</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Position Title</label>
                 <input
                   type="text"
                   value={editJob.title}
                   onChange={(e) => setEditJob({ ...editJob, title: e.target.value })}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 font-sans text-xs"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Company Name</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Company Legal Entity</label>
                 <input
                   type="text"
                   value={editJob.company}
                   onChange={(e) => setEditJob({ ...editJob, company: e.target.value })}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 font-sans text-xs"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2.5 font-mono">
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Min Experience (Years)</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Min Experience (Yrs)</label>
                 <input
                   type="number"
                   value={editJob.minExperienceYears}
                   onChange={(e) => setEditJob({ ...editJob, minExperienceYears: Number(e.target.value) })}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 text-xs"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Salary Range</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Salary Range</label>
                 <input
                   type="text"
                   value={editJob.salaryRange}
                   onChange={(e) => setEditJob({ ...editJob, salaryRange: e.target.value })}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 text-xs"
                 />
               </div>
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Location</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Location</label>
                 <input
                   type="text"
                   value={editJob.location}
                   onChange={(e) => setEditJob({ ...editJob, location: e.target.value })}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 text-xs"
                 />
               </div>
             </div>
 
             {/* Mandatory Required Skills */}
-            <div>
-              <label className="block text-slate-400 mb-1 font-medium">
+            <div className="space-y-1.5 font-mono">
+              <label className="block text-[#8A97A8] text-[10px]">
                 Mandatory Required Skills (Evaluated under Skills Match)
               </label>
-              <div className="flex flex-wrap gap-1.5 mb-2">
+              <div className="flex flex-wrap gap-1">
                 {editJob.requiredSkills.map((sk, idx) => (
-                  <span key={idx} className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 flex items-center space-x-1.5">
+                  <span key={idx} className="px-2 py-0.5 rounded bg-[#0E1A29] border border-[#223348] text-teal-300 flex items-center space-x-1 text-[11px]">
                     <span>{sk}</span>
                     <button
                       onClick={() => setEditJob({
                         ...editJob,
                         requiredSkills: editJob.requiredSkills.filter((_, i) => i !== idx)
                       })}
-                      className="text-rose-400 hover:text-rose-300 font-bold"
+                      className="text-rose-400 hover:text-rose-300 font-bold ml-1"
                     >
                       ×
                     </button>
                   </span>
                 ))}
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 pt-1">
                 <input
                   type="text"
-                  placeholder="Add required skill (e.g. AWS, Snowflake, Tableau)..."
+                  placeholder="Add skill (e.g. AWS, Snowflake, Python)..."
                   value={newSkillInput}
                   onChange={(e) => setNewSkillInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -261,7 +261,7 @@ export const JobManager: React.FC<JobManagerProps> = ({
                       setNewSkillInput('');
                     }
                   }}
-                  className="flex-1 bg-slate-950 p-2 rounded-lg border border-slate-800 text-white focus:outline-none"
+                  className="flex-1 bg-[#0E1A29] p-1.5 rounded border border-[#223348] text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none text-xs"
                 />
                 <button
                   onClick={() => {
@@ -273,7 +273,7 @@ export const JobManager: React.FC<JobManagerProps> = ({
                       setNewSkillInput('');
                     }
                   }}
-                  className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-bold border border-slate-700"
+                  className="px-3 py-1.5 bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] rounded font-semibold border border-[#223348]"
                 >
                   Add
                 </button>
@@ -282,12 +282,12 @@ export const JobManager: React.FC<JobManagerProps> = ({
 
             {/* Job Description Text */}
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Full Job Overview</label>
+              <label className="block text-[#8A97A8] text-[10px] font-mono mb-1">Job Specification Overview</label>
               <textarea
                 rows={3}
                 value={editJob.summary}
                 onChange={(e) => setEditJob({ ...editJob, summary: e.target.value })}
-                className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none resize-none leading-relaxed"
+                className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 resize-none text-xs leading-relaxed"
               />
             </div>
 

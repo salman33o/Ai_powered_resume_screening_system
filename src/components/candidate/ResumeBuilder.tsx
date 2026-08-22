@@ -44,26 +44,24 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
     setTimeout(() => setSavedNotice(false), 2500);
   };
 
-  // Helper to add new experience
   const addExperience = () => {
     const newExp = {
       id: `exp-${Date.now()}`,
-      company: 'New Company',
-      jobTitle: 'Job Title',
+      company: 'Enterprise Org',
+      jobTitle: 'Senior Specialist',
       startDate: '2023-01',
       endDate: '2026-08',
       isCurrent: true,
-      description: 'Describe core achievements, technologies utilized, and quantified business impact.',
+      description: 'Describe core responsibilities, technologies utilized, and quantified business impact.',
       technologies: ['SQL', 'Python']
     };
     updateField('experience', [newExp, ...resume.experience]);
   };
 
-  // Helper to add new project
   const addProject = () => {
     const newProj = {
       id: `proj-${Date.now()}`,
-      title: 'New Key Project',
+      title: 'Distributed Analytics Pipeline',
       description: 'End-to-end architecture and implementation details demonstrating relevant stack proficiency.',
       technologies: ['React', 'Node.js', 'PostgreSQL']
     };
@@ -71,29 +69,29 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Top Header */}
-      <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">ATS-Optimized Builder</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              Template: {selectedTemplate.toUpperCase()}
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Spec-Compliant Builder</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
+              Schema: {selectedTemplate.toUpperCase()}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-white mt-1">
-            Professional Resume Builder & Exporter
+          <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
+            Structured Resume Builder & Exporter
           </h2>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Craft high-fidelity, ATS-parseable resumes designed to pass multi-column OCR extraction filters.
+          <p className="text-xs text-[#8A97A8] mt-0.5">
+            Construct high-fidelity, machine-parseable resumes designed to pass single-column OCR extraction filters.
           </p>
         </div>
 
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2 font-mono">
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center space-x-1.5 transition-all shadow-md shadow-indigo-600/20"
+            className="px-3.5 py-1.5 rounded bg-teal-600 hover:bg-teal-500 text-slate-950 text-xs font-bold flex items-center space-x-1.5 transition-colors cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Save & Re-Score</span>
@@ -101,29 +99,29 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
           <button
             onClick={() => exportResumePDF(resume)}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center space-x-1.5 border border-slate-700 transition-all"
+            className="px-3.5 py-1.5 rounded bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] text-xs font-medium flex items-center space-x-1.5 border border-[#223348] transition-colors cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download PDF</span>
+            <Download className="w-3.5 h-3.5 text-teal-400" />
+            <span>Export PDF</span>
           </button>
         </div>
       </div>
 
       {savedNotice && (
-        <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-200 flex items-center space-x-2 animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>Resume saved successfully! Deterministic scoring recomputed.</span>
+        <div className="p-2.5 rounded bg-[#0E1A29] border border-teal-500/40 text-xs font-mono text-teal-300 flex items-center space-x-2">
+          <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
+          <span>Resume saved successfully. Deterministic scoring recomputed.</span>
         </div>
       )}
 
       {/* Builder Layout: Left Form Editors vs Right Live ATS Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
         {/* Left 6 Columns: Form Editors */}
-        <div className="lg:col-span-6 space-y-4">
+        <div className="lg:col-span-6 space-y-3">
           
           {/* Section Selector Pills */}
-          <div className="flex flex-wrap gap-1.5 p-1.5 bg-slate-900 rounded-xl border border-slate-800">
+          <div className="flex flex-wrap gap-1 p-1 bg-[#131F30] rounded border border-[#223348] font-mono">
             {[
               { id: 'personal', label: 'Contact', icon: FileText },
               { id: 'experience', label: 'Experience', icon: Briefcase },
@@ -137,13 +135,13 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
                 <button
                   key={sec.id}
                   onClick={() => setActiveSection(sec.id as any)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-colors ${
+                  className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1.5 transition-colors cursor-pointer ${
                     activeSection === sec.id
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-teal-600 text-slate-950 font-bold'
+                      : 'text-[#8A97A8] hover:text-[#E6EAF0]'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3 h-3" />
                   <span>{sec.label}</span>
                 </button>
               );
@@ -152,58 +150,58 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
           {/* Section 1: Contact Details */}
           {activeSection === 'personal' && (
-            <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3.5 text-xs">
-              <h3 className="font-bold text-white uppercase tracking-wider text-xs">Personal & Contact Info</h3>
+            <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-3 text-xs font-mono">
+              <h3 className="font-bold text-[#E6EAF0] uppercase tracking-wider text-[10px]">Contact Credentials</h3>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-medium">Full Name</label>
+                  <label className="block text-[#8A97A8] text-[10px] mb-1">Full Name</label>
                   <input
                     type="text"
                     value={resume.fullName}
                     onChange={(e) => updateField('fullName', e.target.value)}
-                    className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 font-sans text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1 font-medium">Email Address</label>
+                  <label className="block text-[#8A97A8] text-[10px] mb-1">Email</label>
                   <input
                     type="email"
                     value={resume.email}
                     onChange={(e) => updateField('email', e.target.value)}
-                    className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 text-xs"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-medium">Phone Number</label>
+                  <label className="block text-[#8A97A8] text-[10px] mb-1">Phone</label>
                   <input
                     type="text"
                     value={resume.phone}
                     onChange={(e) => updateField('phone', e.target.value)}
-                    className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1 font-medium">Location</label>
+                  <label className="block text-[#8A97A8] text-[10px] mb-1">Location</label>
                   <input
                     type="text"
                     value={resume.location}
                     onChange={(e) => updateField('location', e.target.value)}
-                    className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Executive Summary</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Executive Summary</label>
                 <textarea
                   rows={4}
                   value={resume.summary}
                   onChange={(e) => updateField('summary', e.target.value)}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 resize-none leading-relaxed font-sans text-xs"
                 />
               </div>
             </div>
@@ -211,23 +209,23 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
           {/* Section 2: Work Experience */}
           {activeSection === 'experience' && (
-            <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4 text-xs">
+            <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-white uppercase tracking-wider text-xs">Work History ({resume.experience.length})</h3>
+                <h3 className="font-bold text-[#E6EAF0] uppercase tracking-wider text-[10px] font-mono">Work History ({resume.experience.length})</h3>
                 <button
                   onClick={addExperience}
-                  className="px-2.5 py-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-semibold flex items-center space-x-1"
+                  className="px-2 py-0.5 bg-[#0E1A29] hover:bg-[#17263B] text-teal-300 border border-teal-500/30 rounded text-xs font-mono font-semibold flex items-center space-x-1 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3" />
                   <span>Add Role</span>
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-2.5 font-mono">
                 {resume.experience.map((exp, idx) => (
-                  <div key={exp.id || idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                  <div key={exp.id || idx} className="p-3 rounded bg-[#0E1A29] border border-[#223348] space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-300">Position #{idx + 1}</span>
+                      <span className="font-bold text-[#8A97A8] text-xs">Role #{idx + 1}</span>
                       <button
                         onClick={() => {
                           const updated = resume.experience.filter((_, i) => i !== idx);
@@ -249,7 +247,7 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
                           list[idx].jobTitle = e.target.value;
                           updateField('experience', list);
                         }}
-                        className="bg-slate-900 p-2 rounded border border-slate-800 text-white"
+                        className="bg-[#131F30] p-1.5 rounded border border-[#223348] text-[#E6EAF0] text-xs font-sans"
                       />
                       <input
                         type="text"
@@ -260,20 +258,20 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
                           list[idx].company = e.target.value;
                           updateField('experience', list);
                         }}
-                        className="bg-slate-900 p-2 rounded border border-slate-800 text-white"
+                        className="bg-[#131F30] p-1.5 rounded border border-[#223348] text-[#E6EAF0] text-xs font-sans"
                       />
                     </div>
 
                     <textarea
                       rows={3}
-                      placeholder="Bullet points & measurable outcomes..."
+                      placeholder="Bullet points & quantified achievements..."
                       value={exp.description}
                       onChange={(e) => {
                         const list = [...resume.experience];
                         list[idx].description = e.target.value;
                         updateField('experience', list);
                       }}
-                      className="w-full bg-slate-900 p-2 rounded border border-slate-800 text-white resize-none"
+                      className="w-full bg-[#131F30] p-1.5 rounded border border-[#223348] text-[#E6EAF0] resize-none text-xs font-sans leading-relaxed"
                     />
                   </div>
                 ))}
@@ -283,11 +281,11 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
           {/* Section 3: Technical Skills */}
           {activeSection === 'skills' && (
-            <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4 text-xs">
-              <h3 className="font-bold text-white uppercase tracking-wider text-xs">Skills & Competencies</h3>
+            <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-3 text-xs font-mono">
+              <h3 className="font-bold text-[#E6EAF0] uppercase tracking-wider text-[10px]">Competencies Matrix</h3>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Technical Skills (Comma separated)</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Technical Skills (Comma separated)</label>
                 <input
                   type="text"
                   value={resume.skills.technical.join(', ')}
@@ -295,12 +293,12 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
                     const skillsArr = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
                     updateField('skills', { ...resume.skills, technical: skillsArr });
                   }}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-medium">Tools & Cloud Frameworks</label>
+                <label className="block text-[#8A97A8] text-[10px] mb-1">Tools & Cloud Frameworks</label>
                 <input
                   type="text"
                   value={resume.skills.tools.join(', ')}
@@ -308,7 +306,7 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
                     const toolsArr = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
                     updateField('skills', { ...resume.skills, tools: toolsArr });
                   }}
-                  className="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-white"
+                  className="w-full bg-[#0E1A29] p-2 rounded border border-[#223348] text-[#E6EAF0] text-xs"
                 />
               </div>
             </div>
@@ -316,66 +314,68 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
           {/* Section 4: Projects */}
           {activeSection === 'projects' && (
-            <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4 text-xs">
+            <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-white uppercase tracking-wider text-xs">Project Portfolio ({resume.projects.length})</h3>
+                <h3 className="font-bold text-[#E6EAF0] uppercase tracking-wider text-[10px] font-mono">Projects ({resume.projects.length})</h3>
                 <button
                   onClick={addProject}
-                  className="px-2.5 py-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-semibold flex items-center space-x-1"
+                  className="px-2 py-0.5 bg-[#0E1A29] hover:bg-[#17263B] text-teal-300 border border-teal-500/30 rounded text-xs font-mono font-semibold flex items-center space-x-1 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3" />
                   <span>Add Project</span>
                 </button>
               </div>
 
-              {resume.projects.map((proj, idx) => (
-                <div key={proj.id || idx} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <input
-                      type="text"
-                      placeholder="Project Title"
-                      value={proj.title}
+              <div className="space-y-2.5 font-mono">
+                {resume.projects.map((proj, idx) => (
+                  <div key={proj.id || idx} className="p-3 rounded bg-[#0E1A29] border border-[#223348] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <input
+                        type="text"
+                        placeholder="Project Title"
+                        value={proj.title}
+                        onChange={(e) => {
+                          const list = [...resume.projects];
+                          list[idx].title = e.target.value;
+                          updateField('projects', list);
+                        }}
+                        className="bg-[#131F30] p-1.5 rounded border border-[#223348] text-[#E6EAF0] font-bold w-3/4 text-xs font-sans"
+                      />
+                      <button
+                        onClick={() => {
+                          const list = resume.projects.filter((_, i) => i !== idx);
+                          updateField('projects', list);
+                        }}
+                        className="text-rose-400 hover:text-rose-300"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <textarea
+                      rows={2}
+                      placeholder="Architecture description..."
+                      value={proj.description}
                       onChange={(e) => {
                         const list = [...resume.projects];
-                        list[idx].title = e.target.value;
+                        list[idx].description = e.target.value;
                         updateField('projects', list);
                       }}
-                      className="bg-slate-900 p-2 rounded border border-slate-800 text-white font-bold w-3/4"
+                      className="w-full bg-[#131F30] p-1.5 rounded border border-[#223348] text-[#E6EAF0] resize-none text-xs font-sans leading-relaxed"
                     />
-                    <button
-                      onClick={() => {
-                        const list = resume.projects.filter((_, i) => i !== idx);
-                        updateField('projects', list);
-                      }}
-                      className="text-rose-400 hover:text-rose-300"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
                   </div>
-
-                  <textarea
-                    rows={2}
-                    placeholder="Project description and tech stack..."
-                    value={proj.description}
-                    onChange={(e) => {
-                      const list = [...resume.projects];
-                      list[idx].description = e.target.value;
-                      updateField('projects', list);
-                    }}
-                    className="w-full bg-slate-900 p-2 rounded border border-slate-800 text-white resize-none"
-                  />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
           {/* Education & Certs */}
           {(activeSection === 'education' || activeSection === 'certifications') && (
-            <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-3 text-xs">
-              <h3 className="font-bold text-white uppercase tracking-wider text-xs">
+            <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-2 text-xs font-mono">
+              <h3 className="font-bold text-[#E6EAF0] uppercase tracking-wider text-[10px]">
                 {activeSection === 'education' ? 'Academic History' : 'Certifications'}
               </h3>
-              <p className="text-slate-400">
+              <p className="text-[#8A97A8]">
                 Education and certified credentials directly substantiate keyword density and scoring filters.
               </p>
             </div>
@@ -385,33 +385,31 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
         {/* Right 6 Columns: Clean ATS Document Preview (White Sheet Look) */}
         <div className="lg:col-span-6">
-          <div className="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 space-y-3">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <div className="flex items-center space-x-2">
-                <Eye className="w-4 h-4 text-indigo-400" />
-                <span className="font-bold text-slate-200">ATS Parsing Viewport</span>
+          <div className="bg-[#131F30] rounded-lg p-3.5 border border-[#223348] space-y-2.5">
+            <div className="flex items-center justify-between text-xs text-[#8A97A8] font-mono">
+              <div className="flex items-center space-x-1.5">
+                <Eye className="w-3.5 h-3.5 text-teal-400" />
+                <span className="font-bold text-[#E6EAF0]">ATS Parsing Viewport</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                  Standard Single-Column Flow
-                </span>
-              </div>
+              <span className="text-[10px] text-teal-400 px-1.5 py-0.2 rounded bg-[#0E1A29] border border-teal-500/30">
+                Single-Column Standard
+              </span>
             </div>
 
             {/* Document Paper Canvas */}
-            <div className="bg-white text-slate-900 p-6 rounded-xl shadow-2xl font-sans min-h-[580px] text-[11px] leading-relaxed select-text border border-slate-200">
+            <div className="bg-white text-slate-900 p-5 rounded border border-slate-300 font-sans min-h-[560px] text-[11px] leading-relaxed select-text shadow-sm">
               
               {/* Header */}
-              <div className="border-b border-slate-300 pb-3 mb-3 text-center">
+              <div className="border-b border-slate-300 pb-2.5 mb-2.5 text-center">
                 <h1 className="text-base font-bold tracking-tight text-slate-950 uppercase">{resume.fullName}</h1>
                 <p className="text-[10px] text-slate-600 mt-0.5">
                   {resume.email} • {resume.phone} • {resume.location}
                 </p>
-                {resume.linkedin && <p className="text-[9px] text-blue-700">{resume.linkedin}</p>}
+                {resume.linkedin && <p className="text-[9px] text-teal-700">{resume.linkedin}</p>}
               </div>
 
               {/* Summary */}
-              <div className="mb-3">
+              <div className="mb-2.5">
                 <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-0.5 mb-1">
                   Professional Summary
                 </h2>
@@ -419,7 +417,7 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
               </div>
 
               {/* Technical Skills */}
-              <div className="mb-3">
+              <div className="mb-2.5">
                 <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-0.5 mb-1">
                   Technical Competencies
                 </h2>
@@ -434,11 +432,11 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
               </div>
 
               {/* Experience */}
-              <div className="mb-3">
+              <div className="mb-2.5">
                 <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-0.5 mb-1">
                   Work Experience
                 </h2>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {resume.experience.map((exp, idx) => (
                     <div key={idx}>
                       <div className="flex justify-between font-bold text-slate-900 text-[10.5px]">
@@ -453,11 +451,11 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
 
               {/* Projects */}
               {resume.projects.length > 0 && (
-                <div className="mb-3">
+                <div className="mb-2.5">
                   <h2 className="text-[10px] font-bold uppercase tracking-wider text-slate-800 border-b border-slate-200 pb-0.5 mb-1">
                     Projects & Systems
                   </h2>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {resume.projects.map((proj, idx) => (
                       <div key={idx}>
                         <span className="font-bold text-slate-900">{proj.title}</span>

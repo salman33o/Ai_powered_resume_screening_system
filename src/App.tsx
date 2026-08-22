@@ -852,63 +852,63 @@ export default function App() {
 
       {/* --- AUDIT TRAIL MODAL --- */}
       {showAuditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-150">
+          <div className="bg-[#131F30] border border-[#223348] rounded-lg w-full max-w-3xl max-h-[85vh] flex flex-col shadow-lg overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#223348] flex items-center justify-between">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-7 h-7 rounded bg-[#0E1A29] border border-[#223348] text-teal-400 flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">ATS Algorithm Audit & Model Governance Log</h3>
-                  <p className="text-xs text-slate-400">Verifiable deterministic calculations, confidence indices, and OCR fidelity</p>
+                  <h3 className="text-sm font-bold text-[#E6EAF0] font-display">ATS Algorithm Audit & Model Governance Log</h3>
+                  <p className="text-[11px] text-[#8A97A8]">Verifiable deterministic calculations, confidence indices, and OCR fidelity</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowAuditModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                className="text-[#8A97A8] hover:text-[#E6EAF0] p-1 rounded hover:bg-[#17263B]"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-4">
-              <div className="bg-slate-950/70 p-4 rounded-xl border border-slate-800 text-xs space-y-2">
-                <div className="flex items-center justify-between text-slate-300">
-                  <span className="font-semibold text-white">Current Model Version:</span>
-                  <span className="font-mono text-indigo-400">{analysis.modelVersion}</span>
+            <div className="p-5 overflow-y-auto space-y-4">
+              <div className="bg-[#0E1A29] p-3.5 rounded border border-[#223348] text-xs space-y-2 font-mono">
+                <div className="flex items-center justify-between text-[#8A97A8]">
+                  <span className="font-semibold text-[#E6EAF0]">Model Identifier:</span>
+                  <span className="text-teal-400">{analysis.modelVersion}</span>
                 </div>
-                <div className="flex items-center justify-between text-slate-300">
-                  <span className="font-semibold text-white">Scoring Protocol:</span>
-                  <span className="font-mono text-cyan-400">{analysis.scoringEngineVersion}</span>
+                <div className="flex items-center justify-between text-[#8A97A8]">
+                  <span className="font-semibold text-[#E6EAF0]">Scoring Engine Protocol:</span>
+                  <span className="text-teal-400">{analysis.scoringEngineVersion}</span>
                 </div>
-                <div className="flex items-center justify-between text-slate-300">
-                  <span className="font-semibold text-white">Bias Protection:</span>
-                  <span className="text-emerald-400 font-medium">Active (Zero PII weighting, EEOC compliant)</span>
+                <div className="flex items-center justify-between text-[#8A97A8]">
+                  <span className="font-semibold text-[#E6EAF0]">Fairness / Bias Safeguard:</span>
+                  <span className="text-emerald-400 font-medium">Active (Zero PII Weighting, EEOC Compliant)</span>
                 </div>
               </div>
 
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mt-4">
-                Recent Audit Trail Events
+              <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#8A97A8] mt-4">
+                Telemetry Audit Records
               </h4>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {auditLogs.map((log) => (
-                  <div key={log.id} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-xs space-y-2">
+                  <div key={log.id} className="p-3 rounded bg-[#0E1A29] border border-[#223348] text-xs space-y-1.5 font-mono">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white">{log.candidateName}</span>
-                      <span className="text-slate-400">{new Date(log.timestamp).toLocaleString()}</span>
+                      <span className="font-bold text-[#E6EAF0]">{log.candidateName}</span>
+                      <span className="text-[10px] text-[#8A97A8]">{new Date(log.timestamp).toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center space-x-3 text-slate-300">
-                      <span>Job: <strong className="text-slate-100">{log.jobTitle}</strong></span>
-                      <span>Score: <strong className="text-indigo-400">{log.overallScore}%</strong></span>
-                      <span>Confidence: <strong className="text-cyan-400">{log.confidenceScore}%</strong></span>
+                    <div className="flex items-center space-x-3 text-[#8A97A8] text-[11px]">
+                      <span>Target: <strong className="text-[#E6EAF0]">{log.jobTitle}</strong></span>
+                      <span>Score: <strong className="text-teal-400">{log.overallScore}%</strong></span>
+                      <span>Confidence: <strong className="text-teal-300">{log.confidenceScore}%</strong></span>
                     </div>
-                    <p className="text-slate-400 italic">
-                      OCR Fidelity: {log.extractionQuality} | Reviewer: {log.reviewerDecision || 'Pending'}
+                    <p className="text-[11px] text-[#8A97A8]">
+                      Extraction: {log.extractionQuality} | Decision: {log.reviewerDecision || 'Automatic Analysis'}
                     </p>
                     {log.reviewerNotes && (
-                      <p className="text-slate-300 bg-slate-900/80 p-2 rounded-lg border border-slate-800/80">
+                      <p className="text-[11px] text-[#8A97A8] bg-[#131F30] p-2 rounded border border-[#223348]">
                         {log.reviewerNotes}
                       </p>
                     )}
@@ -917,10 +917,10 @@ export default function App() {
               </div>
             </div>
 
-            <div className="px-6 py-3 border-t border-slate-800 bg-slate-950/50 flex justify-end">
+            <div className="px-5 py-3 border-t border-[#223348] bg-[#0E1A29] flex justify-end">
               <button
                 onClick={() => setShowAuditModal(false)}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold"
+                className="px-3.5 py-1.5 bg-[#17263B] hover:bg-[#223348] text-[#E6EAF0] rounded border border-[#223348] text-xs font-semibold"
               >
                 Close Audit Log
               </button>
@@ -931,57 +931,57 @@ export default function App() {
 
       {/* --- PRIVACY & BIAS PROTECTION MODAL --- */}
       {showPrivacyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-150">
+          <div className="bg-[#131F30] border border-[#223348] rounded-lg w-full max-w-2xl max-h-[85vh] flex flex-col shadow-lg overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#223348] flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Algorithmic Transparency & Fairness Standards</h3>
+                <ShieldCheck className="w-4 h-4 text-teal-400" />
+                <h3 className="text-sm font-bold text-[#E6EAF0] font-display">Algorithmic Transparency & Fairness Standards</h3>
               </div>
               <button 
                 onClick={() => setShowPrivacyModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                className="text-[#8A97A8] hover:text-[#E6EAF0] p-1 rounded hover:bg-[#17263B]"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
-              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-                <p className="font-bold mb-1">Ethical Screening Commitment</p>
-                <p>
+            <div className="p-5 overflow-y-auto space-y-3.5 text-xs text-[#8A97A8] leading-relaxed">
+              <div className="p-3.5 rounded bg-[#0E1A29] border border-teal-500/30 text-teal-300">
+                <p className="font-bold mb-1 text-teal-200">Ethical Screening Commitment</p>
+                <p className="text-xs">
                   PrimeATS scores candidates purely on verified technical competencies, quantified achievements, and role-relevant experience. Personal demographic markers are completely excluded from scoring equations.
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <h4 className="font-bold text-white text-xs mb-1">1. Zero PII Bias Weighting</h4>
-                  <p className="text-slate-400">
+              <div className="space-y-2.5">
+                <div className="p-3 rounded bg-[#0E1A29] border border-[#223348]">
+                  <h4 className="font-bold text-[#E6EAF0] text-xs mb-1">1. Zero PII Bias Weighting</h4>
+                  <p className="text-[#8A97A8] text-[11px]">
                     Names, age indicators, gender, photo data, and address lines receive zero mathematical weight in ATS evaluation.
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <h4 className="font-bold text-white text-xs mb-1">2. Explainable Deterministic Core</h4>
-                  <p className="text-slate-400">
-                    Unlike black-box AI classifiers, scores are calculated using a deterministic 7-component formula. AI is used solely for natural-language feedback synthesis.
+                <div className="p-3 rounded bg-[#0E1A29] border border-[#223348]">
+                  <h4 className="font-bold text-[#E6EAF0] text-xs mb-1">2. Explainable Deterministic Core</h4>
+                  <p className="text-[#8A97A8] text-[11px]">
+                    Unlike opaque AI classifiers, scores are calculated using a deterministic 7-component formula. AI is used solely for natural-language feedback synthesis.
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <h4 className="font-bold text-white text-xs mb-1">3. Human-in-the-Loop Safeguards</h4>
-                  <p className="text-slate-400">
+                <div className="p-3 rounded bg-[#0E1A29] border border-[#223348]">
+                  <h4 className="font-bold text-[#E6EAF0] text-xs mb-1">3. Human-in-the-Loop Safeguards</h4>
+                  <p className="text-[#8A97A8] text-[11px]">
                     ATS scores serve as prioritization decision-support metrics, not automated rejection verdicts. Recruiters review evidence cards before disqualifying candidates.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="px-6 py-3 border-t border-slate-800 bg-slate-950/50 flex justify-end">
+            <div className="px-5 py-3 border-t border-[#223348] bg-[#0E1A29] flex justify-end">
               <button
                 onClick={() => setShowPrivacyModal(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold"
+                className="px-3.5 py-1.5 bg-[#17263B] hover:bg-[#223348] text-[#E6EAF0] rounded border border-[#223348] text-xs font-semibold"
               >
                 Understood
               </button>
@@ -992,62 +992,62 @@ export default function App() {
 
       {/* --- CANDIDATE DETAIL SCORECARD MODAL (FOR RECRUITERS) --- */}
       {selectedCandidateDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-150">
+          <div className="bg-[#131F30] border border-[#223348] rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col shadow-lg overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#223348] flex items-center justify-between bg-[#0E1A29]">
               <div>
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-lg font-bold text-white">{selectedCandidateDetail.candidateName}</h3>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  <h3 className="text-base font-bold text-[#E6EAF0] font-display">{selectedCandidateDetail.candidateName}</h3>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded font-bold bg-[#131F30] text-teal-400 border border-teal-500/30">
                     {selectedCandidateDetail.atsScore?.overallScore || selectedCandidateDetail.atsAnalysis.overallScore}% ATS Match
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  {selectedCandidateDetail.candidateEmail} | {selectedCandidateDetail.resume.location} | Stage: <span className="capitalize font-semibold text-slate-200">{selectedCandidateDetail.stage}</span>
+                <p className="text-[11px] text-[#8A97A8] font-mono mt-0.5">
+                  {selectedCandidateDetail.candidateEmail} | {selectedCandidateDetail.resume.location} | Stage: <span className="capitalize text-[#E6EAF0]">{selectedCandidateDetail.stage}</span>
                 </p>
               </div>
               <button 
                 onClick={() => setSelectedCandidateDetail(null)}
-                className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-slate-800"
+                className="text-[#8A97A8] hover:text-[#E6EAF0] p-1 rounded hover:bg-[#17263B]"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-6">
+            <div className="p-5 overflow-y-auto space-y-4">
               
               {/* Summary & Key Strengths */}
-              <div className="bg-slate-950/70 p-4 rounded-xl border border-slate-800 space-y-2">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Candidate Summary</p>
-                <p className="text-xs text-slate-300 leading-relaxed">{selectedCandidateDetail.resume.summary}</p>
+              <div className="bg-[#0E1A29] p-3.5 rounded border border-[#223348] space-y-1.5">
+                <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">Candidate Profile Summary</p>
+                <p className="text-xs text-[#E6EAF0] leading-relaxed">{selectedCandidateDetail.resume.summary}</p>
               </div>
 
               {/* Matched Skills vs Missing Skills */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <div className="p-3.5 rounded bg-[#0E1A29] border border-[#223348]">
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 mb-2">
                     Verified Matched Skills ({selectedCandidateDetail.atsAnalysis.components.skillsMatch.matched.length})
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedCandidateDetail.atsAnalysis.components.skillsMatch.matched.map((m, idx) => (
-                      <span key={idx} className="text-xs px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 flex items-center space-x-1">
-                        <CheckCircle2 className="w-3 h-3" />
+                      <span key={idx} className="text-xs px-2 py-0.5 rounded bg-[#131F30] text-emerald-300 border border-emerald-500/30 flex items-center space-x-1 font-mono">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                         <span>{m.skill}</span>
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <p className="text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">
+                <div className="p-3.5 rounded bg-[#0E1A29] border border-[#223348]">
+                  <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-400 mb-2">
                     Missing Target Skills ({selectedCandidateDetail.atsAnalysis.components.skillsMatch.missingRequired.length})
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {selectedCandidateDetail.atsAnalysis.components.skillsMatch.missingRequired.length === 0 ? (
-                      <span className="text-xs text-emerald-400 font-medium">All required skills present</span>
+                      <span className="text-xs text-emerald-400 font-mono">All required skills present</span>
                     ) : (
                       selectedCandidateDetail.atsAnalysis.components.skillsMatch.missingRequired.map((s, idx) => (
-                        <span key={idx} className="text-xs px-2 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                        <span key={idx} className="text-xs px-2 py-0.5 rounded bg-[#131F30] text-rose-300 border border-rose-500/30 font-mono">
                           {s}
                         </span>
                       ))
@@ -1057,18 +1057,18 @@ export default function App() {
               </div>
 
               {/* Work Experience */}
-              <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Work Experience</p>
+              <div className="space-y-2.5">
+                <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">Work Experience History</p>
                 {selectedCandidateDetail.resume.experience.map((exp, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-xs space-y-1.5">
+                  <div key={idx} className="p-3 rounded bg-[#0E1A29] border border-[#223348] text-xs space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-white">{exp.jobTitle} - {exp.company}</span>
-                      <span className="text-slate-400">{exp.startDate} - {exp.isCurrent ? 'Present' : exp.endDate}</span>
+                      <span className="font-bold text-[#E6EAF0]">{exp.jobTitle} — {exp.company}</span>
+                      <span className="text-[11px] text-[#8A97A8] font-mono">{exp.startDate} - {exp.isCurrent ? 'Present' : exp.endDate}</span>
                     </div>
-                    <p className="text-slate-300 leading-relaxed">{exp.description}</p>
+                    <p className="text-[#8A97A8] leading-relaxed text-[11px]">{exp.description}</p>
                     <div className="flex flex-wrap gap-1 pt-1">
                       {exp.technologies.map((t, tidx) => (
-                        <span key={tidx} className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                        <span key={tidx} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#131F30] text-[#8A97A8] border border-[#223348]">
                           {t}
                         </span>
                       ))}
@@ -1079,19 +1079,19 @@ export default function App() {
 
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
+            <div className="px-5 py-3 border-t border-[#223348] bg-[#0E1A29] flex items-center justify-between">
               <button
                 onClick={() => exportATSReportPDF(selectedCandidateDetail.resume, selectedJob, selectedCandidateDetail.atsAnalysis)}
-                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium border border-slate-700 flex items-center space-x-1.5"
+                className="px-3 py-1.5 bg-[#17263B] hover:bg-[#223348] text-[#E6EAF0] rounded text-xs font-medium border border-[#223348] flex items-center space-x-1.5"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 text-teal-400" />
                 <span>Export Audit PDF</span>
               </button>
 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setSelectedCandidateDetail(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium"
+                  className="px-3 py-1.5 bg-[#131F30] hover:bg-[#17263B] text-[#8A97A8] hover:text-[#E6EAF0] rounded border border-[#223348] text-xs font-medium"
                 >
                   Dismiss
                 </button>
@@ -1101,9 +1101,9 @@ export default function App() {
                     setSelectedCandidateDetail(null);
                     setActiveView('candidate-pipeline');
                   }}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-slate-950 font-bold rounded text-xs transition-colors"
                 >
-                  Schedule Interview
+                  Advance to Interview
                 </button>
               </div>
             </div>
@@ -1114,24 +1114,24 @@ export default function App() {
 
       {/* --- NOTIFICATIONS POPUP PANEL --- */}
       {showNotifications && (
-        <div className="fixed top-16 right-4 sm:right-8 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800 mb-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Notifications</h4>
+        <div className="fixed top-16 right-4 sm:right-8 w-80 bg-[#131F30] border border-[#223348] rounded-lg shadow-lg p-3 z-50 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between pb-2 border-b border-[#223348] mb-2.5">
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">System Notifications</h4>
             <button 
               onClick={() => setShowNotifications(false)}
-              className="text-slate-400 hover:text-white"
+              className="text-[#8A97A8] hover:text-[#E6EAF0]"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="space-y-2.5 max-h-72 overflow-y-auto">
+          <div className="space-y-2 max-h-72 overflow-y-auto">
             {notifications.map((n) => (
-              <div key={n.id} className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs">
+              <div key={n.id} className="p-2.5 rounded bg-[#0E1A29] border border-[#223348] text-xs">
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="font-semibold text-white">{n.title}</span>
-                  <span className="text-[10px] text-slate-400">{n.time}</span>
+                  <span className="font-semibold text-[#E6EAF0] text-[11px]">{n.title}</span>
+                  <span className="text-[9px] font-mono text-[#8A97A8]">{n.time}</span>
                 </div>
-                <p className="text-slate-300 text-[11px] leading-relaxed">{n.desc}</p>
+                <p className="text-[#8A97A8] text-[11px] leading-relaxed">{n.desc}</p>
               </div>
             ))}
           </div>

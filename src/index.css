@@ -7,12 +7,14 @@
   --bg-surface-subtle: #0E1A29;
   --border-color: #223348;
   --border-subtle: #192738;
+  --border-hover: #334A66;
   --border-accent: #14B8A6;
   --text-primary: #E6EAF0;
   --text-secondary: #8A97A8;
   --text-muted: #5B6B80;
   --accent-teal: #14B8A6;
   --accent-teal-hover: #0D9488;
+  --accent-teal-subtle: rgba(20, 184, 166, 0.12);
   --status-success: #22C55E;
   --status-warning: #F59E0B;
   --status-danger: #EF4444;
@@ -38,11 +40,11 @@
   }
 }
 
-/* Precision flat structural surfaces (Replaces glassmorphism) */
+/* Precision flat structural surfaces (No transparency, no backdrop-filter blur) */
 .glass-panel, .panel-solid {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .glass-card, .card-solid {
@@ -53,7 +55,7 @@
 
 .glass-card:hover, .card-solid:hover {
   background: var(--bg-surface);
-  border-color: #334A66;
+  border-color: var(--border-hover);
 }
 
 .glass-input, .input-solid {
@@ -69,7 +71,15 @@
   background: var(--bg-surface);
 }
 
-/* Status indicator borders (Clean 1px functional states, no soft halos) */
+/* Solid high-contrast text replacements */
+.gradient-text-indigo,
+.gradient-text-emerald,
+.gradient-text-amber,
+.gradient-text-teal {
+  color: var(--text-primary);
+}
+
+/* Functional status borders - clean 1px, no soft halos */
 .glow-border-indigo, .glow-border-purple, .border-accent-teal {
   border-color: var(--accent-teal) !important;
 }
@@ -80,13 +90,6 @@
 
 .glow-border-amber, .border-status-warning {
   border-color: #D97706 !important;
-}
-
-/* Solid high-contrast text replacements for AI gradients */
-.gradient-text-indigo,
-.gradient-text-emerald,
-.gradient-text-amber {
-  color: var(--text-primary);
 }
 
 /* Precision status badges */
@@ -116,7 +119,7 @@
 .instrument-gauge {
   background: #0B1420;
   border: 1px solid var(--border-color);
-  height: 8px;
+  height: 6px;
   border-radius: 2px;
   overflow: hidden;
   position: relative;
@@ -125,7 +128,26 @@
 .instrument-gauge-fill {
   height: 100%;
   background: var(--accent-teal);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.25s ease-out;
+}
+
+/* Button & interactive components - deliberate human studio feel */
+.btn-teal {
+  background-color: #0D9488;
+  color: #FFFFFF;
+  border: 1px solid #14B8A6;
+  font-weight: 600;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-teal:hover {
+  background-color: #0F766E;
+  border-color: #2DD4BF;
+}
+
+.btn-teal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Custom crisp scrollbar */
@@ -160,4 +182,3 @@
     display: block !important;
   }
 }
-

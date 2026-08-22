@@ -9,7 +9,7 @@
     "lint": "tsc --noEmit",
     "preview": "vite preview",
     "start": "node dist/server.cjs",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

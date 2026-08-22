@@ -3,8 +3,7 @@ import {
   DirectMessage, 
   UserRole, 
   AuthUser, 
-  JobRequirement,
-  StructuredResume
+  JobRequirement 
 } from '../../types';
 import { 
   MessageSquare, 
@@ -15,11 +14,9 @@ import {
   CheckCircle2, 
   Briefcase, 
   Clock, 
-  Search,
-  Filter,
-  ArrowRight,
-  ShieldCheck,
-  Star
+  Search, 
+  ArrowRight, 
+  ShieldCheck 
 } from 'lucide-react';
 
 interface MessagingCenterProps {
@@ -45,7 +42,6 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
   const [replyText, setReplyText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Group messages into threads
   const threads = React.useMemo(() => {
     const map = new Map<string, {
       threadId: string;
@@ -96,7 +92,6 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
     return list;
   }, [messages, currentUser, currentRole]);
 
-  // Default select first thread
   const activeThread = threads.find(t => t.threadId === selectedThreadId) || threads[0] || null;
 
   const filteredThreads = threads.filter(t => 
@@ -129,70 +124,69 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
   };
 
   const quickReplies = currentRole === 'candidate' ? [
-    'Thank you for the update! I am available any weekday morning for an interview.',
-    'I have attached my latest portfolio and certifications for your review.',
-    'Could you clarify if this position offers remote or hybrid flexibility?'
+    'Available for scheduled technical screen.',
+    'Attached updated portfolio metrics.',
+    'Clarifying remote / hybrid model terms.'
   ] : [
-    'Thanks for reaching out! We would like to schedule a 30-min technical screen.',
-    'Could you please share your GitHub / portfolio link and notice period?',
-    'Our hiring team has reviewed your application and will follow up shortly.'
+    'Confirming technical evaluation window.',
+    'Please forward portfolio references.',
+    'Application review in progress by committee.'
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Header */}
-      <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Direct Inquiries & Hiring Channels</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              {threads.length} Active Conversations
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Communication Terminal</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
+              {threads.length} Active Channels
             </span>
           </div>
-          <h2 className="text-xl font-bold text-white mt-1">
-            {currentRole === 'candidate' ? 'Direct Candidate-to-Company Messages' : 'Candidate Communications & Inquiries Hub'}
+          <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
+            {currentRole === 'candidate' ? 'Candidate Communications Terminal' : 'Recruitment Inquiries & Communications Hub'}
           </h2>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Real-time, 2-way verified messaging between applicants and hiring companies for posted roles.
+          <p className="text-xs text-[#8A97A8] mt-0.5">
+            Direct 2-way messaging ledger between applicants and hiring organizations.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Encrypted Direct ATS Channel</span>
+        <div className="flex items-center space-x-2 font-mono text-xs">
+          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#0E1A29] border border-[#223348] text-[#8A97A8]">
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+            <span>Encrypted Ledger</span>
           </div>
         </div>
       </div>
 
       {/* Main Inbox Container */}
-      <div className="bg-slate-900/90 rounded-3xl border border-slate-800 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px] shadow-2xl">
+      <div className="bg-[#131F30] rounded-lg border border-[#223348] overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[560px]">
         
         {/* Left Thread List (4 cols) */}
-        <div className="lg:col-span-4 border-r border-slate-800 flex flex-col bg-slate-950/50">
+        <div className="lg:col-span-4 border-r border-[#223348] flex flex-col bg-[#0E1A29]">
           
           {/* Search bar */}
-          <div className="p-3.5 border-b border-slate-800">
+          <div className="p-2.5 border-b border-[#223348]">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-[#8A97A8] absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search messages, roles, companies..."
+                placeholder="Search messages, roles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full pl-8 pr-2.5 py-1.5 bg-[#131F30] rounded border border-[#223348] text-xs text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none focus:border-teal-500 font-mono"
               />
             </div>
           </div>
 
           {/* Thread list items */}
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-900 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto divide-y divide-[#223348]">
             {filteredThreads.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-xs space-y-2">
-                <MessageSquare className="w-8 h-8 mx-auto text-slate-600" />
-                <p>No active message threads yet.</p>
-                <p className="text-[10px]">When candidate or recruiter sends a message on a job posting, it will appear here.</p>
+              <div className="p-6 text-center text-[#5B6B80] text-xs font-mono space-y-1.5">
+                <MessageSquare className="w-6 h-6 mx-auto text-[#5B6B80]" />
+                <p>No active message threads.</p>
               </div>
             ) : (
               filteredThreads.map((t) => {
@@ -201,37 +195,37 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
                   <div
                     key={t.threadId}
                     onClick={() => setSelectedThreadId(t.threadId)}
-                    className={`p-4 transition-all cursor-pointer ${
+                    className={`p-3 transition-colors cursor-pointer ${
                       isSelected 
-                        ? 'bg-indigo-950/30 border-l-4 border-indigo-500' 
-                        : 'hover:bg-slate-900/80 border-l-4 border-transparent'
+                        ? 'bg-[#17263B] border-l-2 border-teal-500' 
+                        : 'hover:bg-[#131F30] border-l-2 border-transparent'
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center text-indigo-400 font-bold text-xs">
+                        <div className="w-7 h-7 rounded bg-[#131F30] border border-[#223348] flex items-center justify-center text-teal-400 font-mono font-bold text-[10px]">
                           {t.otherPartyName.slice(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-bold text-xs text-white truncate max-w-[140px]">{t.otherPartyName}</p>
-                          <p className="text-[10px] text-slate-400 truncate max-w-[140px]">{t.companyName}</p>
+                          <p className="font-bold text-xs text-[#E6EAF0] truncate max-w-[130px]">{t.otherPartyName}</p>
+                          <p className="text-[10px] text-[#8A97A8] font-mono truncate max-w-[130px]">{t.companyName}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[9px] font-mono text-[#8A97A8]">
                         {new Date(t.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-900 text-indigo-300 border border-slate-800 truncate max-w-[160px]">
+                    <div className="mt-1.5 flex items-center justify-between font-mono">
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#0E1A29] text-teal-300 border border-[#223348] truncate max-w-[150px]">
                         {t.jobTitle}
                       </span>
                       {t.unreadCount > 0 && (
-                        <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-300 mt-2 line-clamp-1">
+                    <p className="text-xs text-[#8A97A8] mt-1.5 line-clamp-1">
                       {t.lastMessage.content}
                     </p>
                   </div>
@@ -243,27 +237,25 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
         </div>
 
         {/* Right Chat Conversation (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col justify-between bg-slate-900/40">
+        <div className="lg:col-span-8 flex flex-col justify-between bg-[#131F30]">
           
           {activeThread ? (
             <>
               {/* Thread Header */}
-              <div className="p-4 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5">
-                    <div className="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-white font-bold text-xs">
-                      {activeThread.otherPartyName.slice(0, 2).toUpperCase()}
-                    </div>
+              <div className="p-3 border-b border-[#223348] bg-[#0E1A29] flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded bg-[#131F30] border border-[#223348] flex items-center justify-center text-teal-400 font-mono font-bold text-xs">
+                    {activeThread.otherPartyName.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h3 className="font-bold text-white text-sm">{activeThread.otherPartyName}</h3>
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                      <h3 className="font-bold text-[#E6EAF0] text-xs font-display">{activeThread.otherPartyName}</h3>
+                      <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.2 rounded bg-[#131F30] text-[#8A97A8] border border-[#223348]">
                         {activeThread.otherPartyRole}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400">
-                      Re: <span className="text-indigo-300 font-semibold">{activeThread.jobTitle}</span> • {activeThread.companyName}
+                    <p className="text-[10px] font-mono text-[#8A97A8]">
+                      Re: <span className="text-teal-300 font-semibold">{activeThread.jobTitle}</span> • {activeThread.companyName}
                     </p>
                   </div>
                 </div>
@@ -274,16 +266,16 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
                       const matchedJob = jobs.find(j => j.id === activeThread.jobId);
                       if (matchedJob) onSelectJobForContext(matchedJob);
                     }}
-                    className="hidden sm:flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-colors cursor-pointer"
+                    className="hidden sm:flex items-center space-x-1 px-2.5 py-1 rounded bg-[#131F30] hover:bg-[#17263B] border border-[#223348] text-[11px] font-mono text-[#8A97A8] hover:text-[#E6EAF0] transition-colors cursor-pointer"
                   >
-                    <span>View Role Req</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>View Role</span>
+                    <ArrowRight className="w-3 h-3" />
                   </button>
                 )}
               </div>
 
               {/* Chat Messages Stream */}
-              <div className="flex-1 p-5 overflow-y-auto space-y-4 max-h-[380px] custom-scrollbar">
+              <div className="flex-1 p-4 overflow-y-auto space-y-3 max-h-[380px]">
                 {activeThread.messages.map((m) => {
                   const isMe = m.senderId === (currentUser?.id || (currentRole === 'candidate' ? 'cand-1' : 'rec-1'));
                   return (
@@ -291,16 +283,16 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
                       key={m.id} 
                       className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                     >
-                      <div className="flex items-center space-x-1.5 mb-1 text-[10px] text-slate-400">
-                        <span className="font-bold text-slate-300">{isMe ? 'You' : m.senderName}</span>
+                      <div className="flex items-center space-x-1.5 mb-1 text-[10px] font-mono text-[#8A97A8]">
+                        <span className="font-bold text-[#E6EAF0]">{isMe ? 'You' : m.senderName}</span>
                         <span>•</span>
                         <span>{new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                       
-                      <div className={`p-3.5 rounded-2xl max-w-lg text-xs leading-relaxed shadow-md ${
+                      <div className={`p-2.5 rounded max-w-lg text-xs leading-relaxed ${
                         isMe 
-                          ? 'bg-indigo-600 text-white rounded-br-none' 
-                          : 'bg-slate-950 border border-slate-800 text-slate-100 rounded-bl-none'
+                          ? 'bg-teal-600 text-slate-950 font-medium' 
+                          : 'bg-[#0E1A29] border border-[#223348] text-[#E6EAF0]'
                       }`}>
                         {m.content}
                       </div>
@@ -310,46 +302,45 @@ export const MessagingCenter: React.FC<MessagingCenterProps> = ({
               </div>
 
               {/* Quick AI Suggestions */}
-              <div className="px-5 py-2 border-t border-slate-800/80 bg-slate-950/60 flex items-center space-x-2 overflow-x-auto">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                <span className="text-[10px] font-bold text-slate-400 shrink-0">Quick Responses:</span>
+              <div className="px-3.5 py-1.5 border-t border-[#223348] bg-[#0E1A29] flex items-center space-x-2 overflow-x-auto font-mono text-xs">
+                <span className="text-[10px] text-[#8A97A8] shrink-0">Templates:</span>
                 {quickReplies.map((r, rIdx) => (
                   <button
                     key={rIdx}
                     onClick={() => setReplyText(r)}
-                    className="text-[10px] whitespace-nowrap px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    className="text-[10px] whitespace-nowrap px-2 py-0.5 rounded bg-[#131F30] hover:bg-[#17263B] border border-[#223348] text-[#8A97A8] hover:text-[#E6EAF0] transition-colors cursor-pointer"
                   >
-                    {r.length > 40 ? r.slice(0, 40) + '...' : r}
+                    {r}
                   </button>
                 ))}
               </div>
 
               {/* Chat Input Footer */}
-              <form onSubmit={handleSendReply} className="p-4 bg-slate-950 border-t border-slate-800 flex items-center space-x-3">
+              <form onSubmit={handleSendReply} className="p-3 bg-[#0E1A29] border-t border-[#223348] flex items-center space-x-2 font-mono">
                 <input
                   type="text"
                   required
-                  placeholder={`Write your direct message to ${activeThread.otherPartyName}...`}
+                  placeholder={`Message ${activeThread.otherPartyName}...`}
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="flex-1 bg-slate-900 px-4 py-2.5 rounded-2xl border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="flex-1 bg-[#131F30] px-3 py-1.5 rounded border border-[#223348] text-xs text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none focus:border-teal-500 font-sans"
                 />
                 <button
                   type="submit"
                   disabled={!replyText.trim()}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-bold rounded-2xl text-xs transition-all shadow-lg shadow-indigo-600/25 flex items-center space-x-1.5 cursor-pointer"
+                  className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-40 text-slate-950 font-bold rounded text-xs transition-colors flex items-center space-x-1 cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Reply</span>
+                  <Send className="w-3 h-3" />
+                  <span>Send</span>
                 </button>
               </form>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500 text-xs space-y-3">
-              <MessageSquare className="w-12 h-12 text-slate-700" />
-              <h4 className="text-white font-bold text-sm">Select a Conversation</h4>
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#5B6B80] text-xs font-mono space-y-2">
+              <MessageSquare className="w-8 h-8 text-[#5B6B80]" />
+              <h4 className="text-[#E6EAF0] font-bold">Select a Channel</h4>
               <p className="max-w-sm">
-                Choose an active candidate or company message thread on the left to review communication history and respond.
+                Choose an active communication thread on the left to review ledger log history.
               </p>
             </div>
           )}

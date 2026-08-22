@@ -9,20 +9,14 @@ import {
   Layers, 
   Play, 
   CheckCircle2, 
-  AlertCircle, 
   Download, 
   RefreshCw, 
   Zap, 
   ShieldCheck, 
-  FileSpreadsheet,
-  Clock,
-  UploadCloud,
-  FileText,
-  FileCode,
-  FolderArchive,
-  ArrowRight,
-  Sparkles,
-  Coins
+  UploadCloud, 
+  FileText, 
+  ArrowRight, 
+  Coins 
 } from 'lucide-react';
 import { generateBulkResumes } from '../../lib/mockData';
 import { evaluateResumeAgainstJob } from '../../lib/atsEngine';
@@ -60,9 +54,6 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
 
   const MAX_LIMIT = 600;
 
-  /**
-   * Helper to process incoming FileList / File array, extracting .zip archives if present
-   */
   const processIncomingFiles = async (fileList: FileList | File[]) => {
     const rawFiles: File[] = [];
     const countToTake = Math.min(MAX_LIMIT, fileList.length);
@@ -113,7 +104,6 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
     setBatchSize(rawFiles.length);
   };
 
-  // Handle uploaded files via input
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -131,15 +121,13 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
     const isUpload = sourceMode === 'upload' && uploadedRawFiles.length > 0;
     const totalToScreen = isUpload ? uploadedRawFiles.length : batchSize;
     
-    // Check token balance
-    const tokensRequired = totalToScreen; // 1 token per resume
+    const tokensRequired = totalToScreen;
     if (tokenState && tokenState.availableTokens < tokensRequired) {
       alert(`Insufficient AI tokens. You need ${tokensRequired.toLocaleString()} tokens to screen ${totalToScreen} resumes (Available: ${tokenState.availableTokens.toLocaleString()}). Please top up your token quota.`);
       if (onOpenTokenModal) onOpenTokenModal();
       return;
     }
 
-    // Deduct tokens
     if (onDeductTokens) {
       const ok = onDeductTokens(tokensRequired, `Bulk ATS Batch Screening (${totalToScreen} Resumes)`, activeJob.title, 'screening');
       if (!ok) return;
@@ -153,7 +141,6 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
     const startTime = performance.now();
 
     if (isUpload) {
-      // Real file processing pipeline
       const processed: PipelineCandidate[] = [];
       for (let idx = 0; idx < uploadedRawFiles.length; idx++) {
         const file = uploadedRawFiles[idx];
@@ -195,7 +182,6 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
       setThroughput(Math.round(processed.length / (elapsed || 0.1)));
       onScreeningComplete(processed);
     } else {
-      // Fast synthetic batch pipeline (Demo / Synthetic data mode)
       const resumes = generateBulkResumes(totalToScreen);
       let current = 0;
       const chunkStep = Math.max(10, Math.floor(resumes.length / 25));
@@ -242,7 +228,7 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
         } else {
           setProcessedCount(current);
         }
-      }, 80);
+      }, 60);
     }
   };
 
@@ -262,92 +248,89 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
   };
 
   const progressPercent = Math.min(100, Math.round((processedCount / (sourceMode === 'upload' && uploadedFiles.length > 0 ? uploadedFiles.length : batchSize)) * 100));
-
   const totalSelectedBatch = sourceMode === 'upload' && uploadedFiles.length > 0 ? uploadedFiles.length : batchSize;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Header */}
-      <div className="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">High-Throughput Batch Engine</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              Max Limit: {MAX_LIMIT} Resumes / Batch
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">High-Throughput Ingestion</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
+              Batch Limit: {MAX_LIMIT} Docs
             </span>
           </div>
-          <h2 className="text-xl font-bold text-white mt-1">
-            Bulk Automated Resume Screening & Scoring
+          <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
+            Automated Bulk Resume Screening & Scoring
           </h2>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Ingest up to 600 resumes at once from folder uploads or synthetic pipelines. Applies deterministic 7-factor scoring.
+          <p className="text-xs text-[#8A97A8] mt-0.5">
+            Ingest candidate resumes in bulk via folder uploads or synthetic benchmarks. Applies deterministic 7-factor scoring.
           </p>
         </div>
 
         {/* Token Balance Indicator */}
         <div 
           onClick={onOpenTokenModal}
-          className="flex items-center space-x-3 bg-slate-950 px-4 py-2.5 rounded-2xl border border-amber-500/30 glow-border-amber shadow-sm cursor-pointer hover:border-amber-500 transition-all"
+          className="flex items-center space-x-2.5 bg-[#0E1A29] px-3.5 py-2 rounded-lg border border-[#223348] cursor-pointer hover:border-[#334A66] transition-colors"
         >
-          <Coins className="w-5 h-5 text-amber-400" />
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="text-[10px] uppercase font-bold text-slate-400">AI Token Quota</span>
-            </div>
-            <p className="text-sm font-black text-amber-300">
-              {tokenState ? tokenState.availableTokens.toLocaleString() : '25,000'} Tokens
+          <Coins className="w-4 h-4 text-amber-400" />
+          <div className="font-mono">
+            <span className="text-[9px] uppercase text-[#8A97A8] block">AI Token Quota</span>
+            <p className="text-xs font-bold text-[#E6EAF0]">
+              {tokenState ? tokenState.availableTokens.toLocaleString() : '25,000'} tok
             </p>
           </div>
         </div>
       </div>
 
       {/* Mode Selector & Configuration Card */}
-      <div className="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-md space-y-6">
+      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-4">
         
         {/* Source Mode Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
-          <div className="flex items-center space-x-2 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#223348] pb-3">
+          <div className="flex items-center space-x-1 bg-[#0E1A29] p-0.5 rounded border border-[#223348] font-mono text-xs">
             <button
               onClick={() => setSourceMode('synthetic')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                sourceMode === 'synthetic' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded transition-colors cursor-pointer ${
+                sourceMode === 'synthetic' ? 'bg-[#17263B] text-teal-300 border border-teal-500/30' : 'text-[#8A97A8] hover:text-[#E6EAF0]'
               }`}
             >
-              ⚡ Fast Synthetic Batch (Up to 600)
+              Synthetic Benchmark ({batchSize})
             </button>
             <button
               onClick={() => setSourceMode('upload')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                sourceMode === 'upload' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              className={`px-3 py-1.5 rounded transition-colors cursor-pointer ${
+                sourceMode === 'upload' ? 'bg-[#17263B] text-teal-300 border border-teal-500/30' : 'text-[#8A97A8] hover:text-[#E6EAF0]'
               }`}
             >
-              📁 Multi-File Upload / Drag & Drop
+              Upload Resumes / ZIP
             </button>
           </div>
 
-          <div className="text-xs text-slate-400 flex items-center space-x-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Target Role: <strong className="text-white">{activeJob.title}</strong></span>
+          <div className="text-xs font-mono text-[#8A97A8] flex items-center space-x-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+            <span>Target: <strong className="text-[#E6EAF0]">{activeJob.title}</strong></span>
           </div>
         </div>
 
         {/* Source Mode Details */}
         {sourceMode === 'upload' ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDropFiles}
               onClick={() => fileInputRef.current?.click()}
-              className="p-8 rounded-3xl border-2 border-dashed border-slate-700 hover:border-indigo-500/80 bg-slate-950/60 hover:bg-slate-950 text-center transition-all cursor-pointer space-y-3"
+              className="p-6 rounded-lg border border-dashed border-[#223348] hover:border-teal-500/50 bg-[#0E1A29] text-center transition-colors cursor-pointer space-y-2"
             >
-              <UploadCloud className="w-10 h-10 text-indigo-400 mx-auto" />
+              <UploadCloud className="w-8 h-8 text-teal-400 mx-auto" />
               <div>
-                <h4 className="text-sm font-bold text-white">
-                  Drag & Drop Resume Files (PDF, DOCX, TXT, JSON, ZIP)
+                <h4 className="text-xs font-bold text-[#E6EAF0]">
+                  Drop Resume Files (PDF, DOCX, TXT, JSON, ZIP Archive)
                 </h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  Upload up to 600 resume files at one time. Click to browse folder or multi-select files.
+                <p className="text-[11px] text-[#8A97A8] mt-0.5">
+                  Batch ingest up to 600 files per run with parallel worker threads.
                 </p>
               </div>
               <input
@@ -358,28 +341,28 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <span className="inline-block px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300">
-                Select Files from Computer
+              <span className="inline-block px-3 py-1 rounded bg-[#131F30] border border-[#223348] text-xs font-mono text-[#8A97A8]">
+                Browse File System
               </span>
             </div>
 
             {uploadedFiles.length > 0 && (
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">
-                    {uploadedFiles.length} Resumes Ready for Ingestion
+              <div className="p-3 rounded bg-[#0E1A29] border border-[#223348] space-y-2">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="font-bold text-[#E6EAF0]">
+                    {uploadedFiles.length} Resumes Staged for Evaluation
                   </span>
                   <button 
                     onClick={() => { setUploadedRawFiles([]); setUploadedFiles([]); setBatchSize(100); }}
                     className="text-rose-400 hover:underline cursor-pointer"
                   >
-                    Clear Files
+                    Clear All
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto custom-scrollbar">
+                <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
                   {uploadedFiles.map((f, fIdx) => (
-                    <span key={fIdx} className="text-[10px] px-2 py-1 rounded-lg bg-slate-900 text-slate-300 border border-slate-800 flex items-center space-x-1">
-                      <FileText className="w-3 h-3 text-indigo-400" />
+                    <span key={fIdx} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#131F30] text-[#8A97A8] border border-[#223348] flex items-center space-x-1">
+                      <FileText className="w-3 h-3 text-teal-400" />
                       <span className="truncate max-w-[120px]">{f.name}</span>
                     </span>
                   ))}
@@ -388,16 +371,15 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 font-mono">
             <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-300 mb-2">
-                <span>Select Batch Processing Size</span>
-                <span className="font-mono font-bold text-indigo-400 text-sm">
+              <div className="flex justify-between items-center text-xs text-[#8A97A8] mb-1.5">
+                <span>Batch Evaluation Size</span>
+                <span className="font-bold text-teal-400 text-sm">
                   {batchSize} Resumes
                 </span>
               </div>
               
-              {/* Slider */}
               <input
                 type="range"
                 min="10"
@@ -405,22 +387,21 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
                 step="10"
                 value={batchSize}
                 onChange={(e) => setBatchSize(Number(e.target.value))}
-                className="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                className="w-full h-1.5 bg-[#0E1A29] rounded appearance-none cursor-pointer accent-teal-500"
               />
 
-              {/* Quick Preset Buttons */}
-              <div className="grid grid-cols-5 gap-2 mt-3">
+              <div className="grid grid-cols-5 gap-1.5 mt-2">
                 {[50, 100, 250, 500, 600].map((preset) => (
                   <button
                     key={preset}
                     onClick={() => setBatchSize(preset)}
-                    className={`py-2 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
+                    className={`py-1.5 rounded text-xs font-bold border transition-colors cursor-pointer ${
                       batchSize === preset
-                        ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700'
+                        ? 'bg-[#17263B] text-teal-300 border-teal-500/40'
+                        : 'bg-[#0E1A29] text-[#8A97A8] border-[#223348] hover:text-[#E6EAF0]'
                     }`}
                   >
-                    {preset} Resumes
+                    {preset}
                   </button>
                 ))}
               </div>
@@ -429,17 +410,17 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
         )}
 
         {/* Action Panel & Cost Calculation */}
-        <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Zap className="w-5 h-5" />
+        <div className="p-3.5 rounded bg-[#0E1A29] border border-[#223348] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded bg-[#131F30] border border-[#223348] flex items-center justify-center text-amber-400">
+              <Zap className="w-4 h-4" />
             </div>
             <div className="text-xs">
-              <p className="font-bold text-white">
-                Estimated Token Cost: <span className="text-amber-400 font-black">{totalSelectedBatch.toLocaleString()} Tokens</span>
+              <p className="text-[#E6EAF0]">
+                Telemetry Cost: <span className="text-amber-400 font-bold">{totalSelectedBatch.toLocaleString()} tok</span>
               </p>
-              <p className="text-slate-400 text-[11px]">
-                Deterministic scoring rate: 1 token / candidate. Parallelized over {activeWorkers} async workers.
+              <p className="text-[#8A97A8] text-[10px]">
+                Deterministic rate: 1 tok/doc • {activeWorkers} async workers
               </p>
             </div>
           </div>
@@ -447,17 +428,17 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
           <button
             onClick={startScreeningJob}
             disabled={isProcessing}
-            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 disabled:opacity-50 text-white font-bold rounded-2xl text-xs transition-all shadow-xl shadow-indigo-600/25 flex items-center justify-center space-x-2 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-slate-950 font-bold rounded text-xs transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
           >
             {isProcessing ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Screening {processedCount}/{totalSelectedBatch}...</span>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <span>Processing {processedCount}/{totalSelectedBatch}...</span>
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 fill-current" />
-                <span>Launch Batch Screening ({totalSelectedBatch})</span>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Execute Batch Run ({totalSelectedBatch})</span>
               </>
             )}
           </button>
@@ -465,20 +446,20 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
 
         {/* Live Processing Bar */}
         {isProcessing && (
-          <div className="space-y-3 p-5 rounded-2xl bg-slate-950 border border-indigo-500/30 animate-pulse">
+          <div className="space-y-2 p-3.5 rounded bg-[#0E1A29] border border-teal-500/30 font-mono">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-bold text-indigo-400 flex items-center space-x-2">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span>Running Deterministic ATS Pipeline...</span>
+              <span className="text-teal-400 flex items-center space-x-1.5">
+                <RefreshCw className="w-3 h-3 animate-spin" />
+                <span>Executing Deterministic ATS Pipeline...</span>
               </span>
-              <span className="font-mono text-white font-bold">
-                {processedCount} of {totalSelectedBatch} Resumes ({progressPercent}%)
+              <span className="text-[#E6EAF0] font-bold">
+                {processedCount}/{totalSelectedBatch} ({progressPercent}%)
               </span>
             </div>
             
-            <div className="w-full h-3 rounded-full bg-slate-900 overflow-hidden">
+            <div className="instrument-gauge">
               <div 
-                className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 transition-all duration-150"
+                className="instrument-gauge-fill"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -489,106 +470,108 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
 
       {/* Screened Results Summary */}
       {screenedResults.length > 0 && !isProcessing && (
-        <div className="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-md space-y-6 animate-fadeIn">
+        <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-4">
           
           {/* Metrics Topbar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#223348] pb-3">
             <div>
               <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">
-                  Batch Screening Complete: {screenedResults.length} Candidates Processed
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-bold text-[#E6EAF0] font-display">
+                  Batch Execution Completed — {screenedResults.length} Candidate Records
                 </h3>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Screened at <strong className="text-emerald-400">{throughput} resumes/sec</strong> with 0 hallucinations.
+              <p className="text-[11px] font-mono text-[#8A97A8] mt-0.5">
+                Screened at <strong className="text-teal-400">{throughput} docs/sec</strong> with zero hallucination guarantee.
               </p>
             </div>
 
             <div className="flex items-center space-x-2">
               <button
                 onClick={exportToCSV}
-                className="px-4 py-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center space-x-1.5 cursor-pointer"
+                className="px-3 py-1.5 bg-[#0E1A29] hover:bg-[#17263B] border border-[#223348] text-[#E6EAF0] rounded text-xs font-mono transition-colors flex items-center space-x-1 cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 text-teal-400" />
                 <span>Export CSV</span>
               </button>
               
               <button
                 onClick={() => setActiveView('candidate-pipeline')}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center space-x-1.5 cursor-pointer"
+                className="px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-slate-950 font-bold rounded text-xs transition-colors flex items-center space-x-1 cursor-pointer"
               >
-                <span>View in Hiring Pipeline</span>
+                <span>Hiring Pipeline</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
           {/* Quick Distribution Summary */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-4 rounded-2xl bg-slate-950 border border-emerald-500/30">
-              <span className="text-slate-400 block">Top Matches (80%+ Score)</span>
-              <p className="text-2xl font-black text-emerald-400 mt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+            <div className="p-3 rounded bg-[#0E1A29] border border-[#223348]">
+              <span className="text-[#8A97A8] block text-[10px] uppercase">High Match (&gt;=80%)</span>
+              <p className="text-xl font-bold text-emerald-400 mt-0.5">
                 {screenedResults.filter(c => c.atsScore.overallScore >= 80).length} Candidates
               </p>
-              <span className="text-[10px] text-emerald-500 font-semibold">Auto-shortlisted for interviews</span>
+              <span className="text-[10px] text-[#8A97A8]">Auto-shortlisted</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-blue-500/30">
-              <span className="text-slate-400 block">Qualified Potential (60-79% Score)</span>
-              <p className="text-2xl font-black text-blue-400 mt-1">
+            <div className="p-3 rounded bg-[#0E1A29] border border-[#223348]">
+              <span className="text-[#8A97A8] block text-[10px] uppercase">Qualified Range (60-79%)</span>
+              <p className="text-xl font-bold text-teal-400 mt-0.5">
                 {screenedResults.filter(c => c.atsScore.overallScore >= 60 && c.atsScore.overallScore < 80).length} Candidates
               </p>
-              <span className="text-[10px] text-blue-400 font-semibold">Advanced to committee screening</span>
+              <span className="text-[10px] text-[#8A97A8]">Review stage</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-              <span className="text-slate-400 block">Tokens Consumed</span>
-              <p className="text-2xl font-black text-amber-300 mt-1">
-                {tokenDeductedThisRun.toLocaleString()} Tokens
+            <div className="p-3 rounded bg-[#0E1A29] border border-[#223348]">
+              <span className="text-[#8A97A8] block text-[10px] uppercase">Tokens Deducted</span>
+              <p className="text-xl font-bold text-amber-400 mt-0.5">
+                {tokenDeductedThisRun.toLocaleString()} tok
               </p>
-              <span className="text-[10px] text-slate-400">Deducted from account balance</span>
+              <span className="text-[10px] text-[#8A97A8]">Telemetry logged</span>
             </div>
           </div>
 
           {/* Top Candidates Table Preview */}
-          <div className="overflow-x-auto rounded-2xl border border-slate-800">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-bold border-b border-slate-800 text-[11px] uppercase tracking-wider">
+          <div className="overflow-x-auto rounded border border-[#223348]">
+            <table className="w-full text-left text-xs font-mono text-[#8A97A8]">
+              <thead className="bg-[#0E1A29] text-[#8A97A8] border-b border-[#223348] text-[10px] uppercase tracking-wider">
                 <tr>
-                  <th className="p-3.5">Candidate</th>
-                  <th className="p-3.5">Overall ATS Score</th>
-                  <th className="p-3.5">Skills Match</th>
-                  <th className="p-3.5">Experience Match</th>
-                  <th className="p-3.5">Confidence</th>
-                  <th className="p-3.5">Assigned Stage</th>
+                  <th className="p-2.5 font-semibold">Candidate Profile</th>
+                  <th className="p-2.5 font-semibold">Overall ATS Score</th>
+                  <th className="p-2.5 font-semibold">Skills Score</th>
+                  <th className="p-2.5 font-semibold">Experience</th>
+                  <th className="p-2.5 font-semibold">Confidence</th>
+                  <th className="p-2.5 font-semibold">Assigned Stage</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80 bg-slate-950/40">
+              <tbody className="divide-y divide-[#192738] bg-[#0B1420]">
                 {screenedResults.slice(0, 8).map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-900/60 transition-colors">
-                    <td className="p-3.5 font-bold text-white">
-                      {c.resume.fullName}
-                      <span className="block text-[10px] font-normal text-slate-400">{c.resume.email}</span>
+                  <tr key={c.id} className="hover:bg-[#0E1A29] transition-colors">
+                    <td className="p-2.5 font-sans">
+                      <span className="font-bold text-[#E6EAF0]">{c.resume.fullName}</span>
+                      <span className="block text-[10px] font-mono text-[#8A97A8]">{c.resume.email}</span>
                     </td>
-                    <td className="p-3.5">
-                      <span className={`font-black text-xs px-2 py-0.5 rounded-lg ${
-                        c.atsScore.overallScore >= 80 ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-500/30' : 'text-blue-400 bg-blue-950/60 border border-blue-500/30'
+                    <td className="p-2.5">
+                      <span className={`font-bold text-xs px-1.5 py-0.5 rounded border ${
+                        c.atsScore.overallScore >= 80 
+                          ? 'text-emerald-400 bg-[#0E1A29] border-emerald-500/30' 
+                          : 'text-teal-400 bg-[#0E1A29] border-teal-500/30'
                       }`}>
                         {c.atsScore.overallScore}%
                       </span>
                     </td>
-                    <td className="p-3.5 text-slate-200">
+                    <td className="p-2.5 text-[#E6EAF0]">
                       {c.atsScore.components.skillsMatch.score}%
                     </td>
-                    <td className="p-3.5 text-slate-200">
+                    <td className="p-2.5 text-[#E6EAF0]">
                       {c.atsScore.components.experienceMatch.score}%
                     </td>
-                    <td className="p-3.5 text-slate-400 font-mono">
+                    <td className="p-2.5 text-[#8A97A8]">
                       {c.atsScore.confidenceScore}%
                     </td>
-                    <td className="p-3.5">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-200 capitalize">
+                    <td className="p-2.5">
+                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#131F30] text-[#E6EAF0] border border-[#223348]">
                         {c.stage}
                       </span>
                     </td>

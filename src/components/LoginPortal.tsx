@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
-import { UserRole, AuthUser } from '../types';
+import { AuthUser, UserRole } from '../types';
 import { 
-  Sparkles, 
-  UserCheck, 
-  Briefcase, 
+  ShieldCheck, 
+  Building2, 
   Lock, 
   Mail, 
   User, 
-  Building2, 
   ArrowRight, 
-  ShieldCheck, 
   CheckCircle2, 
+  AlertTriangle, 
+  FileText, 
   Eye, 
   EyeOff, 
-  Zap,
-  KeyRound,
-  FileCheck,
-  UploadCloud,
-  FileText,
-  BadgeCheck,
-  Check,
-  AlertTriangle,
-  Globe,
-  MapPin,
-  Smartphone
+  BadgeCheck, 
+  Check, 
+  KeyRound, 
+  Smartphone,
+  UserCheck,
+  Briefcase
 } from 'lucide-react';
 
 interface LoginPortalProps {
@@ -31,42 +25,42 @@ interface LoginPortalProps {
   initialRole?: UserRole;
 }
 
+type AuthMode = 'login' | 'register' | 'verify_2fa' | 'forgot';
+
 export const LoginPortal: React.FC<LoginPortalProps> = ({
   onLoginSuccess,
-  initialRole = 'candidate'
+  initialRole = 'candidate',
 }) => {
-  const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot' | 'verify_2fa'>('login');
   const [selectedRole, setSelectedRole] = useState<UserRole>(initialRole);
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
+
+  // Form State
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+
+  // Recruiter Company Registration Proof State
+  const [companyName, setCompanyName] = useState('');
+  const [govtRegId, setGovtRegId] = useState('');
+  const [companyWebsite, setCompanyWebsite] = useState('');
+  const [companyLocation, setCompanyLocation] = useState('');
+  const [uploadedGovtDocName, setUploadedGovtDocName] = useState<string | null>(null);
+  const [isGovtVerified, setIsGovtVerified] = useState(false);
+  const [isVerifyingGovt, setIsVerifyingGovt] = useState(false);
+
+  // Status & Feedback
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Common Form Fields
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
-
-  // Recruiter / Enterprise Company Verification Fields
-  const [companyName, setCompanyName] = useState('');
-  const [companyWebsite, setCompanyWebsite] = useState('https://apexanalytics.com');
-  const [companyLocation, setCompanyLocation] = useState('San Francisco, CA, USA');
-  const [govtRegId, setGovtRegId] = useState('U72200MH2020PTC345678');
-  const [govtAuthority, setGovtAuthority] = useState('Ministry of Corporate Affairs / US SEC');
-  const [uploadedGovtDocName, setUploadedGovtDocName] = useState<string | null>('Certificate_of_Incorporation_2026.pdf');
-  const [isGovtVerified, setIsGovtVerified] = useState<boolean>(true);
-  const [isVerifyingGovt, setIsVerifyingGovt] = useState(false);
-
-  // 2FA OTP state
-  const [otpCode, setOtpCode] = useState('');
-
-  // Demo auto-fill helpers
+  // Pre-fill demo credentials
   const prefillCandidate = () => {
     setSelectedRole('candidate');
     setAuthMode('login');
-    setEmail('alex.rivera.analyst@example.com');
-    setPassword('CandidatePass2026!');
+    setEmail('alex.rivera@example.com');
+    setPassword('CandidatePass2025!');
     setFullName('Alex Rivera');
     setErrorMsg(null);
   };
@@ -74,99 +68,67 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
   const prefillRecruiter = () => {
     setSelectedRole('recruiter');
     setAuthMode('login');
-    setEmail('sarah.jenkins@apexanalytics.com');
-    setPassword('RecruiterSecure2026!');
+    setEmail('recruiter@apexanalytics.com');
+    setPassword('CorporateSecure2025#');
     setFullName('Sarah Jenkins');
     setCompanyName('Apex Analytics & FinTech Inc.');
-    setCompanyWebsite('https://apexanalytics.com');
-    setCompanyLocation('San Francisco, CA, USA');
     setGovtRegId('EIN-84-2948102-US');
-    setGovtAuthority('US Delaware Division of Corporations & SEC');
-    setUploadedGovtDocName('State_Incorporation_Filing_Apex.pdf');
     setIsGovtVerified(true);
     setErrorMsg(null);
   };
 
   const verifyGovtCredentials = () => {
-    if (!govtRegId.trim() || !companyName.trim()) {
-      setErrorMsg('Please enter Company Name and Government Registration ID before verifying.');
+    if (!companyName || !govtRegId) {
+      setErrorMsg('Please enter both Company Legal Name and Government Registration ID.');
       return;
     }
     setIsVerifyingGovt(true);
     setErrorMsg(null);
+
     setTimeout(() => {
       setIsVerifyingGovt(false);
       setIsGovtVerified(true);
-      setSuccessMsg(`Government Registry Authenticated: Entity active & in good legal standing.`);
-    }, 1200);
+      setSuccessMsg(`Government Entity Verified: ${companyName} (${govtRegId}) is in good standing.`);
+    }, 1000);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+    setSuccessMsg(null);
 
-    if (authMode === 'forgot') {
-      if (!email.trim()) {
-        setErrorMsg('Please enter your registered email address.');
+    if (authMode === 'login') {
+      if (!email || !password) {
+        setErrorMsg('Please provide both corporate email and password.');
         return;
       }
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        setSuccessMsg(`Password reset instructions dispatched to ${email}.`);
-      }, 900);
-      return;
+    }
+
+    if (authMode === 'register' && selectedRole === 'recruiter') {
+      if (!companyName || !govtRegId) {
+        setErrorMsg('Mandatory government registration credentials required for corporate recruiter accounts.');
+        return;
+      }
     }
 
     if (authMode === 'verify_2fa') {
-      if (!otpCode.trim() || otpCode.length < 4) {
-        setErrorMsg('Please enter a valid 6-digit 2FA security code.');
+      if (otpCode !== '829410' && otpCode.length !== 6) {
+        setErrorMsg('Invalid 2FA Verification Token. Enter code 829410 for demo session.');
         return;
-      }
-      completeLogin();
-      return;
-    }
-
-    if (!email.trim() || !password.trim()) {
-      setErrorMsg('Please fill in your email and password.');
-      return;
-    }
-
-    if (authMode === 'register') {
-      if (!fullName.trim()) {
-        setErrorMsg('Please provide your full legal name.');
-        return;
-      }
-      if (selectedRole === 'recruiter') {
-        if (!companyName.trim() || !govtRegId.trim()) {
-          setErrorMsg('Company Name and Government Business Registration ID are mandatory for verified recruiter onboarding.');
-          return;
-        }
-        if (!isGovtVerified) {
-          setErrorMsg('Please complete government verification check before proceeding.');
-          return;
-        }
       }
     }
 
     setIsLoading(true);
 
-    // If recruiter registration or high-security mode, require 2FA OTP simulation
     setTimeout(() => {
       setIsLoading(false);
-      if (selectedRole === 'recruiter' && authMode === 'register') {
+
+      if (authMode === 'login' && selectedRole === 'recruiter' && !otpCode) {
         setAuthMode('verify_2fa');
-        setSuccessMsg(`Security OTP dispatched to corporate email: ${email}`);
-      } else {
-        completeLogin();
+        setSuccessMsg('2FA code dispatched to registered corporate domain. Demo OTP: 829410');
+        return;
       }
-    }, 800);
-  };
 
-  const completeLogin = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
       const mockUser: AuthUser = {
         id: `usr-${Date.now()}`,
         name: fullName || (selectedRole === 'candidate' ? 'Alex Rivera' : 'Sarah Jenkins'),
@@ -181,89 +143,82 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#0B1420] flex flex-col justify-center items-center p-4 relative font-sans text-[#E6EAF0]">
       
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600/15 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-
-      <div className="w-full max-w-5xl bg-slate-900/90 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 relative z-10">
+      <div className="w-full max-w-5xl bg-[#131F30] rounded-lg border border-[#223348] shadow-lg overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative z-10">
         
         {/* Left 5 Cols: Brand Feature Showcase */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-indigo-950/60 to-slate-950 p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800 relative">
+        <div className="lg:col-span-5 bg-[#0E1A29] p-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#223348] relative">
           
           <div>
             {/* Logo */}
-            <div className="flex items-center space-x-3 mb-8">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/30">
-                <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-indigo-400" />
-                </div>
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-8 h-8 rounded bg-[#131F30] border border-[#223348] flex items-center justify-center text-teal-400 font-mono font-bold text-xs">
+                ATS
               </div>
               <div>
-                <h1 className="font-bold text-2xl text-white font-display tracking-tight">
+                <h1 className="font-bold text-xl text-[#E6EAF0] font-display tracking-tight">
                   PrimeATS
                 </h1>
-                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  Government & SOC-2 Verified
+                <span className="text-[10px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded bg-[#131F30] text-teal-400 border border-[#223348]">
+                  Verified ATS Platform
                 </span>
               </div>
             </div>
 
             {/* Value Proposition Items */}
-            <div className="space-y-4 text-xs text-slate-300">
-              <div className="flex items-start space-x-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
-                <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-white">Government-Verified Companies</h4>
-                  <p className="text-slate-400 mt-0.5 text-[11px]">
-                    Every recruiter and company account requires legal incorporation registration (EIN/CIN/LLC) to eliminate ghost jobs and fraud.
-                  </p>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded bg-[#131F30] border border-[#223348]">
+                <div className="flex items-center space-x-2 mb-1">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <h4 className="font-bold text-[#E6EAF0]">Verified Employer Identity</h4>
                 </div>
+                <p className="text-[#8A97A8] text-[11px] leading-relaxed">
+                  Recruiter and employer profiles require verified organization credentials (EIN / CIN / LLC) to maintain candidate trust and eliminate unverified postings.
+                </p>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
-                <BadgeCheck className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-white">Deterministic 7-Factor ATS</h4>
-                  <p className="text-slate-400 mt-0.5 text-[11px]">
-                    Zero-hallucination resume scoring, skill ontologies, and direct candidate-company 2-way messaging.
-                  </p>
+              <div className="p-3 rounded bg-[#131F30] border border-[#223348]">
+                <div className="flex items-center space-x-2 mb-1">
+                  <BadgeCheck className="w-4 h-4 text-teal-400" />
+                  <h4 className="font-bold text-[#E6EAF0]">Deterministic ATS Matrix</h4>
                 </div>
+                <p className="text-[#8A97A8] text-[11px] leading-relaxed">
+                  Deterministic 7-component formula for objective skill matching, keyword coverage, experience evaluation, and explainable audit logs.
+                </p>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
-                <Lock className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-bold text-white">256-Bit TLS & 2FA Auth</h4>
-                  <p className="text-slate-400 mt-0.5 text-[11px]">
-                    Candidate resumes and corporate applicant data protected by end-to-end encryption.
-                  </p>
+              <div className="p-3 rounded bg-[#131F30] border border-[#223348]">
+                <div className="flex items-center space-x-2 mb-1">
+                  <Lock className="w-4 h-4 text-teal-300" />
+                  <h4 className="font-bold text-[#E6EAF0]">End-to-End Privacy</h4>
                 </div>
+                <p className="text-[#8A97A8] text-[11px] leading-relaxed">
+                  Candidate resume parsing and corporate applicant pipelines run in isolated, encrypted evaluation containers with zero PII score weighting.
+                </p>
               </div>
             </div>
           </div>
 
           {/* Quick Demo Credentials Footer */}
-          <div className="mt-8 pt-4 border-t border-slate-800/80 space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              Quick 1-Click Demo Login
+          <div className="mt-6 pt-3.5 border-t border-[#223348] space-y-2">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8] block">
+              Direct Sandbox Access
             </span>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={prefillCandidate}
-                className="px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-850 border border-slate-800 hover:border-indigo-500/50 text-indigo-300 hover:text-white text-xs font-bold transition-all text-center cursor-pointer"
+                className="px-2.5 py-1.5 rounded bg-[#131F30] hover:bg-[#17263B] border border-[#223348] text-[#E6EAF0] text-xs font-mono transition-colors text-center cursor-pointer"
               >
-                Candidate Profile
+                Candidate Demo
               </button>
               <button
                 type="button"
                 onClick={prefillRecruiter}
-                className="px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-850 border border-slate-800 hover:border-emerald-500/50 text-emerald-300 hover:text-white text-xs font-bold transition-all text-center cursor-pointer"
+                className="px-2.5 py-1.5 rounded bg-[#131F30] hover:bg-[#17263B] border border-[#223348] text-teal-300 text-xs font-mono transition-colors text-center cursor-pointer"
               >
-                Verified Recruiter
+                Recruiter Demo
               </button>
             </div>
           </div>
@@ -271,25 +226,25 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
         </div>
 
         {/* Right 7 Cols: Authentication & Onboarding Form */}
-        <div className="lg:col-span-7 p-8 flex flex-col justify-center bg-slate-900/60 max-h-[85vh] overflow-y-auto custom-scrollbar">
+        <div className="lg:col-span-7 p-7 flex flex-col justify-center bg-[#131F30] max-h-[85vh] overflow-y-auto">
           
           {/* Header Switcher */}
-          <div className="mb-6">
+          <div className="mb-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white">
-                {authMode === 'login' && 'Sign In to Your Workspace'}
-                {authMode === 'register' && (selectedRole === 'candidate' ? 'Create Candidate Account' : 'Register Verified Employer')}
-                {authMode === 'verify_2fa' && 'Two-Factor OTP Security Gate'}
-                {authMode === 'forgot' && 'Reset Secure Password'}
+              <h2 className="text-lg font-bold text-[#E6EAF0] font-display">
+                {authMode === 'login' && 'Sign In to Workspace'}
+                {authMode === 'register' && (selectedRole === 'candidate' ? 'Create Candidate Profile' : 'Register Employer Account')}
+                {authMode === 'verify_2fa' && 'Two-Factor Authentication'}
+                {authMode === 'forgot' && 'Reset Password'}
               </h2>
               
               {authMode !== 'verify_2fa' && (
-                <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <div className="flex items-center bg-[#0E1A29] p-0.5 rounded border border-[#223348]">
                   <button
                     type="button"
                     onClick={() => setAuthMode('login')}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                      authMode === 'login' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                    className={`px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
+                      authMode === 'login' ? 'bg-[#17263B] text-[#E6EAF0] border border-[#223348]' : 'text-[#8A97A8] hover:text-[#E6EAF0]'
                     }`}
                   >
                     Login
@@ -297,8 +252,8 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                   <button
                     type="button"
                     onClick={() => setAuthMode('register')}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
-                      authMode === 'register' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                    className={`px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
+                      authMode === 'register' ? 'bg-[#17263B] text-[#E6EAF0] border border-[#223348]' : 'text-[#8A97A8] hover:text-[#E6EAF0]'
                     }`}
                   >
                     Register
@@ -309,31 +264,31 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
 
             {/* Role Switcher Pills */}
             {authMode !== 'verify_2fa' && (
-              <div className="grid grid-cols-2 gap-2 mt-4">
+              <div className="grid grid-cols-2 gap-2 mt-3">
                 <button
                   type="button"
                   onClick={() => setSelectedRole('candidate')}
-                  className={`p-3 rounded-2xl border text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                  className={`p-2.5 rounded border text-xs font-medium flex items-center justify-center space-x-2 transition-colors cursor-pointer ${
                     selectedRole === 'candidate'
-                      ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500 shadow-md shadow-indigo-500/10'
-                      : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                      ? 'bg-[#17263B] text-teal-300 border-teal-500/40'
+                      : 'bg-[#0E1A29] text-[#8A97A8] border-[#223348] hover:text-[#E6EAF0]'
                   }`}
                 >
-                  <UserCheck className="w-4 h-4" />
+                  <UserCheck className="w-4 h-4 text-teal-400" />
                   <span>Job Seeker / Candidate</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setSelectedRole('recruiter')}
-                  className={`p-3 rounded-2xl border text-xs font-bold flex items-center justify-center space-x-2 transition-all cursor-pointer ${
+                  className={`p-2.5 rounded border text-xs font-medium flex items-center justify-center space-x-2 transition-colors cursor-pointer ${
                     selectedRole === 'recruiter'
-                      ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500 shadow-md shadow-emerald-500/10'
-                      : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:text-white'
+                      ? 'bg-[#17263B] text-teal-300 border-teal-500/40'
+                      : 'bg-[#0E1A29] text-[#8A97A8] border-[#223348] hover:text-[#E6EAF0]'
                   }`}
                 >
-                  <Briefcase className="w-4 h-4" />
-                  <span>Company / Employer Side</span>
+                  <Briefcase className="w-4 h-4 text-teal-400" />
+                  <span>Verified Recruiter</span>
                 </button>
               </div>
             )}
@@ -341,30 +296,30 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
 
           {/* Feedback Alerts */}
           {errorMsg && (
-            <div className="mb-4 p-3.5 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs flex items-center space-x-2">
+            <div className="mb-3.5 p-3 rounded bg-[#0E1A29] border border-rose-500/40 text-rose-300 text-xs flex items-center space-x-2 font-mono">
               <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="mb-4 p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-center space-x-2">
+            <div className="mb-3.5 p-3 rounded bg-[#0E1A29] border border-emerald-500/40 text-emerald-300 text-xs flex items-center space-x-2 font-mono">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             
             {authMode === 'verify_2fa' ? (
-              <div className="space-y-4 text-center py-2">
-                <div className="w-14 h-14 rounded-3xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center mx-auto text-purple-400">
-                  <Smartphone className="w-7 h-7" />
+              <div className="space-y-3 text-center py-2">
+                <div className="w-10 h-10 rounded bg-[#0E1A29] border border-[#223348] flex items-center justify-center mx-auto text-teal-400">
+                  <Smartphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Enter 6-Digit Authenticator Code</h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <h3 className="text-xs font-bold text-[#E6EAF0]">Two-Factor Authorization</h3>
+                  <p className="text-[11px] text-[#8A97A8] mt-0.5">
                     Enter the code sent to your registered corporate email to confirm your identity.
                   </p>
                 </div>
@@ -374,12 +329,12 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
                   placeholder="• • • • • •"
-                  className="text-center font-mono text-xl tracking-widest w-48 py-3 bg-slate-950 rounded-2xl border border-slate-800 text-white focus:outline-none focus:border-purple-500 mx-auto block"
+                  className="text-center font-mono text-lg tracking-widest w-40 py-2 bg-[#0E1A29] rounded border border-[#223348] text-[#E6EAF0] focus:outline-none focus:border-teal-500 mx-auto block"
                 />
                 <button
                   type="button"
                   onClick={() => setOtpCode('829410')}
-                  className="text-[11px] text-indigo-400 hover:underline cursor-pointer"
+                  className="text-[11px] font-mono text-teal-400 hover:underline cursor-pointer"
                 >
                   Auto-fill demo code (829410)
                 </button>
@@ -389,18 +344,18 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                 {/* Registration Name Field */}
                 {authMode === 'register' && (
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    <label className="text-[11px] font-medium text-[#8A97A8] block mb-1">
                       {selectedRole === 'candidate' ? 'Full Legal Name' : 'Authorized HR / Recruiter Name'}
                     </label>
                     <div className="relative">
-                      <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <User className="w-3.5 h-3.5 text-[#8A97A8] absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         required
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="e.g. Sarah Jenkins"
-                        className="w-full pl-10 pr-3 py-2.5 bg-slate-950 rounded-2xl border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                        className="w-full pl-9 pr-3 py-2 bg-[#0E1A29] rounded border border-[#223348] text-xs text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none focus:border-teal-500"
                       />
                     </div>
                   </div>
@@ -408,80 +363,80 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
 
                 {/* Recruiter-Specific Mandatory Government Proof Fields */}
                 {selectedRole === 'recruiter' && authMode === 'register' && (
-                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-emerald-500/30 space-y-3.5">
+                  <div className="p-3.5 rounded bg-[#0E1A29] border border-[#223348] space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center space-x-1.5">
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>Mandatory Government Verification</span>
+                      <span className="text-[10px] font-mono font-bold text-teal-400 uppercase tracking-wider flex items-center space-x-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>Corporate Verification</span>
                       </span>
                       {isGovtVerified && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black border border-emerald-500/30 flex items-center space-x-1">
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#131F30] text-emerald-400 border border-emerald-500/30 flex items-center space-x-1">
                           <Check className="w-3 h-3" />
-                          <span>Govt Validated</span>
+                          <span>Verified</span>
                         </span>
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                       <div>
-                        <label className="text-[11px] text-slate-400 font-semibold block mb-1">Company Legal Name</label>
+                        <label className="text-[10px] text-[#8A97A8] block mb-1">Company Legal Entity</label>
                         <input
                           type="text"
                           required
                           value={companyName}
                           onChange={(e) => setCompanyName(e.target.value)}
-                          placeholder="e.g. Apex Analytics & FinTech Inc."
-                          className="w-full px-3 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
+                          placeholder="e.g. Apex Analytics Inc."
+                          className="w-full px-2.5 py-1.5 bg-[#131F30] rounded border border-[#223348] text-xs text-[#E6EAF0] focus:outline-none focus:border-teal-500"
                         />
                       </div>
 
                       <div>
-                        <label className="text-[11px] text-slate-400 font-semibold block mb-1">Govt Registration ID (EIN / CIN / LLC)</label>
+                        <label className="text-[10px] text-[#8A97A8] block mb-1">Registration Identifier (EIN/CIN)</label>
                         <input
                           type="text"
                           required
                           value={govtRegId}
                           onChange={(e) => setGovtRegId(e.target.value)}
                           placeholder="e.g. EIN-84-2948102-US"
-                          className="w-full px-3 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs text-white font-mono focus:outline-none focus:border-emerald-500"
+                          className="w-full px-2.5 py-1.5 bg-[#131F30] rounded border border-[#223348] text-xs font-mono text-[#E6EAF0] focus:outline-none focus:border-teal-500"
                         />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                       <div>
-                        <label className="text-[11px] text-slate-400 font-semibold block mb-1">Official Company Website</label>
+                        <label className="text-[10px] text-[#8A97A8] block mb-1">Official Domain</label>
                         <input
                           type="url"
                           value={companyWebsite}
                           onChange={(e) => setCompanyWebsite(e.target.value)}
-                          placeholder="https://yourcompany.com"
-                          className="w-full px-3 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
+                          placeholder="https://company.com"
+                          className="w-full px-2.5 py-1.5 bg-[#131F30] rounded border border-[#223348] text-xs text-[#E6EAF0] focus:outline-none focus:border-teal-500"
                         />
                       </div>
 
                       <div>
-                        <label className="text-[11px] text-slate-400 font-semibold block mb-1">Headquarters Location</label>
+                        <label className="text-[10px] text-[#8A97A8] block mb-1">HQ Location</label>
                         <input
                           type="text"
                           value={companyLocation}
                           onChange={(e) => setCompanyLocation(e.target.value)}
                           placeholder="San Francisco, CA"
-                          className="w-full px-3 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
+                          className="w-full px-2.5 py-1.5 bg-[#131F30] rounded border border-[#223348] text-xs text-[#E6EAF0] focus:outline-none focus:border-teal-500"
                         />
                       </div>
                     </div>
 
                     {/* Government Proof Document Upload */}
-                    <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                    <div className="p-2.5 rounded bg-[#131F30] border border-[#223348] flex items-center justify-between text-xs">
                       <div className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-indigo-400" />
+                        <FileText className="w-3.5 h-3.5 text-teal-400" />
                         <div>
-                          <p className="font-bold text-white">Incorporation Certificate Proof</p>
-                          <p className="text-[10px] text-slate-400">{uploadedGovtDocName || 'Upload Certificate of Incorporation (PDF/JPG)'}</p>
+                          <p className="font-medium text-[#E6EAF0] text-[11px]">Incorporation Proof</p>
+                          <p className="text-[9px] font-mono text-[#8A97A8]">{uploadedGovtDocName || 'Upload Certificate (PDF/JPG)'}</p>
                         </div>
                       </div>
-                      <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-750 text-slate-200 rounded-lg text-xs font-semibold cursor-pointer">
+                      <label className="px-2.5 py-1 bg-[#17263B] hover:bg-[#223348] text-[#E6EAF0] rounded text-xs font-mono border border-[#223348] cursor-pointer">
                         <span>{uploadedGovtDocName ? 'Replace' : 'Upload'}</span>
                         <input
                           type="file"
@@ -499,28 +454,28 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                       type="button"
                       onClick={verifyGovtCredentials}
                       disabled={isVerifyingGovt}
-                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 shadow-md cursor-pointer"
+                      className="w-full py-1.5 bg-[#17263B] hover:bg-[#223348] text-teal-300 rounded text-xs font-semibold border border-teal-500/30 transition-colors flex items-center justify-center space-x-1.5 cursor-pointer"
                     >
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>{isVerifyingGovt ? 'Querying Corporate Affairs Database...' : 'Verify Government Registry Credentials'}</span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+                      <span>{isVerifyingGovt ? 'Querying Corporate Database...' : 'Verify Registry Credentials'}</span>
                     </button>
                   </div>
                 )}
 
                 {/* Email Field */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  <label className="text-[11px] font-medium text-[#8A97A8] block mb-1">
                     {selectedRole === 'candidate' ? 'Email Address' : 'Corporate Work Email'}
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-3.5 h-3.5 text-[#8A97A8] absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={selectedRole === 'candidate' ? "name@example.com" : "hr@company.com"}
-                      className="w-full pl-10 pr-3 py-2.5 bg-slate-950 rounded-2xl border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full pl-9 pr-3 py-2 bg-[#0E1A29] rounded border border-[#223348] text-xs text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none focus:border-teal-500"
                     />
                   </div>
                 </div>
@@ -528,33 +483,33 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
                 {/* Password Field */}
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <label className="text-xs font-semibold text-slate-300">Password</label>
+                    <label className="text-[11px] font-medium text-[#8A97A8]">Password</label>
                     {authMode === 'login' && (
                       <button
                         type="button"
                         onClick={() => setAuthMode('forgot')}
-                        className="text-[11px] text-indigo-400 hover:underline cursor-pointer"
+                        className="text-[10px] text-teal-400 hover:underline cursor-pointer"
                       >
                         Forgot Password?
                       </button>
                     )}
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Lock className="w-3.5 h-3.5 text-[#8A97A8] absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full pl-10 pr-10 py-2.5 bg-slate-950 rounded-2xl border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full pl-9 pr-9 py-2 bg-[#0E1A29] rounded border border-[#223348] text-xs text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none focus:border-teal-500"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A97A8] hover:text-[#E6EAF0] cursor-pointer"
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
@@ -565,26 +520,22 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3 text-white font-bold rounded-2xl text-xs transition-all shadow-xl flex items-center justify-center space-x-2 cursor-pointer ${
-                selectedRole === 'candidate'
-                  ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 shadow-indigo-600/25'
-                  : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/25'
-              }`}
+              className="w-full py-2.5 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-slate-950 font-bold rounded text-xs transition-colors flex items-center justify-center space-x-2 cursor-pointer"
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Authenticating Credentials...</span>
+                  <div className="w-3.5 h-3.5 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin"></div>
+                  <span>Authenticating...</span>
                 </>
               ) : (
                 <>
                   <span>
-                    {authMode === 'login' && `Access ${selectedRole === 'candidate' ? 'Candidate Portal' : 'Verified Recruiter Hub'}`}
-                    {authMode === 'register' && `Register & Activate ${selectedRole === 'candidate' ? 'Candidate Profile' : 'Verified Company'}`}
+                    {authMode === 'login' && `Access ${selectedRole === 'candidate' ? 'Candidate Console' : 'Verified Recruiter Hub'}`}
+                    {authMode === 'register' && `Activate ${selectedRole === 'candidate' ? 'Candidate Profile' : 'Verified Company'}`}
                     {authMode === 'verify_2fa' && 'Verify 2FA & Complete Sign In'}
                     {authMode === 'forgot' && 'Send Reset Link'}
                   </span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
             </button>

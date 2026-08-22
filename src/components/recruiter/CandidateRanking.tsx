@@ -1,30 +1,28 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  PipelineCandidate, 
   JobRequirement, 
-  ScoringWeights 
+  PipelineCandidate, 
+  StructuredResume 
 } from '../../types';
 import { 
-  Search, 
-  SlidersHorizontal, 
-  ArrowUpDown, 
-  CheckCircle2, 
   Users, 
-  Eye, 
-  Layers, 
-  Filter, 
-  TrendingUp, 
-  RotateCcw,
-  Sparkles
+  SlidersHorizontal, 
+  RotateCcw, 
+  Search, 
+  ArrowUpDown, 
+  ChevronRight, 
+  CheckCircle2, 
+  Sliders, 
+  ShieldCheck, 
+  Layers 
 } from 'lucide-react';
-import { evaluateResumeAgainstJob } from '../../lib/atsEngine';
 
 interface CandidateRankingProps {
   candidates: PipelineCandidate[];
   activeJob: JobRequirement;
   onSelectCandidate: (candidate: PipelineCandidate) => void;
-  onOpenComparison: (selected: PipelineCandidate[]) => void;
-  onOpenAudit: () => void;
+  onOpenComparison?: (candidates: PipelineCandidate[]) => void;
+  onOpenAudit?: () => void;
 }
 
 export const CandidateRanking: React.FC<CandidateRankingProps> = ({
@@ -40,101 +38,112 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
   const [showSliders, setShowSliders] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  // Recruiter Custom Weight Adjustments
-  const [customWeights, setCustomWeights] = useState<ScoringWeights>({
+  // Recruiter customizable scoring weights
+  const [customWeights, setCustomWeights] = useState({
     skillsMatch: 35,
-    experienceMatch: 20,
+    experienceMatch: 25,
     responsibilitiesMatch: 15,
-    projectsMatch: 12,
-    educationMatch: 8,
-    keywordsMatch: 6,
-    certificationsMatch: 4,
+    projectsMatch: 15,
+    educationMatch: 10
   });
 
   const resetWeights = () => {
     setCustomWeights({
       skillsMatch: 35,
-      experienceMatch: 20,
+      experienceMatch: 25,
       responsibilitiesMatch: 15,
-      projectsMatch: 12,
-      educationMatch: 8,
-      keywordsMatch: 6,
-      certificationsMatch: 4,
+      projectsMatch: 15,
+      educationMatch: 10
     });
   };
 
-  // Dynamically recompute scores and re-rank candidates based on active recruiter sliders!
+  // Re-calculate weighted score dynamically
   const rankedCandidates = useMemo(() => {
-    const scored = candidates.map(c => {
-      const liveATS = evaluateResumeAgainstJob(c.resume, activeJob, customWeights);
-      return {
-        ...c,
-        atsScore: liveATS,
-      };
-    });
+    const totalWeight = 
+      customWeights.skillsMatch + 
+      customWeights.experienceMatch + 
+      customWeights.responsibilitiesMatch + 
+      customWeights.projectsMatch + 
+      customWeights.educationMatch || 100;
 
-    return scored
-      .filter(c => {
-        const matchesSearch = c.resume.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.resume.skills.technical.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
-        const matchesStage = selectedStage === 'all' || c.stage === selectedStage;
-        const matchesScore = c.atsScore.overallScore >= minScore;
-        return matchesSearch && matchesStage && matchesScore;
+    return candidates
+      .map(c => {
+        const comps = c.atsScore.components;
+        const dynamicScore = Math.round(
+          (comps.skillsMatch.score * customWeights.skillsMatch +
+           comps.experienceMatch.score * customWeights.experienceMatch +
+           comps.responsibilitiesMatch.score * customWeights.responsibilitiesMatch +
+           comps.projectsMatch.score * customWeights.projectsMatch +
+           comps.educationMatch.score * customWeights.educationMatch) / totalWeight
+        );
+
+        return {
+          ...c,
+          dynamicScore
+        };
       })
-      .sort((a, b) => b.atsScore.overallScore - a.atsScore.overallScore);
-  }, [candidates, activeJob, customWeights, searchTerm, selectedStage, minScore]);
+      .filter(c => {
+        const matchSearch = 
+          c.resume.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.resume.skills.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
+        
+        const matchStage = selectedStage === 'all' || c.stage === selectedStage;
+        const matchScore = c.dynamicScore >= minScore;
+
+        return matchSearch && matchStage && matchScore;
+      })
+      .sort((a, b) => b.dynamicScore - a.dynamicScore);
+  }, [candidates, customWeights, searchTerm, selectedStage, minScore]);
 
   const toggleSelect = (id: string) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(i => i !== id));
-    } else {
-      if (selectedIds.length >= 4) return;
-      setSelectedIds([...selectedIds, id]);
-    }
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   const handleLaunchComparison = () => {
-    const list = rankedCandidates.filter(c => selectedIds.includes(c.id));
-    onOpenComparison(list);
+    if (!onOpenComparison) return;
+    const selected = candidates.filter(c => selectedIds.includes(c.id));
+    onOpenComparison(selected);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Header */}
-      <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-400">Candidate Ranking Matrix</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              {rankedCandidates.length} Matched Profiles
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Ranking Matrix</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
+              {rankedCandidates.length} Candidates Evaluated
             </span>
           </div>
-          <h2 className="text-xl font-bold text-white mt-1">
-            Dynamic Candidate Ranking for {activeJob.title}
+          <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
+            Dynamic Candidate Ranking Matrix — {activeJob.title}
           </h2>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Real-time multi-dimensional scoring. Adjust weights below to re-rank candidate pool instantly based on team hiring priorities.
+          <p className="text-xs text-[#8A97A8] mt-0.5">
+            Multi-dimensional scoring index. Adjust coefficient sliders to re-calculate rank order in real time.
           </p>
         </div>
 
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowSliders(!showSliders)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 border transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-mono font-medium flex items-center space-x-1.5 border transition-colors cursor-pointer ${
               showSliders
-                ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/20'
-                : 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700'
+                ? 'bg-[#17263B] border-teal-500/40 text-teal-300'
+                : 'bg-[#0E1A29] border-[#223348] text-[#8A97A8] hover:text-[#E6EAF0]'
             }`}
           >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>{showSliders ? 'Hide Weight Sliders' : 'Adjust Scoring Weights'}</span>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-teal-400" />
+            <span>{showSliders ? 'Hide Weights' : 'Adjust Weights'}</span>
           </button>
 
           {selectedIds.length >= 2 && (
             <button
               onClick={handleLaunchComparison}
-              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-md shadow-cyan-600/20"
+              className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-slate-950 rounded text-xs font-bold font-mono flex items-center space-x-1.5 transition-colors cursor-pointer"
             >
               <Users className="w-3.5 h-3.5" />
               <span>Compare ({selectedIds.length})</span>
@@ -145,30 +154,30 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
 
       {/* Recruiter Weight Customizer Sliders Panel */}
       {showSliders && (
-        <div className="bg-slate-900/95 rounded-2xl p-5 border border-indigo-500/30 shadow-xl space-y-4 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="bg-[#131F30] rounded-lg p-4 border border-teal-500/30 space-y-3 font-mono">
+          <div className="flex items-center justify-between border-b border-[#223348] pb-2">
             <div className="flex items-center space-x-2">
-              <SlidersHorizontal className="w-4 h-4 text-indigo-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                Live Re-Ranking Weight Coefficients
+              <SlidersHorizontal className="w-3.5 h-3.5 text-teal-400" />
+              <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#E6EAF0]">
+                Deterministic Formula Weight Coefficients
               </h3>
             </div>
             <button
               onClick={resetWeights}
-              className="text-xs text-slate-400 hover:text-slate-200 flex items-center space-x-1"
+              className="text-[10px] text-[#8A97A8] hover:text-[#E6EAF0] flex items-center space-x-1 cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Reset Defaults</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
             
             {/* Skills */}
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-              <div className="flex justify-between font-semibold text-slate-300 mb-1.5">
+            <div className="p-2.5 bg-[#0E1A29] rounded border border-[#223348]">
+              <div className="flex justify-between font-semibold text-[#8A97A8] mb-1">
                 <span>Skills Match</span>
-                <span className="text-indigo-400 font-bold">{customWeights.skillsMatch}%</span>
+                <span className="text-teal-400 font-bold">{customWeights.skillsMatch}%</span>
               </div>
               <input
                 type="range"
@@ -176,15 +185,15 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
                 max={60}
                 value={customWeights.skillsMatch}
                 onChange={(e) => setCustomWeights({ ...customWeights, skillsMatch: Number(e.target.value) })}
-                className="w-full accent-indigo-500 cursor-pointer"
+                className="w-full accent-teal-500 cursor-pointer h-1.5 bg-[#131F30]"
               />
             </div>
 
             {/* Experience */}
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-              <div className="flex justify-between font-semibold text-slate-300 mb-1.5">
-                <span>Experience Match</span>
-                <span className="text-blue-400 font-bold">{customWeights.experienceMatch}%</span>
+            <div className="p-2.5 bg-[#0E1A29] rounded border border-[#223348]">
+              <div className="flex justify-between font-semibold text-[#8A97A8] mb-1">
+                <span>Experience</span>
+                <span className="text-teal-400 font-bold">{customWeights.experienceMatch}%</span>
               </div>
               <input
                 type="range"
@@ -192,15 +201,15 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
                 max={50}
                 value={customWeights.experienceMatch}
                 onChange={(e) => setCustomWeights({ ...customWeights, experienceMatch: Number(e.target.value) })}
-                className="w-full accent-blue-500 cursor-pointer"
+                className="w-full accent-teal-500 cursor-pointer h-1.5 bg-[#131F30]"
               />
             </div>
 
             {/* Responsibilities */}
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-              <div className="flex justify-between font-semibold text-slate-300 mb-1.5">
+            <div className="p-2.5 bg-[#0E1A29] rounded border border-[#223348]">
+              <div className="flex justify-between font-semibold text-[#8A97A8] mb-1">
                 <span>Responsibilities</span>
-                <span className="text-cyan-400 font-bold">{customWeights.responsibilitiesMatch}%</span>
+                <span className="text-teal-400 font-bold">{customWeights.responsibilitiesMatch}%</span>
               </div>
               <input
                 type="range"
@@ -208,15 +217,15 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
                 max={40}
                 value={customWeights.responsibilitiesMatch}
                 onChange={(e) => setCustomWeights({ ...customWeights, responsibilitiesMatch: Number(e.target.value) })}
-                className="w-full accent-cyan-500 cursor-pointer"
+                className="w-full accent-teal-500 cursor-pointer h-1.5 bg-[#131F30]"
               />
             </div>
 
             {/* Projects */}
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-              <div className="flex justify-between font-semibold text-slate-300 mb-1.5">
+            <div className="p-2.5 bg-[#0E1A29] rounded border border-[#223348]">
+              <div className="flex justify-between font-semibold text-[#8A97A8] mb-1">
                 <span>Projects Portfolio</span>
-                <span className="text-purple-400 font-bold">{customWeights.projectsMatch}%</span>
+                <span className="text-teal-400 font-bold">{customWeights.projectsMatch}%</span>
               </div>
               <input
                 type="range"
@@ -224,7 +233,7 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
                 max={30}
                 value={customWeights.projectsMatch}
                 onChange={(e) => setCustomWeights({ ...customWeights, projectsMatch: Number(e.target.value) })}
-                className="w-full accent-purple-500 cursor-pointer"
+                className="w-full accent-teal-500 cursor-pointer h-1.5 bg-[#131F30]"
               />
             </div>
 
@@ -233,24 +242,24 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
       )}
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-center gap-2.5">
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-[#8A97A8] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Search candidate by name or skill (e.g. SQL, Python, Tableau)..."
+            placeholder="Filter candidates by name or technical keyword..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+            className="w-full pl-9 pr-3 py-1.5 bg-[#0E1A29] rounded border border-[#223348] text-xs text-[#E6EAF0] placeholder-[#5B6B80] focus:outline-none focus:border-teal-500"
           />
         </div>
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="flex items-center space-x-2 w-full sm:w-auto font-mono">
           <select
             value={selectedStage}
             onChange={(e) => setSelectedStage(e.target.value)}
             aria-label="Filter by Pipeline Stage"
-            className="bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-800 focus:outline-none"
+            className="bg-[#0E1A29] text-xs text-[#E6EAF0] px-2.5 py-1.5 rounded border border-[#223348] focus:outline-none focus:border-teal-500 cursor-pointer"
           >
             <option value="all">All Stages</option>
             <option value="applied">Applied</option>
@@ -263,7 +272,7 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
             value={minScore}
             onChange={(e) => setMinScore(Number(e.target.value))}
             aria-label="Filter by Minimum ATS Score"
-            className="bg-slate-900 text-xs text-slate-200 px-3 py-2 rounded-xl border border-slate-800 focus:outline-none"
+            className="bg-[#0E1A29] text-xs text-[#E6EAF0] px-2.5 py-1.5 rounded border border-[#223348] focus:outline-none focus:border-teal-500 cursor-pointer"
           >
             <option value={0}>Any Score</option>
             <option value={70}>70%+ Match</option>
@@ -274,75 +283,75 @@ export const CandidateRanking: React.FC<CandidateRankingProps> = ({
       </div>
 
       {/* Ranked Candidate Table */}
-      <div className="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-hidden shadow-md">
+      <div className="bg-[#131F30] rounded-lg border border-[#223348] overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider">
+          <table className="w-full text-left text-xs font-mono">
+            <thead className="bg-[#0E1A29] border-b border-[#223348] text-[#8A97A8] uppercase text-[10px] tracking-wider">
               <tr>
-                <th className="p-3.5 w-10 text-center">Select</th>
-                <th className="p-3.5 font-semibold">Rank & Candidate</th>
-                <th className="p-3.5 font-semibold">Overall ATS</th>
-                <th className="p-3.5 font-semibold">Skills ({customWeights.skillsMatch}%)</th>
-                <th className="p-3.5 font-semibold">Experience ({customWeights.experienceMatch}%)</th>
-                <th className="p-3.5 font-semibold">Confidence</th>
-                <th className="p-3.5 font-semibold">Stage</th>
-                <th className="p-3.5 font-semibold text-right">Action</th>
+                <th className="p-3 w-10 text-center">Sel</th>
+                <th className="p-3 font-semibold">Rank & Candidate</th>
+                <th className="p-3 font-semibold">Weighted Score</th>
+                <th className="p-3 font-semibold">Skills ({customWeights.skillsMatch}%)</th>
+                <th className="p-3 font-semibold">Exp ({customWeights.experienceMatch}%)</th>
+                <th className="p-3 font-semibold">Confidence</th>
+                <th className="p-3 font-semibold">Stage</th>
+                <th className="p-3 font-semibold text-right">Audit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-[#192738]">
               {rankedCandidates.map((c, idx) => {
                 const isChecked = selectedIds.includes(c.id);
                 return (
                   <tr 
                     key={c.id} 
-                    className={`hover:bg-slate-800/30 transition-colors ${isChecked ? 'bg-indigo-950/20' : ''}`}
+                    className={`hover:bg-[#0E1A29] transition-colors ${isChecked ? 'bg-[#17263B]' : ''}`}
                   >
-                    <td className="p-3.5 text-center">
+                    <td className="p-3 text-center">
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleSelect(c.id)}
-                        className="rounded accent-indigo-500 cursor-pointer"
+                        className="rounded accent-teal-500 cursor-pointer"
                       />
                     </td>
-                    <td className="p-3.5">
-                      <div className="flex items-center space-x-2.5">
-                        <span className="font-extrabold text-slate-400 text-xs w-6">#{idx + 1}</span>
+                    <td className="p-3 font-sans">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono text-[#8A97A8] text-xs w-6">#{idx + 1}</span>
                         <div>
-                          <p className="font-bold text-white text-xs">{c.resume.fullName}</p>
-                          <p className="text-[11px] text-slate-400">{c.resume.email}</p>
+                          <p className="font-bold text-[#E6EAF0] text-xs">{c.resume.fullName}</p>
+                          <p className="text-[10px] font-mono text-[#8A97A8]">{c.resume.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-3.5">
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-bold border ${
-                        c.atsScore.overallScore >= 80 
-                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' 
-                          : 'text-blue-400 border-blue-500/30 bg-blue-500/10'
+                    <td className="p-3">
+                      <span className={`text-xs px-2 py-0.5 rounded font-bold border ${
+                        c.dynamicScore >= 80 
+                          ? 'text-emerald-400 border-emerald-500/30 bg-[#0E1A29]' 
+                          : 'text-teal-400 border-teal-500/30 bg-[#0E1A29]'
                       }`}>
-                        {c.atsScore.overallScore}%
+                        {c.dynamicScore}%
                       </span>
                     </td>
-                    <td className="p-3.5 text-slate-300">
+                    <td className="p-3 text-[#8A97A8]">
                       {c.atsScore.components.skillsMatch.score}% ({c.atsScore.components.skillsMatch.matched.length} matched)
                     </td>
-                    <td className="p-3.5 text-slate-300">
+                    <td className="p-3 text-[#8A97A8]">
                       {c.atsScore.components.experienceMatch.score}% (~{c.atsScore.components.experienceMatch.candidateYears} yrs)
                     </td>
-                    <td className="p-3.5 text-cyan-400 font-semibold">
+                    <td className="p-3 text-teal-300 font-semibold">
                       {c.atsScore.confidenceScore}%
                     </td>
-                    <td className="p-3.5">
-                      <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                    <td className="p-3">
+                      <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
                         {c.stage}
                       </span>
                     </td>
-                    <td className="p-3.5 text-right space-x-1.5">
+                    <td className="p-3 text-right">
                       <button
                         onClick={() => onSelectCandidate(c)}
-                        className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold border border-slate-700 transition-colors"
+                        className="px-2.5 py-1 bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] rounded text-xs font-medium border border-[#223348] transition-colors cursor-pointer"
                       >
-                        Inspect Audit
+                        Inspect
                       </button>
                     </td>
                   </tr>
