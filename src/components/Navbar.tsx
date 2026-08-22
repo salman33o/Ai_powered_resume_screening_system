@@ -185,22 +185,34 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Logged in User Profile Dropdown / Login Portal Launcher */}
-            <div className="relative">
+            <div className="relative flex items-center space-x-1.5">
               {authUser ? (
-                <button
-                  onClick={() => setShowUserDropdown(!showUserDropdown)}
-                  className="flex items-center space-x-2 bg-[#0E1A29] hover:bg-[#131F30] px-2.5 py-1.5 rounded-lg border border-[#223348] transition-colors text-xs font-medium text-[#E6EAF0]"
-                >
-                  <div className="w-5 h-5 rounded bg-teal-600/30 border border-teal-500/40 flex items-center justify-center font-mono font-bold text-[10px] text-teal-300">
-                    {authUser.name.charAt(0)}
-                  </div>
-                  <span className="hidden sm:inline max-w-[110px] truncate">{authUser.name}</span>
-                  <ChevronDown className="w-3 h-3 text-[#8A97A8]" />
-                </button>
+                <>
+                  <button
+                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    className="flex items-center space-x-2 bg-[#0E1A29] hover:bg-[#131F30] px-2.5 py-1.5 rounded-lg border border-[#223348] transition-colors text-xs font-medium text-[#E6EAF0]"
+                  >
+                    <div className="w-5 h-5 rounded bg-teal-600/30 border border-teal-500/40 flex items-center justify-center font-mono font-bold text-[10px] text-teal-300">
+                      {authUser.name.charAt(0)}
+                    </div>
+                    <span className="hidden sm:inline max-w-[100px] truncate">{authUser.name}</span>
+                    <ChevronDown className="w-3 h-3 text-[#8A97A8]" />
+                  </button>
+
+                  {/* Direct Visible Logout Button */}
+                  <button
+                    onClick={onLogout}
+                    title="Log Out of Current Session"
+                    className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/60 text-rose-300 text-xs font-semibold font-mono transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                    <span className="hidden md:inline">Log Out</span>
+                  </button>
+                </>
               ) : (
                 <button
                   onClick={onOpenLoginPortal}
-                  className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-slate-950 text-xs font-bold flex items-center space-x-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-slate-950 text-xs font-bold flex items-center space-x-1.5 transition-colors cursor-pointer"
                 >
                   <KeyRound className="w-3.5 h-3.5" />
                   <span>Login Portal</span>
@@ -208,11 +220,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
 
               {showUserDropdown && authUser && (
-                <div className="absolute right-0 mt-1.5 w-60 bg-[#131F30] rounded-lg border border-[#223348] shadow-lg p-2.5 z-50 animate-in fade-in duration-100">
-                  <div className="border-b border-[#223348] pb-2 mb-2">
+                <div className="absolute right-0 top-full mt-1.5 w-64 bg-[#131F30] rounded-lg border border-[#223348] shadow-2xl p-3 z-50 animate-in fade-in duration-100">
+                  <div className="border-b border-[#223348] pb-2.5 mb-2.5">
                     <p className="font-semibold text-xs text-[#E6EAF0]">{authUser.name}</p>
                     <p className="text-[11px] text-[#8A97A8] truncate font-mono">{authUser.email}</p>
-                    <span className="inline-block text-[10px] font-mono uppercase px-1.5 py-0.5 mt-1 rounded bg-[#0E1A29] text-teal-400 border border-[#223348]">
+                    <span className="inline-block text-[10px] font-mono uppercase px-2 py-0.5 mt-1.5 rounded bg-[#0E1A29] text-teal-400 border border-[#223348]">
                       {authUser.role} Session Active
                     </span>
                   </div>
@@ -222,7 +234,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setShowUserDropdown(false);
                       onOpenLoginPortal();
                     }}
-                    className="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium text-[#8A97A8] hover:text-[#E6EAF0] hover:bg-[#17263B] flex items-center space-x-2 transition-colors mb-1"
+                    className="w-full text-left px-2.5 py-2 rounded text-xs font-medium text-[#8A97A8] hover:text-[#E6EAF0] hover:bg-[#17263B] flex items-center space-x-2 transition-colors mb-1.5 cursor-pointer"
                   >
                     <KeyRound className="w-3.5 h-3.5 text-teal-400" />
                     <span>Switch Auth Account</span>
@@ -233,10 +245,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setShowUserDropdown(false);
                       onLogout();
                     }}
-                    className="w-full text-left px-2.5 py-1.5 rounded text-xs font-medium text-rose-400 hover:bg-rose-950/30 flex items-center space-x-2 transition-colors"
+                    className="w-full text-left px-2.5 py-2 rounded text-xs font-bold text-rose-300 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 flex items-center space-x-2 transition-colors cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5 text-rose-400" />
-                    <span>Sign Out</span>
+                    <span>Confirm Log Out</span>
                   </button>
                 </div>
               )}

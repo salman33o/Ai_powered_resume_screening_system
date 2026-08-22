@@ -1,13 +1,15 @@
-import { JobRequirement, StructuredResume, CandidateApplication, ATSAuditRecord } from '../types';
+import { JobRequirement, StructuredResume, CandidateApplication, ATSAuditRecord, InterviewQuestionItem } from '../types';
 import { evaluateResumeAgainstJob } from './atsEngine';
 
 export const SAMPLE_JOBS: JobRequirement[] = [
-  // --- ENGINEERING & TECH ---
+  // ==========================================
+  // 1. INFORMATION TECHNOLOGY & AI (IT / AI)
+  // ==========================================
   {
     id: 'job-data-analyst',
     title: 'Senior Data Analyst',
     company: 'Apex Analytics & FinTech',
-    department: 'Business Intelligence',
+    department: 'Information Technology & Data',
     location: 'San Francisco, CA (Hybrid)',
     type: 'Full-time',
     seniority: 'Senior',
@@ -43,7 +45,7 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     id: 'job-ml-engineer',
     title: 'Machine Learning Engineer',
     company: 'NeuralFlow AI',
-    department: 'Applied AI & Core Models',
+    department: 'Information Technology & Data',
     location: 'Remote (US/EU)',
     type: 'Full-time',
     seniority: 'Mid',
@@ -78,7 +80,7 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     id: 'job-fullstack',
     title: 'Senior Full-Stack Engineer',
     company: 'CloudScale Technologies',
-    department: 'Core Product Engineering',
+    department: 'Information Technology & Data',
     location: 'Austin, TX (Remote Available)',
     type: 'Full-time',
     seniority: 'Senior',
@@ -110,78 +112,10 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     }
   },
   {
-    id: 'job-frontend-assoc',
-    title: 'Associate Frontend Developer',
-    company: 'Veloce Digital Interfaces',
-    department: 'Web Engineering',
-    location: 'Chicago, IL (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Entry',
-    minExperienceYears: 1,
-    salaryRange: '$80,000 - $105,000',
-    summary: 'Develop interactive client-side web applications using React, TypeScript, and responsive CSS for high-traffic customer portals.',
-    requiredSkills: ['React', 'JavaScript', 'HTML/CSS', 'TypeScript', 'Git'],
-    preferredSkills: ['Next.js', 'Tailwind CSS', 'Redux', 'Jest', 'Figma'],
-    responsibilities: [
-      'Implement responsive UI components adhering to strict accessibility and design specifications',
-      'Integrate frontend views with RESTful backend APIs and manage local client state',
-      'Write unit tests for UI components to maintain high test coverage and zero regressions'
-    ],
-    educationRequirement: "Bachelor's degree in Computer Science, Web Development, or equivalent bootcamp certification",
-    requiredCertifications: [],
-    keywords: ['Frontend', 'React', 'JavaScript', 'TypeScript', 'CSS', 'UI Components', 'Responsive Design'],
-    published: true,
-    createdAt: '2026-08-11T08:00:00Z',
-    applicationsCount: 54,
-    scoringWeights: {
-      skillsMatch: 35,
-      experienceMatch: 15,
-      responsibilitiesMatch: 25,
-      projectsMatch: 15,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-backend-sr',
-    title: 'Senior Backend Engineer',
-    company: 'Vanguard Systems',
-    department: 'Distributed Platform Services',
-    location: 'Seattle, WA (Remote)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 5,
-    salaryRange: '$155,000 - $190,000',
-    summary: 'Architect high-throughput microservices and distributed transaction engines utilizing Golang, Python, PostgreSQL, and Kafka.',
-    requiredSkills: ['Golang', 'Python', 'PostgreSQL', 'Docker', 'Git', 'Cloud Architecture'],
-    preferredSkills: ['Kubernetes', 'gRPC', 'Kafka', 'Redis', 'AWS'],
-    responsibilities: [
-      'Design fault-tolerant distributed services handling millions of concurrent financial transactions',
-      'Optimize database query execution and data partitioning schemes for high concurrency',
-      'Implement CI/CD pipeline automation and infrastructure as code'
-    ],
-    educationRequirement: "Bachelor's or Master's in Computer Science or Software Engineering",
-    requiredCertifications: ['AWS Certified Solutions Architect (Preferred)'],
-    keywords: ['Backend', 'Golang', 'Python', 'Microservices', 'PostgreSQL', 'Distributed Systems', 'Kafka'],
-    published: true,
-    createdAt: '2026-08-03T11:20:00Z',
-    applicationsCount: 71,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 25,
-      responsibilitiesMatch: 20,
-      projectsMatch: 15,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
     id: 'job-devops-sr',
     title: 'Lead DevOps & Cloud Engineer',
     company: 'Aether Cloud Infrastructure',
-    department: 'Site Reliability & Infrastructure',
+    department: 'Information Technology & Data',
     location: 'Denver, CO (Remote)',
     type: 'Full-time',
     seniority: 'Lead',
@@ -212,188 +146,18 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     }
   },
   {
-    id: 'job-data-scientist',
-    title: 'Senior Data Scientist',
-    company: 'Quantis Predictive Labs',
-    department: 'Statistical Research',
-    location: 'Boston, MA (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 4,
-    salaryRange: '$145,000 - $180,000',
-    summary: 'Develop statistical learning models, predictive customer lifetime value algorithms, and causal inference experiments.',
-    requiredSkills: ['Python', 'Machine Learning', 'Data Analysis', 'SQL', 'Deep Learning'],
-    preferredSkills: ['PyTorch', 'R', 'A/B Testing', 'Snowflake', 'Scikit-Learn'],
-    responsibilities: [
-      'Build end-to-end predictive machine learning models to forecast operational churn and revenue trends',
-      'Formulate and analyze large-scale multi-variate randomized experiments',
-      'Translate complex statistical models into actionable executive leadership recommendations'
-    ],
-    educationRequirement: "Master's or Ph.D. in Statistics, Mathematics, Data Science, or Computer Science",
-    requiredCertifications: [],
-    keywords: ['Data Science', 'Machine Learning', 'Python', 'Statistics', 'SQL', 'Predictive Modeling'],
-    published: true,
-    createdAt: '2026-08-06T15:30:00Z',
-    applicationsCount: 63,
-    scoringWeights: {
-      skillsMatch: 35,
-      experienceMatch: 25,
-      responsibilitiesMatch: 20,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-data-engineer',
-    title: 'Data Platform Engineer',
-    company: 'Nexus Stream Data',
-    department: 'Data Platform',
-    location: 'New York, NY (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Mid',
-    minExperienceYears: 3,
-    salaryRange: '$130,000 - $160,000',
-    summary: 'Build robust real-time ETL/ELT pipelines and scalable data lakehouse infrastructure utilizing Apache Spark, SQL, and Python.',
-    requiredSkills: ['Python', 'SQL', 'Big Data', 'PostgreSQL', 'Docker'],
-    preferredSkills: ['Spark', 'Snowflake', 'dbt', 'Airflow', 'Kafka'],
-    responsibilities: [
-      'Design, build, and optimize automated streaming and batch pipelines ingestion systems',
-      'Enforce data governance, schema migrations, and real-time data quality monitoring suites',
-      'Scale centralized data warehouse schemas for performant analytical querying'
-    ],
-    educationRequirement: "Bachelor's degree in Computer Science, Information Systems, or related quantitative field",
-    requiredCertifications: ['Databricks Certified Data Engineer (Preferred)'],
-    keywords: ['Data Engineering', 'SQL', 'Python', 'Spark', 'ETL', 'Pipelines', 'Snowflake'],
-    published: true,
-    createdAt: '2026-08-07T10:15:00Z',
-    applicationsCount: 47,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 25,
-      responsibilitiesMatch: 25,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-sdet-qa',
-    title: 'SDET & QA Automation Engineer',
-    company: 'Precision Quality Labs',
-    department: 'Quality Engineering',
-    location: 'Remote (US)',
-    type: 'Full-time',
-    seniority: 'Mid',
-    minExperienceYears: 3,
-    salaryRange: '$110,000 - $140,000',
-    summary: 'Develop automated test frameworks for web, API, and mobile applications to ensure zero-defect software deployments.',
-    requiredSkills: ['JavaScript', 'TypeScript', 'Python', 'Git', 'CI/CD'],
-    preferredSkills: ['Playwright', 'Cypress', 'Selenium', 'Postman', 'Docker'],
-    responsibilities: [
-      'Architect robust end-to-end automation test suites using Playwright and TypeScript',
-      'Implement API contract tests and performance load testing pipelines in CI/CD',
-      'Partner with software engineers to define test plans and triage defect reports'
-    ],
-    educationRequirement: "Bachelor's degree in Computer Science, Software Engineering, or equivalent experience",
-    requiredCertifications: ['ISTQB Certified Tester (Preferred)'],
-    keywords: ['QA', 'SDET', 'Automation', 'TypeScript', 'Playwright', 'Testing', 'CI/CD'],
-    published: true,
-    createdAt: '2026-08-09T09:00:00Z',
-    applicationsCount: 31,
-    scoringWeights: {
-      skillsMatch: 35,
-      experienceMatch: 20,
-      responsibilitiesMatch: 25,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-mobile-engineer',
-    title: 'Mobile Engineer (Flutter & Android)',
-    company: 'Apex Mobile Interactive',
-    department: 'Client Engineering',
-    location: 'Atlanta, GA (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 4,
-    salaryRange: '$135,000 - $170,000',
-    summary: 'Engineer smooth, 60fps cross-platform mobile applications with Flutter and native Android integrations.',
-    requiredSkills: ['Flutter', 'Android', 'JavaScript', 'Git', 'HTML/CSS'],
-    preferredSkills: ['Dart', 'Kotlin', 'Firebase', 'State Management', 'REST APIs'],
-    responsibilities: [
-      'Architect cross-platform client mobile apps using Flutter and modern declarative UI standards',
-      'Integrate push notifications, background sync workers, and local SQLite data caching',
-      'Publish and maintain releases on Google Play Store and Apple App Store'
-    ],
-    educationRequirement: "Bachelor's in Computer Science, Software Engineering, or equivalent experience",
-    requiredCertifications: [],
-    keywords: ['Mobile', 'Flutter', 'Android', 'Dart', 'Kotlin', 'Cross-Platform', 'Mobile App'],
-    published: true,
-    createdAt: '2026-08-10T14:40:00Z',
-    applicationsCount: 45,
-    scoringWeights: {
-      skillsMatch: 35,
-      experienceMatch: 25,
-      responsibilitiesMatch: 20,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-cloud-architect',
-    title: 'Cloud Solutions Architect',
-    company: 'Horizon Cloud Advisors',
-    department: 'Enterprise Architecture',
-    location: 'San Jose, CA (Remote)',
-    type: 'Full-time',
-    seniority: 'Lead',
-    minExperienceYears: 7,
-    salaryRange: '$180,000 - $225,000',
-    summary: 'Lead cloud transformation, governance, enterprise security architecture, and disaster recovery strategies for Fortune 500 clients.',
-    requiredSkills: ['Cloud Architecture', 'AWS', 'Docker', 'Kubernetes', 'Problem Solving', 'Leadership'],
-    preferredSkills: ['Azure', 'GCP', 'Terraform', 'Security Architecture', 'Microservices'],
-    responsibilities: [
-      'Design high-availability, multi-region enterprise cloud landing zones and governance models',
-      'Guide executive stakeholders through legacy application modernization and cloud migrations',
-      'Establish enterprise architectural standards, cost optimization protocols, and compliance guardrails'
-    ],
-    educationRequirement: "Bachelor's or Master's degree in Computer Science, Information Systems, or Engineering",
-    requiredCertifications: ['AWS Certified Solutions Architect Professional', 'CISSP (Preferred)'],
-    keywords: ['Cloud Architect', 'AWS', 'Architecture', 'Enterprise', 'Cloud Migration', 'Security'],
-    published: true,
-    createdAt: '2026-08-02T16:00:00Z',
-    applicationsCount: 28,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 25,
-      responsibilitiesMatch: 20,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 5,
-      certificationsMatch: 5
-    }
-  },
-  {
     id: 'job-cybersecurity-analyst',
     title: 'Cybersecurity & SOC Analyst',
     company: 'Sentinel Defense Network',
-    department: 'Information Security',
+    department: 'Information Technology & Data',
     location: 'Washington, DC (Hybrid)',
     type: 'Full-time',
     seniority: 'Mid',
     minExperienceYears: 3,
     salaryRange: '$115,000 - $145,000',
     summary: 'Monitor threat vectors, analyze SIEM telemetry, manage incident response protocols, and enforce security controls.',
-    requiredSkills: ['Problem Solving', 'Communication', 'Git', 'Cloud Architecture', 'Python'],
-    preferredSkills: ['SIEM', 'Splunk', 'Wireshark', 'Incident Response', 'Vulnerability Assessment'],
+    requiredSkills: ['Cybersecurity', 'SIEM', 'Python', 'Incident Response', 'Network Security', 'Firewalls'],
+    preferredSkills: ['Splunk', 'Wireshark', 'Vulnerability Assessment', 'Linux', 'Ethical Hacking'],
     responsibilities: [
       'Monitor and investigate security alerts across network perimeter and cloud endpoints',
       'Conduct vulnerability scans, threat modeling exercises, and remediation tracking',
@@ -416,68 +180,37 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     }
   },
 
-  // --- PRODUCT & DESIGN ---
+  // ==========================================
+  // 2. ELECTRICAL & ELECTRONICS (EEE / ECE)
+  // ==========================================
   {
-    id: 'job-product-manager-assoc',
-    title: 'Associate Product Manager',
-    company: 'Pulse Digital Labs',
-    department: 'Product Management',
-    location: 'San Francisco, CA (Hybrid)',
+    id: 'job-eee-power-systems',
+    title: 'Electrical Power Systems Engineer',
+    company: 'GridVolt Energy Systems',
+    department: 'Electrical & Electronics (EEE)',
+    location: 'Houston, TX (Hybrid)',
     type: 'Full-time',
-    seniority: 'Entry',
-    minExperienceYears: 1,
-    salaryRange: '$95,000 - $120,000',
-    summary: 'Drive product requirement documentation, user feedback synthesis, and agile sprint delivery for growth-oriented SaaS features.',
-    requiredSkills: ['Agile', 'Communication', 'Problem Solving', 'Data Analysis', 'Leadership'],
-    preferredSkills: ['Jira', 'SQL', 'User Research', 'Figma', 'A/B Testing'],
+    seniority: 'Senior',
+    minExperienceYears: 5,
+    salaryRange: '$125,000 - $160,000',
+    summary: 'Design high-voltage substation distributions, perform electrical load calculations in ETAP/MATLAB, configure SCADA telemetry, and oversee power quality compliance.',
+    requiredSkills: ['Power Systems', 'Circuit Design', 'MATLAB/Simulink', 'ETAP', 'PLC/SCADA', 'AutoCAD Electrical'],
+    preferredSkills: ['High Voltage Systems', 'Protection Relays', 'Renewable Energy Integration', 'Substation Design', 'IEEE Standards'],
     responsibilities: [
-      'Gather and analyze user feedback to write crisp Product Requirement Documents (PRDs)',
-      'Partner closely with design and engineering teams through sprint planning and daily standups',
-      'Track feature adoption metrics and present experiment findings to product leadership'
+      'Perform electrical load flow, short circuit, and protection coordination studies using ETAP and MATLAB',
+      'Design medium to high voltage power distribution schematics and single-line diagrams (SLDs)',
+      'Program and integrate PLC/SCADA industrial controllers for remote substation monitoring',
+      'Ensure all electrical installations comply strictly with NEC, NESC, and IEEE safety codes'
     ],
-    educationRequirement: "Bachelor's degree in Business, Computer Science, Economics, or related discipline",
-    requiredCertifications: [],
-    keywords: ['Product Manager', 'APM', 'Agile', 'PRD', 'Product Strategy', 'Scrum', 'Data Analysis'],
+    educationRequirement: "Bachelor's or Master's in Electrical Engineering (EEE / Power Systems)",
+    requiredCertifications: ['Professional Engineer (PE) License or EIT Certification (Preferred)'],
+    keywords: ['Electrical Engineering', 'Power Systems', 'ETAP', 'MATLAB', 'Circuit Design', 'Substations', 'SCADA', 'PLC', 'High Voltage'],
     published: true,
-    createdAt: '2026-08-11T12:00:00Z',
-    applicationsCount: 82,
+    createdAt: '2026-08-10T11:00:00Z',
+    applicationsCount: 29,
     scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 20,
-      responsibilitiesMatch: 25,
-      projectsMatch: 15,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-product-manager-lead',
-    title: 'Principal Product Manager',
-    company: 'Stratos Enterprise Software',
-    department: 'Product Leadership',
-    location: 'San Francisco, CA (Remote)',
-    type: 'Full-time',
-    seniority: 'Lead',
-    minExperienceYears: 7,
-    salaryRange: '$180,000 - $225,000',
-    summary: 'Define strategic multi-year product vision, align executive roadmaps, and lead cross-functional squads to drive enterprise ARR.',
-    requiredSkills: ['Leadership', 'Agile', 'Communication', 'Problem Solving', 'Data Analysis'],
-    preferredSkills: ['Roadmapping', 'SaaS Pricing', 'Executive Presentation', 'Customer Discovery'],
-    responsibilities: [
-      'Establish unified multi-year product strategy for core enterprise B2B platform products',
-      'Lead cross-functional teams of engineering managers, designers, and go-to-market teams',
-      'Drive customer Advisory Boards and negotiate high-impact strategic partnership integrations'
-    ],
-    educationRequirement: "Bachelor's or Master's degree (MBA preferred) in Business or Engineering",
-    requiredCertifications: [],
-    keywords: ['Product Management', 'Principal PM', 'Product Strategy', 'Roadmap', 'B2B SaaS', 'Leadership'],
-    published: true,
-    createdAt: '2026-08-01T15:00:00Z',
-    applicationsCount: 46,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 30,
+      skillsMatch: 35,
+      experienceMatch: 25,
       responsibilitiesMatch: 20,
       projectsMatch: 10,
       educationMatch: 5,
@@ -486,29 +219,178 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     }
   },
   {
-    id: 'job-ux-ui-designer',
-    title: 'UI/UX Product Designer',
-    company: 'Canvas Craft Studios',
-    department: 'Design Systems & UX',
-    location: 'Los Angeles, CA (Hybrid)',
+    id: 'job-eee-embedded-firmware',
+    title: 'Embedded Systems & Firmware Engineer',
+    company: 'OptiChip Microelectronics',
+    department: 'Electrical & Electronics (EEE)',
+    location: 'Boston, MA (On-site)',
     type: 'Full-time',
     seniority: 'Mid',
     minExperienceYears: 3,
-    salaryRange: '$115,000 - $145,000',
-    summary: 'Create intuitive user journeys, wireframes, interactive prototypes, and design system components for complex web and mobile workflows.',
-    requiredSkills: ['HTML/CSS', 'Problem Solving', 'Communication', 'Agile'],
-    preferredSkills: ['Figma', 'Design Systems', 'User Research', 'Prototyping', 'Usability Testing'],
+    salaryRange: '$120,000 - $155,000',
+    summary: 'Develop low-level C/C++ bare-metal firmware, RTOS drivers, PCB schematics, and IoT hardware sensor interfaces for smart electronics.',
+    requiredSkills: ['Embedded C', 'C++', 'ARM Cortex Microcontrollers', 'PCB Design', 'RTOS', 'SPI/I2C/UART Protocols'],
+    preferredSkills: ['Altium Designer', 'KiCAD', 'Oscilloscopes & Logic Analyzers', 'BLE/Zigbee', 'Firmware Debugging'],
     responsibilities: [
-      'Conduct user interviews, usability tests, and synthesize behavioral research into actionable flows',
-      'Produce high-fidelity interactive Figma prototypes and scalable component design systems',
-      'Collaborate with frontend developers to ensure design fidelity and micro-interaction polish'
+      'Develop deterministic low-power embedded firmware in C and C++ for ARM microcontrollers',
+      'Design multi-layer PCB hardware layouts and circuit schematics in Altium Designer',
+      'Validate hardware-software integration using logic analyzers, digital oscilloscopes, and spectrum analyzers',
+      'Implement communication bus protocols including I2C, SPI, CAN bus, and UART'
     ],
-    educationRequirement: "Bachelor's degree in Human-Computer Interaction (HCI), Graphic Design, or equivalent portfolio",
+    educationRequirement: "Bachelor's in Electrical & Electronics Engineering, Electronics & Communication (ECE), or Computer Engineering",
     requiredCertifications: [],
-    keywords: ['UX Designer', 'UI Designer', 'Figma', 'Design System', 'Wireframing', 'User Research'],
+    keywords: ['Embedded Systems', 'Firmware', 'C/C++', 'ARM Cortex', 'Altium', 'PCB Design', 'RTOS', 'Microcontrollers', 'I2C/SPI'],
     published: true,
-    createdAt: '2026-08-07T13:30:00Z',
-    applicationsCount: 75,
+    createdAt: '2026-08-09T14:30:00Z',
+    applicationsCount: 38,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+
+  // ==========================================
+  // 3. AGRICULTURE & AGTECH (AGRI)
+  // ==========================================
+  {
+    id: 'job-agri-precision-spec',
+    title: 'Precision Agriculture & AgTech Specialist',
+    company: 'TerraCrop Precision Ag',
+    department: 'Agriculture & Smart AgTech',
+    location: 'Des Moines, IA (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 4,
+    salaryRange: '$110,000 - $145,000',
+    summary: 'Leverage GIS satellite imagery, IoT soil sensor telemetry, drone crop analytics, and yield predictive models to optimize sustainable crop production.',
+    requiredSkills: ['Precision Agriculture', 'GIS Mapping & Spatial Analysis', 'Soil Science & Agronomy', 'Drone Crop Analytics', 'Data Analysis', 'IoT Sensors'],
+    preferredSkills: ['Python for Geospatial Data', 'QGIS / ArcGIS', 'Variable Rate Technology (VRT)', 'Yield Modeling', 'GPS Guidance Systems'],
+    responsibilities: [
+      'Analyze multi-spectral drone imagery and satellite NDVI index maps to detect crop stress and nutrient deficiencies',
+      'Calibrate and configure variable-rate fertilizer (VRT) prescriptions and automated GPS tractor guidance',
+      'Manage telemetry streams from IoT moisture sensors and automated irrigation controllers across 20,000+ acres',
+      'Deliver data-backed agronomic crop advisory reports to commercial farm operators'
+    ],
+    educationRequirement: "Bachelor's or Master's in Agronomy, Agricultural Engineering, Crop Science, or Precision AgTech",
+    requiredCertifications: ['Certified Crop Adviser (CCA) or FAA Part 107 Drone Pilot License (Preferred)'],
+    keywords: ['Agriculture', 'Precision Ag', 'Agronomy', 'GIS', 'ArcGIS', 'Crop Science', 'IoT Sensors', 'Drone Analytics', 'Yield Optimization'],
+    published: true,
+    createdAt: '2026-08-08T09:00:00Z',
+    applicationsCount: 22,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+  {
+    id: 'job-agri-food-supply',
+    title: 'Agronomist & Food Quality Supply Manager',
+    company: 'Verdant Harvest Organics',
+    department: 'Agriculture & Smart AgTech',
+    location: 'Sacramento, CA (On-site)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$95,000 - $125,000',
+    summary: 'Oversee sustainable crop cultivation, organic soil health audits, post-harvest cold chain logistics, and USDA organic regulatory certifications.',
+    requiredSkills: ['Agronomy', 'Soil Fertility Management', 'Pest Management (IPM)', 'Food Safety & HACCP', 'Crop Rotation Planning'],
+    preferredSkills: ['Organic Certification Standards', 'Cold Chain Logistics', 'Supply Chain Tracking', 'Crop Scouting', 'Farm ERP Software'],
+    responsibilities: [
+      'Develop integrated pest management (IPM) and biological soil nutrition protocols across organic orchards and fields',
+      'Conduct regular field scouting, disease diagnostic tests, and soil chemical composition audits',
+      'Ensure strict adherence to USDA Organic, GAP, and FSMA food safety quality guidelines',
+      'Coordinate post-harvest transport and temperature-controlled cold chain distribution'
+    ],
+    educationRequirement: "Bachelor's in Agriculture, Horticulture, Plant Pathology, or Food Science",
+    requiredCertifications: ['Certified Crop Adviser (CCA) or HACCP Certification'],
+    keywords: ['Agronomy', 'Soil Management', 'Food Safety', 'Organic', 'Crop Science', 'HACCP', 'Horticulture', 'Harvest'],
+    published: true,
+    createdAt: '2026-08-07T12:00:00Z',
+    applicationsCount: 19,
+    scoringWeights: {
+      skillsMatch: 30,
+      experienceMatch: 25,
+      responsibilitiesMatch: 25,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+
+  // ==========================================
+  // 4. ARTS, DESIGN & MEDIA (ART / CREATIVE)
+  // ==========================================
+  {
+    id: 'job-art-creative-director',
+    title: 'Creative Art Director & Brand Designer',
+    company: 'Prism & Canvas Creative Agency',
+    department: 'Arts, Design & Media',
+    location: 'New York, NY (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 6,
+    salaryRange: '$130,000 - $170,000',
+    summary: 'Lead multi-channel visual brand identity, typography systems, editorial layouts, motion design guidelines, and creative campaign art direction.',
+    requiredSkills: ['Visual Brand Identity', 'Typography', 'Adobe Creative Suite (Photoshop, Illustrator, InDesign)', 'Art Direction', 'Creative Campaign Strategy'],
+    preferredSkills: ['Figma', 'After Effects', 'Design Systems', '3D Asset Creation', 'Editorial Design', 'Color Theory'],
+    responsibilities: [
+      'Direct overarching visual identity systems, typography guidelines, and brand design standards',
+      'Lead a team of graphic artists, motion designers, and copywriters on global marketing campaigns',
+      'Review and critique design deliverables for aesthetic harmony, composition balance, and publication quality',
+      'Collaborate with executive clients to translate brand visions into striking print and digital experiences'
+    ],
+    educationRequirement: "Bachelor's in Fine Arts (BFA), Graphic Design, Visual Communication, or equivalent stellar portfolio",
+    requiredCertifications: [],
+    keywords: ['Art Director', 'Brand Design', 'Typography', 'Adobe Illustrator', 'Photoshop', 'Visual Identity', 'Graphic Design', 'Editorial'],
+    published: true,
+    createdAt: '2026-08-06T15:00:00Z',
+    applicationsCount: 47,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 15,
+      educationMatch: 3,
+      keywordsMatch: 2,
+      certificationsMatch: 0
+    }
+  },
+  {
+    id: 'job-art-3d-animator',
+    title: '3D Animator & Visual Effects Designer',
+    company: 'Starlight Motion Studios',
+    department: 'Arts, Design & Media',
+    location: 'Los Angeles, CA (Remote)',
+    type: 'Full-time',
+    seniority: 'Mid',
+    minExperienceYears: 3,
+    salaryRange: '$105,000 - $140,000',
+    summary: 'Create stylized 3D character animations, mechanical rigs, shader materials, lighting setups, and motion graphics for cinematic games and commercials.',
+    requiredSkills: ['3D Animation', 'Blender', 'Maya', 'Character Rigging', 'Texturing & Shading', 'Motion Graphics'],
+    preferredSkills: ['Cinema 4D', 'Unreal Engine 5', 'Substance Painter', 'After Effects', 'Lighting & Rendering'],
+    responsibilities: [
+      'Animate expressive 3D character movements, facial dynamics, and realistic physical simulations',
+      'Build clean character skeletal rigs and inverse kinematic (IK/FK) controllers in Maya and Blender',
+      'Develop PBR material textures and lighting setups for high-resolution rendering engines',
+      'Collaborate with technical directors to optimize asset polygon counts and frame rate performance'
+    ],
+    educationRequirement: "Bachelor's in Animation, Digital Media, Computer Graphics, or equivalent portfolio demonstration",
+    requiredCertifications: [],
+    keywords: ['3D Animation', 'Blender', 'Maya', 'Rigging', 'Unreal Engine', 'CGI', 'Motion Design', 'Visual Effects', 'Texturing'],
+    published: true,
+    createdAt: '2026-08-05T16:30:00Z',
+    applicationsCount: 36,
     scoringWeights: {
       skillsMatch: 35,
       experienceMatch: 20,
@@ -520,35 +402,38 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     }
   },
 
-  // --- BUSINESS & OPERATIONS ---
+  // ==========================================
+  // 5. MECHANICAL & CIVIL ENGINEERING
+  // ==========================================
   {
-    id: 'job-business-analyst',
-    title: 'Senior Business Systems Analyst',
-    company: 'Apex Enterprise Consulting',
-    department: 'Business Strategy',
-    location: 'Chicago, IL (Hybrid)',
+    id: 'job-mech-cad-engineer',
+    title: 'Mechanical Design & Thermal Engineer',
+    company: 'Vanguard Dynamics Engineering',
+    department: 'Mechanical & Civil Engineering',
+    location: 'Detroit, MI (On-site)',
     type: 'Full-time',
     seniority: 'Senior',
-    minExperienceYears: 4,
-    salaryRange: '$120,000 - $150,000',
-    summary: 'Translate complex business requirements into technical system specifications, optimize ERP/CRM workflows, and lead process audits.',
-    requiredSkills: ['SQL', 'Data Analysis', 'Communication', 'Problem Solving', 'Agile'],
-    preferredSkills: ['Business Intelligence', 'Tableau', 'Visio', 'Process Mapping', 'Excel Modeling'],
+    minExperienceYears: 5,
+    salaryRange: '$120,000 - $155,000',
+    summary: 'Design mechanical component assemblies in SolidWorks, execute FEA structural and thermal simulations in ANSYS, and oversee precision CNC manufacturing.',
+    requiredSkills: ['Mechanical Design', 'SolidWorks / CATIA', 'FEA Simulation (ANSYS)', 'GD&T (Geometric Dimensioning)', 'Thermal Dynamics', 'DFM / DFA Principles'],
+    preferredSkills: ['Injection Molding Design', 'CNC Machining Processes', 'Rapid Prototyping', 'Materials Selection', 'Fluid Dynamics (CFD)'],
     responsibilities: [
-      'Bridge the gap between executive business stakeholders and technical software engineering squads',
-      'Document detailed business requirements (BRD), user stories, and acceptance criteria',
-      'Perform data validation queries in SQL and model financial process improvements'
+      'Create parametric 3D CAD assemblies and comprehensive 2D manufacturing drawings with strict GD&T tolerances',
+      'Perform finite element stress (FEA) and computational fluid/thermal dynamics (CFD) analysis in ANSYS',
+      'Prototype and physically validate structural load limits in mechanical testing laboratories',
+      'Collaborate with manufacturing vendors to ensure design for manufacturability (DFM) standards'
     ],
-    educationRequirement: "Bachelor's degree in Business Administration, Information Systems, or Finance",
-    requiredCertifications: ['CBAP (Certified Business Analysis Professional) (Preferred)'],
-    keywords: ['Business Analyst', 'Requirements Gathering', 'SQL', 'BRD', 'Process Optimization', 'Agile'],
+    educationRequirement: "Bachelor's or Master's degree in Mechanical Engineering or Aerospace Engineering",
+    requiredCertifications: ['Certified SolidWorks Professional (CSWP) (Preferred)'],
+    keywords: ['Mechanical Engineering', 'SolidWorks', 'ANSYS', 'FEA', 'CAD', 'GD&T', 'Thermal Dynamics', 'DFM', 'Manufacturing'],
     published: true,
-    createdAt: '2026-08-04T10:00:00Z',
-    applicationsCount: 52,
+    createdAt: '2026-08-04T14:00:00Z',
+    applicationsCount: 33,
     scoringWeights: {
-      skillsMatch: 30,
+      skillsMatch: 35,
       experienceMatch: 25,
-      responsibilitiesMatch: 25,
+      responsibilitiesMatch: 20,
       projectsMatch: 10,
       educationMatch: 5,
       keywordsMatch: 3,
@@ -556,29 +441,69 @@ export const SAMPLE_JOBS: JobRequirement[] = [
     }
   },
   {
-    id: 'job-project-manager',
-    title: 'Technical Project Manager',
-    company: 'CoreWave Solutions',
-    department: 'Program Management Office',
-    location: 'Dallas, TX (Remote)',
+    id: 'job-civil-structural',
+    title: 'Structural & Civil Infrastructure Engineer',
+    company: 'Apex Infrastructure & Bridge Labs',
+    department: 'Mechanical & Civil Engineering',
+    location: 'Chicago, IL (Hybrid)',
+    type: 'Full-time',
+    seniority: 'Senior',
+    minExperienceYears: 5,
+    salaryRange: '$125,000 - $160,000',
+    summary: 'Conduct structural analysis on reinforced concrete and steel infrastructure, draft BIM models in Revit/AutoCAD, and manage on-site building compliance.',
+    requiredSkills: ['Structural Engineering', 'AutoCAD Civil 3D', 'Revit / BIM', 'Structural Analysis (SAP2000 / ETABS)', 'Reinforced Concrete & Steel Design', 'Building Codes (IBC / ASCE 7)'],
+    preferredSkills: ['Foundation Design', 'Seismic Analysis', 'Site Inspection', 'Cost Estimation', 'Environmental Impact Assessment'],
+    responsibilities: [
+      'Calculate structural load paths, seismic shear forces, and wind load reactions using SAP2000 and ETABS',
+      'Produce structural construction blueprints and 3D Building Information Models (BIM) in Revit',
+      'Conduct periodic on-site structural inspections to certify construction adherence to architectural plans',
+      'Ensure strict compliance with international building codes (IBC) and municipal safety standards'
+    ],
+    educationRequirement: "Bachelor's or Master's degree in Civil or Structural Engineering",
+    requiredCertifications: ['Professional Engineer (PE) License or EIT'],
+    keywords: ['Civil Engineering', 'Structural Engineering', 'Revit', 'AutoCAD', 'ETABS', 'SAP2000', 'BIM', 'Concrete Design', 'Building Codes'],
+    published: true,
+    createdAt: '2026-08-03T10:00:00Z',
+    applicationsCount: 26,
+    scoringWeights: {
+      skillsMatch: 35,
+      experienceMatch: 25,
+      responsibilitiesMatch: 20,
+      projectsMatch: 10,
+      educationMatch: 5,
+      keywordsMatch: 3,
+      certificationsMatch: 2
+    }
+  },
+
+  // ==========================================
+  // 6. HEALTHCARE & BIOTECH
+  // ==========================================
+  {
+    id: 'job-biomed-clinical',
+    title: 'Biomedical Specialist & Clinical Research Coordinator',
+    company: 'BioVanguard Life Sciences',
+    department: 'Healthcare & Biomedical Sciences',
+    location: 'Philadelphia, PA (Hybrid)',
     type: 'Full-time',
     seniority: 'Mid',
-    minExperienceYears: 4,
-    salaryRange: '$125,000 - $155,000',
-    summary: 'Manage software delivery milestones, cross-functional dependencies, project budgets, and risk mitigation across multi-team programs.',
-    requiredSkills: ['Agile', 'Leadership', 'Communication', 'Problem Solving'],
-    preferredSkills: ['PMP', 'Jira', 'Scrum Master', 'Risk Management', 'Budget Tracking'],
+    minExperienceYears: 3,
+    salaryRange: '$105,000 - $138,000',
+    summary: 'Coordinate clinical trial protocols, analyze patient health telemetry, validate medical diagnostic equipment, and ensure FDA/GCP regulatory compliance.',
+    requiredSkills: ['Clinical Trials & Protocol Management', 'Medical Data Analysis', 'FDA Regulatory Standards (GCP/GLP)', 'HIPAA Compliance', 'Biomedical Instrumentation'],
+    preferredSkills: ['Electronic Data Capture (EDC)', 'Statistical Analysis (SAS/SPSS/R)', 'Patient Telemetry', 'Clinical Trial Documentation', 'Bio-Informatics'],
     responsibilities: [
-      'Lead agile release planning, track sprint velocity, and unblock cross-functional engineering teams',
-      'Manage scope, schedule, and stakeholder communication for complex multi-quarter programs',
-      'Identify operational bottlenecks, mitigate project risks, and deliver status reports to leadership'
+      'Administer Phase II/III clinical trial protocols adhering strictly to FDA, GCP, and Institutional Review Board (IRB) mandates',
+      'Manage electronic data capture (EDC) systems tracking patient biomarkers and therapeutic efficacy',
+      'Validate diagnostic medical instrumentation and ensure calibration compliance across clinical sites',
+      'Author clinical research summary reports and present adverse event telemetry to trial sponsors'
     ],
-    educationRequirement: "Bachelor's degree in Business, Computer Science, or Management",
-    requiredCertifications: ['Project Management Professional (PMP)', 'Certified ScrumMaster (CSM)'],
-    keywords: ['Project Manager', 'PMP', 'Scrum', 'Agile', 'Program Management', 'Risk Management'],
+    educationRequirement: "Bachelor's or Master's in Biomedical Science, Biotechnology, Nursing, or Health Sciences",
+    requiredCertifications: ['Certified Clinical Research Coordinator (CCRC) or SOCRA CCRP (Preferred)'],
+    keywords: ['Biomedical', 'Clinical Research', 'GCP', 'FDA', 'Medical Data', 'Clinical Trials', 'HIPAA', 'Healthcare', 'Biotechnology'],
     published: true,
-    createdAt: '2026-08-08T11:00:00Z',
-    applicationsCount: 48,
+    createdAt: '2026-08-02T13:00:00Z',
+    applicationsCount: 31,
     scoringWeights: {
       skillsMatch: 30,
       experienceMatch: 25,
@@ -588,224 +513,17 @@ export const SAMPLE_JOBS: JobRequirement[] = [
       keywordsMatch: 2,
       certificationsMatch: 3
     }
-  },
-
-  // --- MARKETING & SALES ---
-  {
-    id: 'job-digital-marketing',
-    title: 'Digital Marketing & Growth Specialist',
-    company: 'OmniReach Growth Agency',
-    department: 'Growth Marketing',
-    location: 'Miami, FL (Remote)',
-    type: 'Full-time',
-    seniority: 'Mid',
-    minExperienceYears: 3,
-    salaryRange: '$90,000 - $120,000',
-    summary: 'Design and execute multi-channel paid acquisition campaigns, manage ad budgets across Google & Meta, and optimize conversion funnels.',
-    requiredSkills: ['Data Analysis', 'Communication', 'Problem Solving'],
-    preferredSkills: ['Google Ads', 'Meta Ads Manager', 'SEO', 'Google Analytics 4', 'A/B Testing', 'HubSpot'],
-    responsibilities: [
-      'Manage performance marketing campaigns across Google Ads, LinkedIn, and Meta to drive qualified MQLs',
-      'Perform continuous landing page A/B testing and attribution analysis to lower CAC by 20%+',
-      'Build automated analytics reporting funnels to calculate customer lifetime value and ROAS'
-    ],
-    educationRequirement: "Bachelor's degree in Marketing, Communications, Business, or related discipline",
-    requiredCertifications: ['Google Ads Certified', 'HubSpot Inbound Marketing'],
-    keywords: ['Digital Marketing', 'Paid Media', 'Google Ads', 'SEO', 'Growth Marketing', 'CAC', 'ROAS'],
-    published: true,
-    createdAt: '2026-08-09T16:00:00Z',
-    applicationsCount: 65,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 25,
-      responsibilitiesMatch: 25,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-account-executive',
-    title: 'Enterprise Account Executive',
-    company: 'CloudGate SaaS Platforms',
-    department: 'Enterprise Sales',
-    location: 'New York, NY (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 5,
-    salaryRange: '$140,000 - $260,000 (OTE)',
-    summary: 'Drive full-cycle enterprise B2B sales cycles from discovery to contract negotiation, closing $100K+ ACV deals with C-level executives.',
-    requiredSkills: ['Communication', 'Leadership', 'Problem Solving'],
-    preferredSkills: ['MEDDPICC', 'Salesforce', 'Enterprise Sales', 'Contract Negotiation', 'Cold Outreach'],
-    responsibilities: [
-      'Execute enterprise sales strategies targeting Fortune 1000 technical decision makers',
-      'Manage complex multi-stakeholder procurement and legal contract negotiation cycles',
-      'Consistently exceed quarterly quota quotas through disciplined pipeline generation and MEDDPICC qualification'
-    ],
-    educationRequirement: "Bachelor's degree in Business, Communications, or equivalent sales track record",
-    requiredCertifications: [],
-    keywords: ['Account Executive', 'Enterprise Sales', 'B2B SaaS', 'MEDDPICC', 'Closing', 'Quota'],
-    published: true,
-    createdAt: '2026-08-05T14:00:00Z',
-    applicationsCount: 41,
-    scoringWeights: {
-      skillsMatch: 25,
-      experienceMatch: 35,
-      responsibilitiesMatch: 25,
-      projectsMatch: 5,
-      educationMatch: 5,
-      keywordsMatch: 5,
-      certificationsMatch: 0
-    }
-  },
-
-  // --- FINANCE & HR ---
-  {
-    id: 'job-financial-analyst',
-    title: 'Senior Financial Analyst',
-    company: 'Capital Peak Advisory',
-    department: 'Corporate FP&A',
-    location: 'Charlotte, NC (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 4,
-    salaryRange: '$115,000 - $145,000',
-    summary: 'Build complex financial forecasting models, variance analyses, and annual operating budget presentations for executive leadership.',
-    requiredSkills: ['SQL', 'Data Analysis', 'Communication', 'Problem Solving'],
-    preferredSkills: ['Financial Modeling', 'Excel VBA', 'Power BI', 'DCF Valuation', 'Budgeting'],
-    responsibilities: [
-      'Develop three-statement financial forecasting models and capital expenditure forecasts',
-      'Analyze monthly budget-to-actual variances and provide strategic cost optimization recommendations',
-      'Prepare quarterly board presentation decks with clean financial KPI visualizations'
-    ],
-    educationRequirement: "Bachelor's in Finance, Accounting, Economics, or MBA",
-    requiredCertifications: ['CFA (Chartered Financial Analyst) Level 1+ or CPA (Preferred)'],
-    keywords: ['Financial Analyst', 'FP&A', 'Financial Modeling', 'Budgeting', 'Forecasting', 'Excel', 'CFA'],
-    published: true,
-    createdAt: '2026-08-03T14:30:00Z',
-    applicationsCount: 59,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 25,
-      responsibilitiesMatch: 25,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-  {
-    id: 'job-recruiter-ta',
-    title: 'Senior Technical Recruiter',
-    company: 'TalentScale Partners',
-    department: 'Talent Acquisition',
-    location: 'Seattle, WA (Remote)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 4,
-    salaryRange: '$110,000 - $140,000',
-    summary: 'Lead full-cycle technical recruiting for specialized engineering, AI/ML, and product leadership roles in high-growth technology environments.',
-    requiredSkills: ['Communication', 'Leadership', 'Problem Solving'],
-    preferredSkills: ['ATS Management', 'Technical Sourcing', 'LinkedIn Recruiter', 'Offer Negotiation', 'Diversity Hiring'],
-    responsibilities: [
-      'Partner with engineering VPs and hiring managers to calibrate candidate scorecards and hiring standards',
-      'Build active candidate sourcing pipelines for niche software, ML, and distributed systems talent',
-      'Deliver world-class candidate experience and negotiate closing offer packages'
-    ],
-    educationRequirement: "Bachelor's degree in Human Resources, Communications, Business, or equivalent",
-    requiredCertifications: ['AIRS Certified Internet Recruiter (CIR) (Preferred)'],
-    keywords: ['Technical Recruiter', 'Talent Acquisition', 'Sourcing', 'ATS', 'Full-Cycle Recruiting', 'Hiring'],
-    published: true,
-    createdAt: '2026-08-07T11:00:00Z',
-    applicationsCount: 38,
-    scoringWeights: {
-      skillsMatch: 25,
-      experienceMatch: 30,
-      responsibilitiesMatch: 30,
-      projectsMatch: 5,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
-  },
-
-  // --- HEALTHCARE & CLINICAL ---
-  {
-    id: 'job-registered-nurse',
-    title: 'Clinical Nurse Specialist & Informatics',
-    company: 'Providence Health Systems',
-    department: 'Clinical Quality & Informatics',
-    location: 'Portland, OR (On-site)',
-    type: 'Full-time',
-    seniority: 'Senior',
-    minExperienceYears: 4,
-    salaryRange: '$105,000 - $135,000',
-    summary: 'Provide patient care expertise while optimizing electronic health records (EHR) workflows, clinical documentation, and hospital quality standards.',
-    requiredSkills: ['Communication', 'Problem Solving', 'Leadership'],
-    preferredSkills: ['EHR', 'Epic Systems', 'Clinical Informatics', 'Patient Care', 'Healthcare Compliance'],
-    responsibilities: [
-      'Deliver evidence-based clinical protocols and mentor nursing staff on critical care workflows',
-      'Collaborate with health IT analysts to refine Epic EHR clinical documentation templates',
-      'Monitor hospital quality metrics and ensure strict adherence to Joint Commission and HIPAA standards'
-    ],
-    educationRequirement: "Bachelor of Science in Nursing (BSN) or Master's in Nursing Informatics (MSN)",
-    requiredCertifications: ['Registered Nurse (RN) License', 'Informatics Nursing Certification (RN-BC) (Preferred)'],
-    keywords: ['Nurse', 'RN', 'Clinical Informatics', 'Epic', 'Healthcare', 'Patient Care', 'EHR'],
-    published: true,
-    createdAt: '2026-08-02T09:00:00Z',
-    applicationsCount: 22,
-    scoringWeights: {
-      skillsMatch: 25,
-      experienceMatch: 30,
-      responsibilitiesMatch: 25,
-      projectsMatch: 5,
-      educationMatch: 5,
-      keywordsMatch: 5,
-      certificationsMatch: 5
-    }
-  },
-  {
-    id: 'job-clinical-data-coord',
-    title: 'Clinical Data Management Coordinator',
-    company: 'BioVance Clinical Trials',
-    department: 'Biometrics & Clinical Research',
-    location: 'Raleigh, NC (Hybrid)',
-    type: 'Full-time',
-    seniority: 'Mid',
-    minExperienceYears: 3,
-    salaryRange: '$85,000 - $115,000',
-    summary: 'Coordinate clinical trial electronic data capture (EDC), manage query resolution workflows, and validate data integrity for FDA regulatory submissions.',
-    requiredSkills: ['Data Analysis', 'SQL', 'Problem Solving', 'Communication'],
-    preferredSkills: ['EDC', 'Medidata Rave', 'GCP Compliance', 'CDISC SDTM', 'Clinical Trials'],
-    responsibilities: [
-      'Design and validate Electronic Case Report Forms (eCRF) in compliance with clinical trial protocols',
-      'Execute automated data discrepancy checks and manage clinical investigator site queries',
-      'Prepare clean, locked clinical databases ready for statistical analysis and FDA submission'
-    ],
-    educationRequirement: "Bachelor's degree in Life Sciences, Health Informatics, Statistics, or related discipline",
-    requiredCertifications: ['Certified Clinical Data Manager (CCDM) (Preferred)'],
-    keywords: ['Clinical Data', 'EDC', 'Clinical Trials', 'GCP', 'Medidata Rave', 'Data Management', 'FDA'],
-    published: true,
-    createdAt: '2026-08-06T13:00:00Z',
-    applicationsCount: 29,
-    scoringWeights: {
-      skillsMatch: 30,
-      experienceMatch: 25,
-      responsibilitiesMatch: 25,
-      projectsMatch: 10,
-      educationMatch: 5,
-      keywordsMatch: 3,
-      certificationsMatch: 2
-    }
   }
 ];
 
-
+// ============================================================================
+// DIVERSE CANDIDATE PROFILES FOR EACH DOMAIN
+// ============================================================================
 export const SAMPLE_CANDIDATE_RESUMES: StructuredResume[] = [
+  // 1. Alex Rivera (IT & Data Analysis)
   {
     id: 'resume-alex-rivera',
-    versionName: 'Resume v2 — Data Analyst Focus',
+    versionName: 'Alex Rivera — Data Analytics Focus (IT)',
     createdAt: '2026-08-10T12:00:00Z',
     updatedAt: '2026-08-12T16:30:00Z',
     fullName: 'Alex Rivera',
@@ -863,13 +581,6 @@ export const SAMPLE_CANDIDATE_RESUMES: StructuredResume[] = [
         technologies: ['Python', 'SQL', 'Power BI', 'Scikit-learn', 'Docker'],
         link: 'github.com/alexrivera-data/churn-analytics',
         metrics: '91.4% ROC-AUC accuracy; reduced churn risk by 18%'
-      },
-      {
-        id: 'proj-2',
-        title: 'Automated Financial Reconciliation Engine',
-        description: 'Created a automated Python + PostgreSQL data verification tool that reconciled 50,000+ daily bank ledger records.',
-        technologies: ['Python', 'PostgreSQL', 'SQL', 'Pandas'],
-        link: 'github.com/alexrivera-data/reconcile-engine'
       }
     ],
     certifications: [
@@ -881,12 +592,13 @@ export const SAMPLE_CANDIDATE_RESUMES: StructuredResume[] = [
         credentialId: 'MS-89421-PBI'
       }
     ],
-    extractionQuality: 'high',
-    extractionNotes: ['Clean text formatting', 'All dates, metrics, and degrees successfully parsed and validated']
+    extractionQuality: 'high'
   },
+
+  // 2. Sophia Zhang (Machine Learning & AI)
   {
     id: 'resume-sophia-zhang',
-    versionName: 'Resume v1 — Machine Learning Engineer',
+    versionName: 'Sophia Zhang — Machine Learning & AI (IT)',
     createdAt: '2026-08-08T10:00:00Z',
     updatedAt: '2026-08-11T14:00:00Z',
     fullName: 'Sophia Zhang',
@@ -913,17 +625,6 @@ export const SAMPLE_CANDIDATE_RESUMES: StructuredResume[] = [
         location: 'Seattle, WA',
         description: 'Architected and deployed semantic search microservices serving 4M requests/day using Sentence-BERT embeddings and FastAPI. Reduced model inference latency from 240ms to 65ms.',
         technologies: ['Python', 'PyTorch', 'Sentence-BERT', 'FastAPI', 'Docker', 'AWS']
-      },
-      {
-        id: 'exp-sz-2',
-        company: 'DataCore Intelligence',
-        jobTitle: 'Associate Data Scientist',
-        startDate: '2021-06',
-        endDate: '2022-12',
-        isCurrent: false,
-        location: 'San Jose, CA',
-        description: 'Trained text categorization models using PyTorch and scikit-learn. Built REST API wrappers and automated evaluation pipelines.',
-        technologies: ['Python', 'Machine Learning', 'PyTorch', 'SQL']
       }
     ],
     education: [
@@ -954,365 +655,897 @@ export const SAMPLE_CANDIDATE_RESUMES: StructuredResume[] = [
     ],
     extractionQuality: 'high'
   },
+
+  // 3. Karthik Subramanian (Electrical & Power Systems - EEE)
   {
-    id: 'resume-marcus-chen',
-    versionName: 'Resume v3 — Senior Full Stack',
-    createdAt: '2026-08-01T08:00:00Z',
-    updatedAt: '2026-08-10T19:00:00Z',
-    fullName: 'Marcus Chen',
-    email: 'marcus.chen.dev@example.com',
-    phone: '+1 (555) 456-1122',
-    location: 'Austin, TX',
-    linkedin: 'linkedin.com/in/marcuschen-fullstack',
-    github: 'github.com/marcuschen-dev',
-    summary: 'Full-Stack Software Engineer with 6 years experience building scalable enterprise cloud applications with React, TypeScript, Node.js, and PostgreSQL.',
+    id: 'resume-karthik-eee',
+    versionName: 'Karthik S. — Electrical & Power Systems (EEE)',
+    createdAt: '2026-08-05T09:00:00Z',
+    updatedAt: '2026-08-11T12:00:00Z',
+    fullName: 'Karthik Subramanian',
+    email: 'karthik.eee.power@example.com',
+    phone: '+1 (555) 678-4321',
+    location: 'Houston, TX',
+    linkedin: 'linkedin.com/in/karthik-power-eee',
+    portfolio: 'karthik-electrical.tech',
+    summary: 'Lead Electrical Power Systems Engineer with 5.5+ years of expertise in high-voltage substation automation, electrical circuit design, ETAP load flow simulations, and industrial SCADA controllers.',
     skills: {
-      technical: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS', 'Express', 'JavaScript', 'HTML/CSS', 'Git', 'SQL'],
-      soft: ['Team Mentorship', 'System Architecture', 'Agile Delivery'],
-      tools: ['Docker', 'AWS', 'Jest', 'Webpack', 'Vite']
+      technical: ['Power Systems', 'Circuit Design', 'MATLAB/Simulink', 'ETAP', 'PLC/SCADA', 'AutoCAD Electrical', 'High Voltage Systems', 'Protection Relays'],
+      soft: ['Project Leadership', 'Industrial Safety Compliance', 'Root-Cause Problem Solving'],
+      tools: ['ETAP', 'MATLAB', 'AutoCAD Electrical', 'Simulink', 'Siemens TIA Portal', 'RSLogix']
     },
     experience: [
       {
-        id: 'exp-mc-1',
-        company: 'SaaSVelocity Inc',
-        jobTitle: 'Senior Full Stack Developer',
-        startDate: '2022-01',
+        id: 'exp-ks-1',
+        company: 'Texas Grid Power & Energy',
+        jobTitle: 'Senior Electrical Engineer',
+        startDate: '2021-04',
         endDate: '2026-08',
         isCurrent: true,
-        location: 'Austin, TX',
-        description: 'Led a team of 5 engineers building enterprise dashboard apps using React 19, TypeScript, and Node.js microservices. Improved Lighthouse performance scores from 54 to 98.',
-        technologies: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS']
-      },
-      {
-        id: 'exp-mc-2',
-        company: 'DevForge Systems',
-        jobTitle: 'Software Engineer',
-        startDate: '2019-06',
-        endDate: '2021-12',
-        isCurrent: false,
-        location: 'Austin, TX',
-        description: 'Developed REST APIs in Express and integrated responsive frontend views. Designed database schema migrations in PostgreSQL.',
-        technologies: ['JavaScript', 'Node.js', 'PostgreSQL', 'React']
+        location: 'Houston, TX',
+        description: 'Conducted short-circuit, harmonic, and arc flash analysis across 220kV substations using ETAP. Configured Siemens PLC and SCADA industrial telemetries reducing unplanned downtime by 24%.',
+        technologies: ['ETAP', 'MATLAB/Simulink', 'PLC/SCADA', 'Circuit Design', 'AutoCAD Electrical']
       }
     ],
     education: [
       {
-        id: 'edu-mc-1',
-        institution: 'University of Texas at Austin',
-        degree: 'Bachelor of Science',
-        fieldOfStudy: 'Computer Science',
-        graduationYear: '2019'
+        id: 'edu-ks-1',
+        institution: 'Texas A&M University',
+        degree: 'Bachelor of Engineering (B.E.)',
+        fieldOfStudy: 'Electrical & Electronics Engineering (EEE)',
+        graduationYear: '2020',
+        gpa: '3.88'
       }
     ],
     projects: [
       {
-        id: 'proj-mc-1',
-        title: 'Real-Time Collaborative Workspace',
-        description: 'Engineered high-concurrency web workspace with WebSocket live sync and PostgreSQL persistence.',
-        technologies: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS']
+        id: 'proj-ks-1',
+        title: 'Microgrid Solar-Storage Substation Simulation',
+        description: 'Simulated a 10MW renewable hybrid substation load response in MATLAB/Simulink with automatic islanding protection relays.',
+        technologies: ['MATLAB/Simulink', 'ETAP', 'Circuit Design', 'Power Systems']
       }
     ],
-    certifications: [],
+    certifications: [
+      {
+        id: 'cert-ks-1',
+        name: 'Engineer in Training (EIT) / FE Electrical Certification',
+        issuer: 'NCEES',
+        issueDate: '2020-08',
+        credentialId: 'EIT-TX-78921'
+      }
+    ],
+    extractionQuality: 'high'
+  },
+
+  // 4. Elena Ramos (Precision Agriculture & Smart Farming - Agri)
+  {
+    id: 'resume-elena-agri',
+    versionName: 'Elena Ramos — Precision Agriculture Specialist (Agri)',
+    createdAt: '2026-08-04T10:00:00Z',
+    updatedAt: '2026-08-10T15:00:00Z',
+    fullName: 'Elena Ramos',
+    email: 'elena.ramos.agri@example.com',
+    phone: '+1 (555) 432-8765',
+    location: 'Des Moines, IA',
+    linkedin: 'linkedin.com/in/elena-ramos-agtech',
+    portfolio: 'elena-agritech.org',
+    summary: 'Precision Agriculture Specialist and Agronomist with 4.5+ years experience in geospatial GIS mapping, multi-spectral drone imagery crop analytics, IoT soil moisture telemetry, and yield prediction algorithms.',
+    skills: {
+      technical: ['Precision Agriculture', 'GIS Mapping & Spatial Analysis', 'Soil Science & Agronomy', 'Drone Crop Analytics', 'Data Analysis', 'IoT Sensors', 'Variable Rate Technology (VRT)'],
+      soft: ['Field Diagnostics', 'Farmer Advisory Consultation', 'Sustainable Resource Optimization'],
+      tools: ['QGIS', 'ArcGIS Pro', 'Pix4Dfields', 'John Deere Operations Center', 'Python (GeoPandas)', 'Excel']
+    },
+    experience: [
+      {
+        id: 'exp-er-1',
+        company: 'Midwest AgTech Innovations',
+        jobTitle: 'Precision Agronomist & Field Lead',
+        startDate: '2022-02',
+        endDate: '2026-08',
+        isCurrent: true,
+        location: 'Des Moines, IA',
+        description: 'Managed 35,000+ acres of corn and soybean variable-rate fertilizer (VRT) prescriptions using GIS spatial layers and multispectral drone NDVI analytics, increasing average crop yield by 11.2%.',
+        technologies: ['Precision Agriculture', 'GIS Mapping & Spatial Analysis', 'IoT Sensors', 'QGIS', 'Drone Crop Analytics']
+      }
+    ],
+    education: [
+      {
+        id: 'edu-er-1',
+        institution: 'Iowa State University',
+        degree: 'Bachelor of Science (B.S.)',
+        fieldOfStudy: 'Agronomy & Precision Agriculture',
+        graduationYear: '2021',
+        gpa: '3.79'
+      }
+    ],
+    projects: [
+      {
+        id: 'proj-er-1',
+        title: 'IoT Soil Nitrate & Moisture Real-time Grid',
+        description: 'Installed and networked 80+ solar-powered IoT soil telemetry probes feeding real-time irrigation advice to mobile farm dashboards.',
+        technologies: ['IoT Sensors', 'Precision Agriculture', 'Python', 'GIS']
+      }
+    ],
+    certifications: [
+      {
+        id: 'cert-er-1',
+        name: 'Certified Crop Adviser (CCA)',
+        issuer: 'American Society of Agronomy',
+        issueDate: '2022-05',
+        credentialId: 'CCA-94810-MW'
+      },
+      {
+        id: 'cert-er-2',
+        name: 'FAA Part 107 Remote Pilot Certification (Commercial Drone)',
+        issuer: 'FAA',
+        issueDate: '2021-10',
+        credentialId: 'FAA-DRONE-83921'
+      }
+    ],
+    extractionQuality: 'high'
+  },
+
+  // 5. Maya Lin (Creative Art Director & Brand Design - Art)
+  {
+    id: 'resume-maya-art',
+    versionName: 'Maya Lin — Creative Art Director (Art & Design)',
+    createdAt: '2026-08-03T11:00:00Z',
+    updatedAt: '2026-08-09T18:00:00Z',
+    fullName: 'Maya Lin',
+    email: 'maya.lin.creative@example.com',
+    phone: '+1 (555) 901-2345',
+    location: 'New York, NY',
+    linkedin: 'linkedin.com/in/mayalin-artdirector',
+    portfolio: 'mayalin-portfolio.design',
+    summary: 'Award-winning Creative Art Director and Brand Designer with 6+ years experience crafting comprehensive visual brand identities, typography guidelines, editorial publication layouts, and multi-channel creative campaign strategies.',
+    skills: {
+      technical: ['Visual Brand Identity', 'Typography', 'Adobe Creative Suite (Photoshop, Illustrator, InDesign)', 'Art Direction', 'Creative Campaign Strategy', 'Design Systems', 'Color Theory'],
+      soft: ['Creative Leadership', 'Visual Storytelling', 'Client Direction & Pitching'],
+      tools: ['Adobe Illustrator', 'Adobe Photoshop', 'Adobe InDesign', 'Figma', 'After Effects', 'Cinema 4D']
+    },
+    experience: [
+      {
+        id: 'exp-ml-1',
+        company: 'Verve Studio New York',
+        jobTitle: 'Senior Art Director',
+        startDate: '2021-08',
+        endDate: '2026-08',
+        isCurrent: true,
+        location: 'New York, NY',
+        description: 'Led visual brand overhauls for 18+ high-growth fashion, lifestyle, and corporate clients. Directed photography shoots, bespoke typography systems, and print/digital assets recognized in AIGA Design Archives.',
+        technologies: ['Adobe Creative Suite (Photoshop, Illustrator, InDesign)', 'Typography', 'Visual Brand Identity', 'Art Direction']
+      }
+    ],
+    education: [
+      {
+        id: 'edu-ml-1',
+        institution: 'Rhode Island School of Design (RISD)',
+        degree: 'Bachelor of Fine Arts (BFA)',
+        fieldOfStudy: 'Graphic Design & Visual Arts',
+        graduationYear: '2019',
+        gpa: '3.91'
+      }
+    ],
+    projects: [
+      {
+        id: 'proj-ml-1',
+        title: 'Global Monolith Brand Identity & Typography Specimen',
+        description: 'Created a bespoke variable font and complete multi-format brand guidelines used across 45 countries.',
+        technologies: ['Typography', 'Adobe Illustrator', 'InDesign', 'Visual Brand Identity']
+      }
+    ],
+    certifications: [
+      {
+        id: 'cert-ml-1',
+        name: 'AIGA Professional Member & Typography Guild Honors',
+        issuer: 'AIGA',
+        issueDate: '2022-01'
+      }
+    ],
+    extractionQuality: 'high'
+  },
+
+  // 6. Marcus Chen (Mechanical & CAD Design - Mech)
+  {
+    id: 'resume-marcus-mech',
+    versionName: 'Marcus Chen — Mechanical CAD & Thermal Design (Mech)',
+    createdAt: '2026-08-02T14:00:00Z',
+    updatedAt: '2026-08-08T17:00:00Z',
+    fullName: 'Marcus Chen',
+    email: 'marcus.chen.mech@example.com',
+    phone: '+1 (555) 890-5678',
+    location: 'Detroit, MI',
+    linkedin: 'linkedin.com/in/marcuschen-mechanical',
+    portfolio: 'marcuschen-cad.engineering',
+    summary: 'Senior Mechanical Design Engineer with 5+ years of experience in parametric 3D CAD modeling (SolidWorks, CATIA), FEA structural & thermal simulation in ANSYS, GD&T tolerancing, and Design for Manufacturability (DFM).',
+    skills: {
+      technical: ['Mechanical Design', 'SolidWorks / CATIA', 'FEA Simulation (ANSYS)', 'GD&T (Geometric Dimensioning)', 'Thermal Dynamics', 'DFM / DFA Principles', 'CAD Modeling'],
+      soft: ['Cross-functional Engineering', 'Precision Quality Control', 'Vendor Collaboration'],
+      tools: ['SolidWorks', 'ANSYS Workbench', 'CATIA V5', 'AutoCAD', 'KeyShot', 'MATLAB']
+    },
+    experience: [
+      {
+        id: 'exp-mc-mech-1',
+        company: 'AeroDrive Propulsion Systems',
+        jobTitle: 'Senior Mechanical Design Engineer',
+        startDate: '2021-03',
+        endDate: '2026-08',
+        isCurrent: true,
+        location: 'Detroit, MI',
+        description: 'Designed die-cast aluminum enclosures and thermal cooling fins for electric vehicle power inverters. Validated structural integrity under 50G shock loads using ANSYS FEA.',
+        technologies: ['Mechanical Design', 'SolidWorks / CATIA', 'FEA Simulation (ANSYS)', 'GD&T (Geometric Dimensioning)', 'Thermal Dynamics']
+      }
+    ],
+    education: [
+      {
+        id: 'edu-mc-mech-1',
+        institution: 'University of Michigan, Ann Arbor',
+        degree: 'Bachelor of Science (B.S.)',
+        fieldOfStudy: 'Mechanical Engineering',
+        graduationYear: '2020',
+        gpa: '3.84'
+      }
+    ],
+    projects: [
+      {
+        id: 'proj-mc-mech-1',
+        title: 'High-Efficiency Liquid Cold Plate for EV Batteries',
+        description: 'Engineered micro-channel liquid cold plate reducing battery cell thermal variance by 4.2°C.',
+        technologies: ['SolidWorks / CATIA', 'FEA Simulation (ANSYS)', 'Thermal Dynamics', 'DFM / DFA Principles']
+      }
+    ],
+    certifications: [
+      {
+        id: 'cert-mc-mech-1',
+        name: 'Certified SolidWorks Professional (CSWP)',
+        issuer: 'Dassault Systèmes',
+        issueDate: '2021-06',
+        credentialId: 'CSWP-78210-MC'
+      }
+    ],
     extractionQuality: 'high'
   }
 ];
 
-/**
- * Initial candidate pipeline applications
- */
+// ============================================================================
+// EXTENSIVE 50+ ROLE & GROUNDED INTERVIEW QUESTION BANK
+// ============================================================================
+export const SAMPLE_INTERVIEW_QUESTIONS: InterviewQuestionItem[] = [
+  // --- IT, DATA & AI (Questions 1-12) ---
+  {
+    id: 'q-data-1',
+    category: 'technical',
+    question: 'How do you optimize complex multi-table SQL queries with billions of rows to prevent full table scans and memory spills?',
+    contextWhyAsked: 'Tests database indexing strategies, query execution plans, partitioning, and deep SQL performance engineering.',
+    expectedKeyPoints: ['Clustered vs non-clustered indexes', 'EXPLAIN ANALYZE execution plan review', 'Partition pruning and materialized views'],
+    candidateBackgroundEvidence: 'Candidate lists 4+ years of SQL data pipeline architecture and database query tuning on large transaction datasets.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-data-2',
+    category: 'technical',
+    question: 'What is the mathematical and operational difference between DAX calculated columns and measures in Power BI, and when does each impact memory?',
+    contextWhyAsked: 'Evaluates VertiPaq engine understanding, filter context, row context, and dashboard latency optimization.',
+    expectedKeyPoints: ['Row context vs filter context', 'In-memory compression in VertiPaq', 'Measures computed on query time vs calculated column RAM overhead'],
+    candidateBackgroundEvidence: 'Candidate holds Power BI certification and built executive KPI dashboards.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-ai-3',
+    category: 'technical',
+    question: 'How do you prevent catastrophic forgetting and token degradation when fine-tuning transformer models on domain-specific corpora?',
+    contextWhyAsked: 'Assesses practical deep learning knowledge, LoRA / PEFT adapters, and learning rate scheduling.',
+    expectedKeyPoints: ['Parameter-Efficient Fine-Tuning (LoRA/QLoRA)', 'Replay buffer validation', 'Learning rate warmups and weight decay'],
+    candidateBackgroundEvidence: 'Candidate built Sentence-BERT transformer pipelines and fine-tuned embeddings.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-ai-4',
+    category: 'project_deep_dive',
+    question: 'Can you walk us through the vector retrieval architecture you used for semantic indexing and how you handled latency bottlenecks?',
+    contextWhyAsked: 'Tests RAG architecture, vector distance metrics (Cosine/HNSW), and embedding caching.',
+    expectedKeyPoints: ['HNSW index quantization', 'Embedding batching', 'Sub-100ms API response caching'],
+    candidateBackgroundEvidence: 'Candidate deployed vector retrieval microservices in FastAPI.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-dev-5',
+    category: 'technical',
+    question: 'How do you structure React state management in high-throughput enterprise apps to prevent unnecessary component re-renders?',
+    contextWhyAsked: 'Evaluates modern React 19 / TypeScript architecture, state colocation, context splitting, and memoization.',
+    expectedKeyPoints: ['Context splitting', 'useMemo and useCallback boundaries', 'Immutable state updates and selectors'],
+    candidateBackgroundEvidence: 'Candidate built enterprise UI dashboards with React and TypeScript.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-devops-6',
+    category: 'technical',
+    question: 'How do you design a zero-downtime blue/green Kubernetes deployment strategy with automated canary rollback on error spike?',
+    contextWhyAsked: 'Tests Kubernetes ingress routing, readiness probes, Prometheus metrics, and automated deployment automation.',
+    expectedKeyPoints: ['Canary traffic split (Argo Rollouts/Flagger)', 'Readiness/Liveness probe thresholds', 'Automated metrics rollback'],
+    candidateBackgroundEvidence: 'Candidate engineered Kubernetes clusters and automated CI/CD pipelines.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-sec-7',
+    category: 'technical',
+    question: 'If you identify an anomalous outbound DNS tunneling request in your SIEM telemetry, what are your immediate triage and containment steps?',
+    contextWhyAsked: 'Assesses real-time cybersecurity incident response protocol and threat isolation speed.',
+    expectedKeyPoints: ['Host network isolation', 'DNS sinkholing and IP blacklisting', 'Forensic memory dump and root-cause analysis'],
+    candidateBackgroundEvidence: 'Candidate lists SIEM monitoring and incident response experience.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-data-8',
+    category: 'technical',
+    question: 'How do you handle schema evolution and data quality verification in real-time streaming pipelines without pipeline downtime?',
+    contextWhyAsked: 'Measures data engineering maturity with Avro/Protobuf schema registries and dbt assertions.',
+    expectedKeyPoints: ['Schema Registry compatibility modes (Backward/Full)', 'Dead-letter queues for malformed payloads', 'Automated data contract validation'],
+    candidateBackgroundEvidence: 'Candidate built automated data verification pipelines and ETL models.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-ai-9',
+    category: 'technical',
+    question: 'How do you quantitatively measure hallucination rates and factual grounding in production GenAI applications?',
+    contextWhyAsked: 'Tests LLM evaluation benchmarks (RAGAS, G-Eval, BLEU/ROUGE) and guardrail systems.',
+    expectedKeyPoints: ['RAGAS faithfulness metrics', 'Semantic similarity benchmarking', 'Deterministic fallback validation'],
+    candidateBackgroundEvidence: 'Candidate implemented deterministic ATS scoring and AI explanation engines.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-dev-10',
+    category: 'technical',
+    question: 'Explain the ACID properties in PostgreSQL and how isolation levels prevent dirty reads, non-repeatable reads, and phantom reads.',
+    contextWhyAsked: 'Assesses relational database consistency, concurrency locks, and transaction isolation.',
+    expectedKeyPoints: ['Read Committed vs Repeatable Read vs Serializable', 'Multi-Version Concurrency Control (MVCC)', 'Write-Ahead Logging (WAL)'],
+    candidateBackgroundEvidence: 'Candidate designed relational database schemas in PostgreSQL.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-dev-11',
+    category: 'behavioral',
+    question: 'Describe a situation where you had to push back on a stakeholder request due to technical debt or scalability constraints.',
+    contextWhyAsked: 'Evaluates diplomatic communication, risk justification, and engineering integrity.',
+    expectedKeyPoints: ['STAR format (Situation, Task, Action, Result)', 'Data-backed tradeoff explanation', 'Constructive alternative roadmap'],
+    candidateBackgroundEvidence: 'Candidate lists cross-functional team leadership and executive presentations.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-data-12',
+    category: 'technical',
+    question: 'How do you design an A/B testing experiment to ensure sample size sufficiency and prevent false positives from multiple testing (p-hacking)?',
+    contextWhyAsked: 'Tests statistical rigor, power analysis, minimum detectable effect (MDE), and Bonferroni corrections.',
+    expectedKeyPoints: ['Power calculation for sample size', 'Bonferroni / Benjamini-Hochberg p-value corrections', 'Guardrail metric monitoring'],
+    candidateBackgroundEvidence: 'Candidate conducted A/B tests yielding conversion optimization.',
+    difficulty: 'Mid'
+  },
+
+  // --- ELECTRICAL & ELECTRONICS (EEE / ECE) (Questions 13-22) ---
+  {
+    id: 'q-eee-13',
+    category: 'technical',
+    question: 'How do you perform short-circuit fault calculations on a 3-phase power distribution system using symmetrical components in ETAP?',
+    contextWhyAsked: 'Tests core electrical power engineering principles, positive/negative/zero sequence networks, and breaker sizing.',
+    expectedKeyPoints: ['Symmetrical components transformation', 'Zero sequence impedance modeling in transformers', 'Interrupting capacity rating of circuit breakers'],
+    candidateBackgroundEvidence: 'Candidate lists ETAP load flow and short-circuit analysis across high-voltage substations.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-eee-14',
+    category: 'technical',
+    question: 'What methods do you use to mitigate harmonic distortion and power factor lag in industrial electrical networks with non-linear VFD loads?',
+    contextWhyAsked: 'Assesses power quality standards (IEEE 519), active power filters, and capacitor bank design.',
+    expectedKeyPoints: ['Active vs passive harmonic harmonic filters', 'Total Harmonic Distortion (THD) limits under IEEE 519', 'Detuned capacitor banks to avoid resonance'],
+    candidateBackgroundEvidence: 'Candidate engineered power distribution and substation harmonic studies.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-eee-15',
+    category: 'technical',
+    question: 'How do you design protection relay coordination curves (TCC) to ensure selective tripping between upstream and downstream breakers?',
+    contextWhyAsked: 'Evaluates electrical safety, overcurrent time-dial settings, and arc-flash hazard reduction.',
+    expectedKeyPoints: ['Time-Current Characteristic (TCC) coordination margins', 'Instantaneous vs time-delay pickup settings', 'Differential and distance protection principles'],
+    candidateBackgroundEvidence: 'Candidate configured electrical protection relays in industrial facilities.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-eee-16',
+    category: 'technical',
+    question: 'In high-speed PCB design, how do you control differential pair trace impedance and prevent electromagnetic interference (EMI) cross-talk?',
+    contextWhyAsked: 'Tests PCB layout physics, stripline vs microstrip impedance calculation, ground return paths, and decoupling capacitor placement.',
+    expectedKeyPoints: ['Controlled trace width and dielectric spacing', 'Continuous ground reference planes without split voids', 'Proper termination resistors and length matching'],
+    candidateBackgroundEvidence: 'Candidate designed multi-layer PCB hardware and circuit layouts in Altium.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-eee-17',
+    category: 'technical',
+    question: 'How do you handle interrupt latency, race conditions, and critical sections in bare-metal embedded C programming on ARM Cortex-M microcontrollers?',
+    contextWhyAsked: 'Tests low-level embedded software principles, volatile keyword usage, atomic operations, and priority grouping.',
+    expectedKeyPoints: ['Volatile keyword for shared memory registers', 'Disabling interrupts or using mutexes in critical sections', 'Nested Vectored Interrupt Controller (NVIC) priority grouping'],
+    candidateBackgroundEvidence: 'Candidate programmed ARM Cortex C/C++ firmware and RTOS device drivers.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-eee-18',
+    category: 'project_deep_dive',
+    question: 'Walk us through an electrical hardware failure or grounding issue you diagnosed using an oscilloscope, and how you resolved the root cause.',
+    contextWhyAsked: 'Measures hands-on laboratory troubleshooting and diagnostic methodologies.',
+    expectedKeyPoints: ['Signal capture with digital oscilloscope', 'Ground loop or ground bounce diagnosis', 'Hardware filter or PCB trace redesign'],
+    candidateBackgroundEvidence: 'Candidate validated embedded hardware using oscilloscopes and logic analyzers.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-eee-19',
+    category: 'technical',
+    question: 'What are the main communication tradeoffs between SPI, I2C, and CAN bus protocols for automotive or industrial embedded sensor networks?',
+    contextWhyAsked: 'Assesses hardware communication bus architectures, multi-master arbitration, speed, and wire count.',
+    expectedKeyPoints: ['SPI: full duplex, fast, high pin count', 'I2C: 2-wire, addressable, slower', 'CAN bus: differential signaling, noise immune, collision arbitration'],
+    candidateBackgroundEvidence: 'Candidate implemented I2C, SPI, and CAN communication bus interfaces.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-eee-20',
+    category: 'technical',
+    question: 'How does SCADA integrate with remote terminal units (RTUs) and PLCs over Modbus/DNP3 protocols for electrical grid telemetry?',
+    contextWhyAsked: 'Evaluates industrial automation protocols, polling cycles, and substation remote monitoring.',
+    expectedKeyPoints: ['Modbus TCP/RTU register mapping', 'DNP3 timestamped event reporting', 'HMI alarm thresholds and remote breaker actuation'],
+    candidateBackgroundEvidence: 'Candidate integrated Siemens PLC and SCADA telemetry systems.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-eee-21',
+    category: 'technical',
+    question: 'Explain the working principle and thermal considerations of modern SiC (Silicon Carbide) MOSFETs compared to traditional Silicon IGBTs in power inverters.',
+    contextWhyAsked: 'Tests modern power electronics, switching frequency, gate drive design, and thermal dissipation.',
+    expectedKeyPoints: ['Wide bandgap advantages (higher breakdown voltage, lower Rds(on))', 'Higher switching frequencies reducing passive component size', 'Thermal conductivity and gate driver dv/dt transient management'],
+    candidateBackgroundEvidence: 'Candidate worked on power electronics and high-voltage circuit design.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-eee-22',
+    category: 'behavioral',
+    question: 'How do you ensure strict adherence to electrical safety protocols (e.g. Lockout/Tagout, arc flash PPE) when working on live high-voltage equipment?',
+    contextWhyAsked: 'Tests commitment to life safety, NFPA 70E compliance, and job safety analysis (JSA).',
+    expectedKeyPoints: ['LOTO (Lockout/Tagout) verification steps', 'Arc flash boundary calculation and PPE ratings', 'Zero-energy verification with calibrated meters'],
+    candidateBackgroundEvidence: 'Candidate conducted substation installations adhering to safety codes.',
+    difficulty: 'Mid'
+  },
+
+  // --- AGRICULTURE & AGTECH (AGRI) (Questions 23-32) ---
+  {
+    id: 'q-agri-23',
+    category: 'technical',
+    question: 'How do you interpret multi-spectral NDVI (Normalized Difference Vegetation Index) drone imagery to differentiate between nitrogen deficiency and fungal disease in field crops?',
+    contextWhyAsked: 'Tests precision agriculture remote sensing physics, near-infrared reflectance, and agronomic field validation.',
+    expectedKeyPoints: ['NDVI formula (NIR - Red) / (NIR + Red)', 'Spatial pattern analysis (broad uniform trends vs localized circular pathogen clusters)', 'Ground-truth soil/tissue sampling to verify canopy spectral data'],
+    candidateBackgroundEvidence: 'Candidate analyzed multi-spectral drone imagery and NDVI maps across 35,000+ crop acres.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-agri-24',
+    category: 'technical',
+    question: 'What are the steps to build a prescription map for Variable Rate Technology (VRT) fertilizer application using GIS soil sampling and historical yield data?',
+    contextWhyAsked: 'Evaluates geospatial analysis in agriculture, management zone creation, and tractor controller integration.',
+    expectedKeyPoints: ['Delineation of management zones via historical yield overlays and soil CEC/pH grids', 'Agronomic yield response curves for nitrogen/potassium', 'Exporting ISOXML / shapefiles to precision tractor controllers'],
+    candidateBackgroundEvidence: 'Candidate created variable-rate fertilizer (VRT) prescriptions using GIS spatial layers.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-agri-25',
+    category: 'technical',
+    question: 'How do you interpret a comprehensive soil test report (pH, Cation Exchange Capacity (CEC), Base Saturation, organic matter) to prescribe lime and nutrient amendments?',
+    contextWhyAsked: 'Tests soil chemistry fundamentals, nutrient availability across pH scales, and buffer pH calculations.',
+    expectedKeyPoints: ['Buffer pH used to calculate lime requirement to raise soil pH', 'CEC determining nutrient holding capacity and leaching vulnerability', 'Base saturation balance of Calcium, Magnesium, and Potassium'],
+    candidateBackgroundEvidence: 'Candidate conducted soil fertility audits and chemical composition analysis.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-agri-26',
+    category: 'technical',
+    question: 'How do IoT soil moisture sensors (capacitance vs tensiometer probes) guide automated precision irrigation scheduling to prevent both crop drought stress and root anaerobic conditions?',
+    contextWhyAsked: 'Tests agricultural IoT telemetry, field capacity vs permanent wilting point, and volumetric water content (VWC).',
+    expectedKeyPoints: ['Field Capacity (FC) vs Permanent Wilting Point (PWP)', 'Multi-depth probe telemetry tracking active root-zone absorption', 'Automated threshold triggers for solenoid valve irrigation actuation'],
+    candidateBackgroundEvidence: 'Candidate installed and networked 80+ IoT soil telemetry probes.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-agri-27',
+    category: 'technical',
+    question: 'What are the core principles of Integrated Pest Management (IPM), and how do you calculate economic injury levels (EIL) before recommending chemical or biological interventions?',
+    contextWhyAsked: 'Assesses sustainable crop protection, beneficial insect preservation, and economic threshold modeling.',
+    expectedKeyPoints: ['Economic Threshold (ET) vs Economic Injury Level (EIL)', 'Cultural, physical, biological controls before chemical application', 'Rotating pesticide Modes of Action (MOA/IRAC) to avoid pest resistance'],
+    candidateBackgroundEvidence: 'Candidate developed integrated pest management (IPM) protocols for commercial crops.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-agri-28',
+    category: 'project_deep_dive',
+    question: 'Describe an agricultural technology or farm data project where your recommendations measurably increased crop yield or reduced fertilizer runoff.',
+    contextWhyAsked: 'Measures practical agronomic impact, ROI calculation, and environmental stewardship.',
+    expectedKeyPoints: ['Baseline input and yield comparison', 'Specific tech or agronomic intervention applied', 'Measurable metric outcomes (bushels/acre lift, input cost reduction %)'],
+    candidateBackgroundEvidence: 'Candidate documented an 11.2% crop yield lift across commercial farm operations.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-agri-29',
+    category: 'technical',
+    question: 'How do you calibrate autonomous agricultural machinery guidance systems (RTK-GPS) to achieve sub-inch repeatable pass-to-pass accuracy?',
+    contextWhyAsked: 'Tests precision tractor autosteer hardware, RTK base station correction signals, and terrain compensation.',
+    expectedKeyPoints: ['Real-Time Kinematic (RTK) differential correction radio/cellular feeds', 'Terrain Compensation Module (TCM) roll and yaw calibration', 'Implement drift compensation in strip-till or planting operations'],
+    candidateBackgroundEvidence: 'Candidate calibrated precision GPS guidance and tractor controllers.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-agri-30',
+    category: 'technical',
+    question: 'What quality control and cold chain management protocols are critical to maintain post-harvest shelf life and prevent bacterial contamination (e.g. Listeria, E. coli) in organic produce?',
+    contextWhyAsked: 'Assesses post-harvest physiology, rapid pre-cooling, sanitization, and FSMA food safety rules.',
+    expectedKeyPoints: ['Hydro-cooling / forced-air pre-cooling to remove field heat within hours', 'Continuous temperature monitoring and data logging during transit', 'HACCP critical control points and organic-approved sanitizers'],
+    candidateBackgroundEvidence: 'Candidate managed post-harvest cold chain logistics under USDA Organic guidelines.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-agri-31',
+    category: 'technical',
+    question: 'How do cover crops (e.g. legumes, cereal rye) improve soil microbial biodiversity, carbon sequestration, and weed suppression between main crop rotations?',
+    contextWhyAsked: 'Tests regenerative agriculture science, nitrogen fixation by Rhizobium bacteria, and soil aggregate stability.',
+    expectedKeyPoints: ['Atmospheric nitrogen fixation by legume root nodules', 'Mycorrhizal fungal network promotion and organic matter building', 'Biomass mulch reducing soil erosion and shading weed seeds'],
+    candidateBackgroundEvidence: 'Candidate managed biological soil nutrition and crop rotation planning.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-agri-32',
+    category: 'behavioral',
+    question: 'How do you communicate complex AgTech data and spatial maps to traditional farmers who may be skeptical of automated digital recommendations?',
+    contextWhyAsked: 'Evaluates empathy, practical communication, trust-building, and agronomic advisory skills.',
+    expectedKeyPoints: ['Listening to grower field history first', 'Showing clear side-by-side test strip ROI proofs', 'Simplifying software interfaces into clear actionable steps'],
+    candidateBackgroundEvidence: 'Candidate provided agronomic crop advisory to commercial farm operators.',
+    difficulty: 'Mid'
+  },
+
+  // --- ARTS, DESIGN & MEDIA (ART / CREATIVE) (Questions 33-42) ---
+  {
+    id: 'q-art-33',
+    category: 'technical',
+    question: 'How do you establish a cohesive typography hierarchy, optical kerning, and grid system across both responsive web interfaces and large-format print publications?',
+    contextWhyAsked: 'Tests typographic fundamentals, modular scale ratios, baseline grids, x-height, and multi-format brand design.',
+    expectedKeyPoints: ['Modular type scale (e.g. Major Third 1.25 or Golden Ratio 1.618)', 'Baseline vertical rhythm alignment', 'Optical vs metric kerning adjustments for headlines vs body text'],
+    candidateBackgroundEvidence: 'Candidate designed typography systems and editorial brand guidelines recognized in design archives.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-art-34',
+    category: 'technical',
+    question: 'How do you maintain color accuracy and consistency across different color spaces (sRGB, Display P3, CMYK, and Pantone spot colors)?',
+    contextWhyAsked: 'Evaluates color theory physics, gamut clipping, rendering intents, and print production prepress.',
+    expectedKeyPoints: ['Color gamut differences between RGB additive and CMYK subtractive models', 'ICC profile management and soft-proofing in Photoshop/InDesign', 'Assigning Pantone spot colors for packaging and brand identity fidelity'],
+    candidateBackgroundEvidence: 'Candidate managed global visual brand identities and print/digital assets.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-art-35',
+    category: 'project_deep_dive',
+    question: 'Walk us through your creative direction process when rebranding an established company with legacy customer attachments.',
+    contextWhyAsked: 'Measures brand strategy, stakeholder alignment, creative brief formulation, and evolutionary vs revolutionary design.',
+    expectedKeyPoints: ['Brand audit and discovery research', 'Moodboarding and concept divergence/convergence', 'Testing visual systems across real-world collateral touchpoints'],
+    candidateBackgroundEvidence: 'Candidate led visual brand overhauls for 18+ corporate and lifestyle clients.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-art-36',
+    category: 'technical',
+    question: 'In 3D animation, how do you apply the classic 12 Principles of Animation (e.g. Squash & Stretch, Anticipation, Follow-Through) to convey weight and personality in stylized character rigs?',
+    contextWhyAsked: 'Tests character animation fundamentals, timing, spatial arcs, and keyframe curve editing.',
+    expectedKeyPoints: ['Squash and stretch preserving object volume', 'Anticipation preparing the audience for rapid action', 'Graph editor curve smoothing for natural momentum deceleration'],
+    candidateBackgroundEvidence: 'Candidate animated character movements and facial dynamics in Maya and Blender.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-art-37',
+    category: 'technical',
+    question: 'How do you design a robust character skeletal rig in Maya or Blender with seamless IK/FK switching and proper vertex skinning weight distribution?',
+    contextWhyAsked: 'Tests 3D rigging mechanics, joint orientation, deformation correction, and skinning brush tools.',
+    expectedKeyPoints: ['Inverse Kinematics (IK) for ground contact vs Forward Kinematics (FK) for fluid arcs', 'Pole vector constraints to avoid knee/elbow flipping', 'Dual quaternion skinning to eliminate joint volume pinching'],
+    candidateBackgroundEvidence: 'Candidate built character skeletal rigs and IK/FK controllers in Maya.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-art-38',
+    category: 'technical',
+    question: 'What is the difference between Physically Based Rendering (PBR) Metallic/Roughness workflow versus Specular/Glossiness in 3D shading engines?',
+    contextWhyAsked: 'Evaluates 3D texturing physics, energy conservation laws, and material channel authoring in Substance Painter.',
+    expectedKeyPoints: ['Energy conservation (reflected light cannot exceed incident light)', 'Base Color / Metallic / Roughness map channel definitions', 'Normal maps vs height displacement maps in real-time rendering'],
+    candidateBackgroundEvidence: 'Candidate developed PBR material textures and lighting setups in Blender and Maya.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-art-39',
+    category: 'technical',
+    question: 'How do you construct a design token architecture in Figma that synchronizes smoothly with frontend CSS custom properties for dark/light themes?',
+    contextWhyAsked: 'Assesses modern design system engineering, token hierarchy (Global, Semantic, Component), and developer handoff.',
+    expectedKeyPoints: ['Token naming conventions (color.surface.primary, space.md)', 'Figma variable modes mapped to CSS custom properties', 'Enforcing accessibility WCAG contrast ratios through semantic tokens'],
+    candidateBackgroundEvidence: 'Candidate created scalable component design systems in Figma.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-art-40',
+    category: 'technical',
+    question: 'How do you composite 3D render passes (Beauty, Cryptomatte, Ambient Occlusion, Depth Z-Pass) in After Effects or Nuke to achieve cinematic depth of field and color grading?',
+    contextWhyAsked: 'Tests visual effects post-production, multi-pass EXR rendering, and optical camera lens simulation.',
+    expectedKeyPoints: ['Linear 32-bit color space compositing', 'Using Depth Z-pass for optical camera depth-of-field blurring', 'Ambient occlusion multiplication for contact shadows'],
+    candidateBackgroundEvidence: 'Candidate composited visual effects and motion graphics.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-art-41',
+    category: 'behavioral',
+    question: 'How do you handle severe creative differences with an executive client who insists on an aesthetic direction that violates design best practices?',
+    contextWhyAsked: 'Evaluates creative diplomacy, objective design rationale, user testing data justification, and leadership.',
+    expectedKeyPoints: ['Framing critiques around target audience goals rather than personal subjective taste', 'Presenting A/B visual mockups highlighting readability/conversion differences', 'Finding collaborative compromise while preserving brand integrity'],
+    candidateBackgroundEvidence: 'Candidate pitched and led creative direction with senior executive clients.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-art-42',
+    category: 'technical',
+    question: 'How do you optimize 3D asset geometry, texture atlasing, and draw calls for real-time interactive experiences in Unreal Engine 5 or WebGL?',
+    contextWhyAsked: 'Tests technical art optimization, LOD (Level of Detail) generation, UV packing, and Nanite geometry mesh rules.',
+    expectedKeyPoints: ['Quad/Tri topology flow without non-manifold geometry', 'UV texture atlasing reducing material draw calls', 'Level of Detail (LOD) distance scaling or Nanite virtualized geometry'],
+    candidateBackgroundEvidence: 'Candidate optimized 3D polygon counts and real-time render performance.',
+    difficulty: 'Mid'
+  },
+
+  // --- MECHANICAL & CIVIL ENGINEERING (Questions 43-48) ---
+  {
+    id: 'q-mech-43',
+    category: 'technical',
+    question: 'How do you determine appropriate Geometric Dimensioning and Tolerancing (GD&T) datum references and Maximum Material Condition (MMC) modifiers in SolidWorks manufacturing drawings?',
+    contextWhyAsked: 'Tests mechanical drafting standards (ASME Y14.5), tolerance stack-up analysis, and assembly fit interchangeability.',
+    expectedKeyPoints: ['Datum reference frame (Primary, Secondary, Tertiary)', 'True position tolerance calculation at MMC (Bonus tolerance)', 'Runout, flatness, and perpendicularity inspection verification'],
+    candidateBackgroundEvidence: 'Candidate created parametric 3D CAD assemblies and 2D drawings with GD&T tolerances.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-mech-44',
+    category: 'technical',
+    question: 'In FEA structural simulation in ANSYS, how do you verify mesh convergence and choose appropriate boundary condition constraints to avoid artificial stress singularities?',
+    contextWhyAsked: 'Assesses finite element analysis accuracy, mesh refinement studies, element types (Tetrahedral vs Hexahedral), and Saint-Venant’s Principle.',
+    expectedKeyPoints: ['Mesh refinement at high-stress gradient fillets until stress asymptotes (<5% change)', 'Identifying point loads or sharp re-entrant corners causing infinite stress singularities', 'Applying realistic distributed face loads and frictionless/fixed support boundaries'],
+    candidateBackgroundEvidence: 'Candidate validated structural integrity and thermal dissipation in ANSYS FEA.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-civil-45',
+    category: 'technical',
+    question: 'How do you design a reinforced concrete beam for both ultimate flexural limit state (bending) and serviceability limit state (deflection/crack control) under ACI 318 building codes?',
+    contextWhyAsked: 'Evaluates structural concrete engineering, tension rebar area calculation, neutral axis depth, and shear stirrup spacing.',
+    expectedKeyPoints: ['Whitney stress block for moment capacity (Mn = As * fy * (d - a/2))', 'Under-reinforced design ensuring ductile tension steel yielding before concrete crushing', 'Shear reinforcement spacing (Vu <= phi * (Vc + Vs)) and crack control bar distribution'],
+    candidateBackgroundEvidence: 'Candidate conducted structural analysis and concrete design in civil engineering.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-civil-46',
+    category: 'technical',
+    question: 'How do you calculate seismic equivalent lateral base shear forces on multi-story building frames following ASCE 7-16 and IBC codes?',
+    contextWhyAsked: 'Tests earthquake engineering, spectral response acceleration parameters (Ss, S1), seismic design category (SDC), and structural fundamental period (T).',
+    expectedKeyPoints: ['Seismic Base Shear formula V = Cs * W', 'Fundamental natural period calculation (T = Ct * hn^x)', 'Response modification coefficient (R) reflecting structural ductility and energy dissipation'],
+    candidateBackgroundEvidence: 'Candidate calculated structural load paths and seismic shear forces in ETABS/SAP2000.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-mech-47',
+    category: 'technical',
+    question: 'What are the main Design for Manufacturability (DFM) guidelines for plastic injection molded parts regarding uniform wall thickness, draft angles, and rib-to-wall ratios?',
+    contextWhyAsked: 'Tests manufacturing engineering physics, sink mark prevention, mold ejection, and weld line mitigation.',
+    expectedKeyPoints: ['Uniform wall thickness to avoid differential cooling shrinkage and warping', '0.5° to 2° minimum draft angle for clean core/cavity mold release', 'Rib thickness limited to 50-60% of nominal wall to prevent surface sink marks'],
+    candidateBackgroundEvidence: 'Candidate designed mechanical component assemblies under DFM/DFA principles.',
+    difficulty: 'Mid'
+  },
+  {
+    id: 'q-mech-48',
+    category: 'project_deep_dive',
+    question: 'Walk us through a physical mechanical prototype failure during thermal or shock testing, and what engineering modifications you made to pass validation.',
+    contextWhyAsked: 'Evaluates experimental validation methodology, root-cause thermal/mechanical analysis, and iterative redesign.',
+    expectedKeyPoints: ['Test parameters (temperature cycling range, vibration spectrum)', 'Failure mode identification (fatigue crack, thermal throttling, plastic deformation)', 'Design modification (heat pipe integration, material change, gusset reinforcement) and verified re-test'],
+    candidateBackgroundEvidence: 'Candidate designed aluminum enclosures validated under 50G shock loads.',
+    difficulty: 'Senior'
+  },
+
+  // --- HEALTHCARE & GENERAL EXECUTIVE (Questions 49-50) ---
+  {
+    id: 'q-health-49',
+    category: 'technical',
+    question: 'How do you ensure strict FDA Good Clinical Practice (GCP) and 21 CFR Part 11 electronic records compliance during patient telemetry data capture in multi-site clinical trials?',
+    contextWhyAsked: 'Tests biomedical research compliance, electronic audit trails, patient privacy (HIPAA), and adverse event reporting workflows.',
+    expectedKeyPoints: ['Immutable electronic signature audit trails under 21 CFR Part 11', 'Informed consent documentation and patient de-identification', 'Standardized reporting of Serious Adverse Events (SAEs) within mandated 24-48h windows'],
+    candidateBackgroundEvidence: 'Candidate managed clinical trial protocols and medical diagnostic telemetry.',
+    difficulty: 'Senior'
+  },
+  {
+    id: 'q-lead-50',
+    category: 'behavioral',
+    question: 'How do you prioritize competing deadlines across multiple cross-functional projects when business goals and technical constraints change simultaneously?',
+    contextWhyAsked: 'Tests executive composure, agile backlog prioritization, impact matrix analysis, and transparent communication.',
+    expectedKeyPoints: ['Eisenhower / Value-vs-Effort matrix triage', 'Transparent dependency mapping and early stakeholder re-alignment', 'Focusing team velocity on mission-critical deliverables'],
+    candidateBackgroundEvidence: 'Candidate led cross-functional teams and managed high-concurrency production workflows.',
+    difficulty: 'Senior'
+  }
+];
+
+export const INITIAL_AUDIT_LOGS: ATSAuditRecord[] = [
+  {
+    id: 'audit-001',
+    candidateName: 'Alex Rivera',
+    jobTitle: 'Senior Data Analyst',
+    overallScore: 89,
+    confidenceScore: 94,
+    breakdown: {
+      skills: 92,
+      experience: 95,
+      responsibilities: 86,
+      projects: 90,
+      education: 95
+    },
+    modelVersion: 'ATS-Hybrid-v2.6',
+    scoringVersion: 'Deterministic-Evidence-v1.4',
+    timestamp: '2026-08-12T14:30:00Z',
+    extractionQuality: 'high (100% text fidelity)',
+    reviewerDecision: 'Shortlisted for Phone Screen',
+    reviewerNotes: 'Verified Power BI certification and SQL pipeline depth.'
+  },
+  {
+    id: 'audit-002',
+    candidateName: 'Karthik Subramanian',
+    jobTitle: 'Electrical Power Systems Engineer',
+    overallScore: 91,
+    confidenceScore: 95,
+    breakdown: {
+      skills: 94,
+      experience: 90,
+      responsibilities: 92,
+      projects: 88,
+      education: 95
+    },
+    modelVersion: 'ATS-Hybrid-v2.6',
+    scoringVersion: 'Deterministic-Evidence-v1.4',
+    timestamp: '2026-08-11T16:15:00Z',
+    extractionQuality: 'high (Clean format)',
+    reviewerDecision: 'Technical Interview Passed',
+    reviewerNotes: 'Strong ETAP and high-voltage substation experience.'
+  },
+  {
+    id: 'audit-003',
+    candidateName: 'Elena Ramos',
+    jobTitle: 'Precision Agriculture & AgTech Specialist',
+    overallScore: 88,
+    confidenceScore: 93,
+    breakdown: {
+      skills: 90,
+      experience: 92,
+      responsibilities: 88,
+      projects: 85,
+      education: 90
+    },
+    modelVersion: 'ATS-Hybrid-v2.6',
+    scoringVersion: 'Deterministic-Evidence-v1.4',
+    timestamp: '2026-08-11T11:20:00Z',
+    extractionQuality: 'high (Structured Agronomy CV)',
+    reviewerDecision: 'Shortlisted for Field AgTech Lead',
+    reviewerNotes: 'Verified CCA license and drone GIS analytics background.'
+  }
+];
+
 export function generateInitialCandidateApplications(): CandidateApplication[] {
-  const defaultJob = SAMPLE_JOBS[0]; // Senior Data Analyst
+  const defaultJob = SAMPLE_JOBS[0];
 
-  const candidatesMeta = [
+  return [
     {
-      resume: SAMPLE_CANDIDATE_RESUMES[0],
-      stage: 'shortlisted' as const,
-      tags: ['Top Match', 'Power BI Certified', 'UC Berkeley'],
-      rating: 5,
-      appliedDate: '2026-08-10T14:22:00Z',
-      notes: ['Exemplary domain knowledge in SQL & Power BI. Recommended for technical phone screen.']
-    },
-    {
-      resume: SAMPLE_CANDIDATE_RESUMES[1],
-      stage: 'screening' as const,
-      tags: ['Strong ML', 'FastAPI'],
-      rating: 4,
-      appliedDate: '2026-08-11T09:15:00Z',
-      notes: ['Deep technical skills, but slightly more focused on ML than standard BI pipelines.']
-    },
-    {
-      resume: SAMPLE_CANDIDATE_RESUMES[2],
-      stage: 'applied' as const,
-      tags: ['Full Stack Dev', 'TypeScript'],
-      rating: 3,
-      appliedDate: '2026-08-12T11:40:00Z',
-      notes: ['Full-stack engineer applying to analytics position. Assess data query depth.']
-    },
-    {
-      resume: {
-        id: 'resume-david-kim',
-        versionName: 'David Kim - BI Specialist',
-        createdAt: '2026-08-09T08:00:00Z',
-        updatedAt: '2026-08-09T08:00:00Z',
-        fullName: 'David Kim',
-        email: 'david.kim.analytics@example.com',
-        phone: '+1 (555) 345-6789',
-        location: 'San Francisco, CA',
-        summary: 'Data Analyst with 5 years experience in SQL, Tableau, Power BI, Excel, and Snowflake data modeling.',
-        skills: {
-          technical: ['SQL', 'Tableau', 'Power BI', 'Excel', 'Snowflake', 'Data Analysis', 'Python'],
-          soft: ['Problem Solving', 'Communication'],
-          tools: ['Git', 'dbt', 'Jira']
-        },
-        experience: [
-          {
-            id: 'exp-dk-1',
-            company: 'PayStream Corp',
-            jobTitle: 'Senior Data Analyst',
-            startDate: '2021-04',
-            endDate: '2026-08',
-            isCurrent: true,
-            description: 'Designed enterprise KPI dashboards in Power BI and SQL for financial compliance.',
-            technologies: ['SQL', 'Power BI', 'Tableau', 'Snowflake']
-          }
-        ],
-        education: [
-          {
-            id: 'edu-dk-1',
-            institution: 'San Jose State University',
-            degree: 'BS',
-            fieldOfStudy: 'Applied Economics & Analytics',
-            graduationYear: '2020'
-          }
-        ],
-        projects: [
-          {
-            id: 'proj-dk-1',
-            title: 'Revenue Analytics Platform',
-            description: 'Snowflake + Power BI pipeline providing real-time financial summaries.',
-            technologies: ['Snowflake', 'Power BI', 'SQL']
-          }
-        ],
-        certifications: [
-          {
-            id: 'cert-dk-1',
-            name: 'Tableau Desktop Certified Associate',
-            issuer: 'Tableau',
-            issueDate: '2022-05'
-          }
-        ],
-        extractionQuality: 'high' as const
-      },
-      stage: 'interview' as const,
-      tags: ['Interview Scheduled', 'Snowflake Specialist'],
-      rating: 5,
-      appliedDate: '2026-08-08T18:00:00Z',
-      interviewScheduledDate: '2026-08-16T15:00:00Z',
-      notes: ['Technical round 1 passed with flying colors. Panel interview scheduled.']
-    },
-    {
-      resume: {
-        id: 'resume-priya-patel',
-        versionName: 'Priya Patel - Junior Analyst',
-        createdAt: '2026-08-12T10:00:00Z',
-        updatedAt: '2026-08-12T10:00:00Z',
-        fullName: 'Priya Patel',
-        email: 'priya.patel@example.com',
-        phone: '+1 (555) 901-2345',
-        location: 'Remote, US',
-        summary: 'Recent Graduate with strong academic foundation in SQL, Python, and Statistics. Eager to contribute to high-growth data teams.',
-        skills: {
-          technical: ['SQL', 'Python', 'Excel', 'Data Analysis'],
-          soft: ['Fast Learner', 'Collaboration'],
-          tools: ['Jupyter', 'Git']
-        },
-        experience: [
-          {
-            id: 'exp-pp-1',
-            company: 'StatSolutions Lab',
-            jobTitle: 'Data Analyst Intern',
-            startDate: '2025-06',
-            endDate: '2025-12',
-            isCurrent: false,
-            description: 'Assisted in preparing monthly revenue reports and cleaning raw survey data in Python.',
-            technologies: ['Python', 'SQL', 'Excel']
-          }
-        ],
-        education: [
-          {
-            id: 'edu-pp-1',
-            institution: 'University of Illinois',
-            degree: 'BS',
-            fieldOfStudy: 'Statistics',
-            graduationYear: '2025'
-          }
-        ],
-        projects: [],
-        certifications: [],
-        extractionQuality: 'high' as const
-      },
-      stage: 'on_hold' as const,
-      tags: ['Junior Profile', 'Good Potential'],
-      rating: 3,
-      appliedDate: '2026-08-12T15:30:00Z',
-      notes: ['High potential candidate for junior roles; currently under seniority baseline for Senior role.']
-    }
-  ];
-
-  return candidatesMeta.map((cand, idx) => {
-    const analysis = evaluateResumeAgainstJob(cand.resume, defaultJob);
-    return {
-      id: `app-${idx + 1}`,
-      candidateId: cand.resume.id,
-      candidateName: cand.resume.fullName,
-      candidateEmail: cand.resume.email,
-      candidatePhone: cand.resume.phone,
+      id: 'app-alex',
+      candidateId: SAMPLE_CANDIDATE_RESUMES[0].id,
+      candidateName: SAMPLE_CANDIDATE_RESUMES[0].fullName,
+      candidateEmail: SAMPLE_CANDIDATE_RESUMES[0].email,
+      candidatePhone: SAMPLE_CANDIDATE_RESUMES[0].phone,
       jobId: defaultJob.id,
       jobTitle: defaultJob.title,
       companyName: defaultJob.company,
-      appliedDate: cand.appliedDate,
-      stage: cand.stage,
-      resume: cand.resume,
-      atsAnalysis: analysis,
-      recruiterNotes: cand.notes,
-      tags: cand.tags,
-      recruiterRating: cand.rating,
-      interviewScheduledDate: cand.interviewScheduledDate
-    };
-  });
-}
-
-/**
- * Generator for bulk resumes simulation
- */
-export function generateBulkResumes(count: number): StructuredResume[] {
-  const names = [
-    'Liam Smith', 'Olivia Johnson', 'Noah Williams', 'Emma Brown', 'James Jones', 'Ava Garcia',
-    'William Miller', 'Sophia Davis', 'Benjamin Rodriguez', 'Isabella Martinez', 'Lucas Hernandez',
-    'Mia Lopez', 'Henry Gonzalez', 'Evelyn Wilson', 'Alexander Anderson', 'Harper Thomas',
-    'Sebastian Taylor', 'Camila Moore', 'Jack Jackson', 'Gianna Martin', 'Samuel Lee',
-    'Abigail Perez', 'Matthew Thompson', 'Emily White', 'Daniel Harris', 'Elizabeth Sanchez',
-    'Michael Clark', 'Avery Ramirez', 'Ethan Lewis', 'Sofia Robinson', 'Logan Walker',
-    'Ella Young', 'Jackson Allen', 'Madison King', 'Aiden Wright', 'Scarlett Scott',
-    'Oliver Torres', 'Victoria Nguyen', 'Elijah Hill', 'Aria Flores', 'Jacob Green'
-  ];
-
-  const colleges = ['UC Berkeley', 'Stanford University', 'MIT', 'Georgia Tech', 'UT Austin', 'Univ of Washington', 'UIUC', 'NYU', 'Carnegie Mellon', 'UCLA'];
-  const skillPool = ['SQL', 'Python', 'Power BI', 'Tableau', 'Excel', 'Snowflake', 'dbt', 'Pandas', 'FastAPI', 'Docker', 'AWS', 'PostgreSQL', 'Spark', 'A/B Testing', 'Statistics'];
-
-  const results: StructuredResume[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const name = `${names[i % names.length]} ${i >= names.length ? `#${Math.floor(i / names.length) + 1}` : ''}`.trim();
-    const email = `${name.toLowerCase().replace(/[^a-z0-9]/g, '.')}@example.com`;
-    const yearsExp = Math.round((2 + (i % 8) * 1.2 + (Math.random() * 2)) * 10) / 10;
-    
-    const randSkillCount = 4 + (i % 7);
-    const candidateSkills: string[] = [];
-    for (let s = 0; s < randSkillCount; s++) {
-      const sk = skillPool[(i * 3 + s) % skillPool.length];
-      if (!candidateSkills.includes(sk)) candidateSkills.push(sk);
+      appliedDate: '2026-08-10T14:22:00Z',
+      stage: 'shortlisted',
+      resume: SAMPLE_CANDIDATE_RESUMES[0],
+      atsAnalysis: evaluateResumeAgainstJob(SAMPLE_CANDIDATE_RESUMES[0], defaultJob),
+      recruiterNotes: ['Exemplary domain knowledge in SQL & Power BI. Recommended for technical phone screen.'],
+      tags: ['Top Match', 'Power BI Certified', 'UC Berkeley'],
+      recruiterRating: 5
+    },
+    {
+      id: 'app-sophia',
+      candidateId: SAMPLE_CANDIDATE_RESUMES[1].id,
+      candidateName: SAMPLE_CANDIDATE_RESUMES[1].fullName,
+      candidateEmail: SAMPLE_CANDIDATE_RESUMES[1].email,
+      candidatePhone: SAMPLE_CANDIDATE_RESUMES[1].phone,
+      jobId: defaultJob.id,
+      jobTitle: defaultJob.title,
+      companyName: defaultJob.company,
+      appliedDate: '2026-08-11T09:15:00Z',
+      stage: 'screening',
+      resume: SAMPLE_CANDIDATE_RESUMES[1],
+      atsAnalysis: evaluateResumeAgainstJob(SAMPLE_CANDIDATE_RESUMES[1], defaultJob),
+      recruiterNotes: ['Deep technical skills, but slightly more focused on ML than standard BI pipelines.'],
+      tags: ['Strong ML', 'FastAPI'],
+      recruiterRating: 4
+    },
+    {
+      id: 'app-karthik',
+      candidateId: SAMPLE_CANDIDATE_RESUMES[2].id,
+      candidateName: SAMPLE_CANDIDATE_RESUMES[2].fullName,
+      candidateEmail: SAMPLE_CANDIDATE_RESUMES[2].email,
+      candidatePhone: SAMPLE_CANDIDATE_RESUMES[2].phone,
+      jobId: defaultJob.id,
+      jobTitle: defaultJob.title,
+      companyName: defaultJob.company,
+      appliedDate: '2026-08-11T15:30:00Z',
+      stage: 'screening',
+      resume: SAMPLE_CANDIDATE_RESUMES[2],
+      atsAnalysis: evaluateResumeAgainstJob(SAMPLE_CANDIDATE_RESUMES[2], defaultJob),
+      recruiterNotes: ['Electrical engineering background. Strong quantitative modeling.'],
+      tags: ['EEE Specialist', 'ETAP / Power'],
+      recruiterRating: 4
+    },
+    {
+      id: 'app-elena',
+      candidateId: SAMPLE_CANDIDATE_RESUMES[3].id,
+      candidateName: SAMPLE_CANDIDATE_RESUMES[3].fullName,
+      candidateEmail: SAMPLE_CANDIDATE_RESUMES[3].email,
+      candidatePhone: SAMPLE_CANDIDATE_RESUMES[3].phone,
+      jobId: defaultJob.id,
+      jobTitle: defaultJob.title,
+      companyName: defaultJob.company,
+      appliedDate: '2026-08-12T08:45:00Z',
+      stage: 'applied',
+      resume: SAMPLE_CANDIDATE_RESUMES[3],
+      atsAnalysis: evaluateResumeAgainstJob(SAMPLE_CANDIDATE_RESUMES[3], defaultJob),
+      recruiterNotes: ['Agronomy specialist. Review analytical and GIS skills transfer.'],
+      tags: ['Agri / GIS', 'Drone Certified'],
+      recruiterRating: 3
     }
-
-    const extractionQuality: 'high' | 'medium' | 'low' = i % 15 === 0 ? 'low' : i % 6 === 0 ? 'medium' : 'high';
-
-    results.push({
-      id: `bulk-resume-${i + 1}`,
-      versionName: `${name} - Resume`,
-      createdAt: new Date(Date.now() - (count - i) * 3600000).toISOString(),
-      updatedAt: new Date().toISOString(),
-      fullName: name,
-      email,
-      phone: `+1 (555) ${100 + (i % 900)}-${1000 + (i % 9000)}`,
-      location: i % 3 === 0 ? 'San Francisco, CA' : i % 2 === 0 ? 'Remote' : 'Austin, TX',
-      summary: `Experienced analytical professional with ${yearsExp} years specializing in ${candidateSkills.slice(0, 3).join(', ')} and database analytics.`,
-      skills: {
-        technical: candidateSkills,
-        soft: ['Communication', 'Analytical Thinking', 'Teamwork'],
-        tools: ['Git', 'Excel', 'Docker']
-      },
-      experience: [
-        {
-          id: `exp-${i}-1`,
-          company: `Tech Enterprise ${((i % 10) + 1)}`,
-          jobTitle: yearsExp >= 4 ? 'Senior Data Specialist' : 'Data Analyst',
-          startDate: `${2026 - Math.floor(yearsExp)}-01`,
-          endDate: '2026-08',
-          isCurrent: true,
-          description: `Managed data reporting pipelines, executed SQL queries, and generated business intelligence metrics using ${candidateSkills.slice(0, 2).join(' and ')}.`,
-          technologies: candidateSkills.slice(0, 4)
-        }
-      ],
-      education: [
-        {
-          id: `edu-${i}`,
-          institution: colleges[i % colleges.length],
-          degree: 'Bachelor of Science',
-          fieldOfStudy: 'Computer Science / Analytics',
-          graduationYear: `${2026 - Math.floor(yearsExp) - 1}`
-        }
-      ],
-      projects: [
-        {
-          id: `proj-${i}`,
-          title: `Analytics & Reporting Hub`,
-          description: `Built automated dashboards tracking business performance using ${candidateSkills.slice(0, 2).join(', ')}.`,
-          technologies: candidateSkills.slice(0, 3)
-        }
-      ],
-      certifications: i % 3 === 0 ? [{ id: `c-${i}`, name: 'Microsoft Certified: Power BI Associate', issuer: 'Microsoft', issueDate: '2024-01' }] : [],
-      extractionQuality
-    });
-  }
-
-  return results;
+  ];
 }
 
-/**
- * Generator for bulk processing simulation (up to 400 realistic candidates)
- */
-export function generateBulkCandidatePool(count: number, targetJob: JobRequirement): CandidateApplication[] {
-  const names = [
-    'Liam Smith', 'Olivia Johnson', 'Noah Williams', 'Emma Brown', 'James Jones', 'Ava Garcia',
-    'William Miller', 'Sophia Davis', 'Benjamin Rodriguez', 'Isabella Martinez', 'Lucas Hernandez',
-    'Mia Lopez', 'Henry Gonzalez', 'Evelyn Wilson', 'Alexander Anderson', 'Harper Thomas',
-    'Sebastian Taylor', 'Camila Moore', 'Jack Jackson', 'Gianna Martin', 'Samuel Lee',
-    'Abigail Perez', 'Matthew Thompson', 'Emily White', 'Daniel Harris', 'Elizabeth Sanchez',
-    'Michael Clark', 'Avery Ramirez', 'Ethan Lewis', 'Sofia Robinson', 'Logan Walker',
-    'Ella Young', 'Jackson Allen', 'Madison King', 'Aiden Wright', 'Scarlett Scott',
-    'Oliver Torres', 'Victoria Nguyen', 'Elijah Hill', 'Aria Flores', 'Jacob Green'
-  ];
-
-  const colleges = ['UC Berkeley', 'Stanford University', 'MIT', 'Georgia Tech', 'UT Austin', 'Univ of Washington', 'UIUC', 'NYU', 'Carnegie Mellon', 'UCLA'];
-  const skillPool = ['SQL', 'Python', 'Power BI', 'Tableau', 'Excel', 'Snowflake', 'dbt', 'Pandas', 'FastAPI', 'Docker', 'AWS', 'PostgreSQL', 'Spark', 'A/B Testing', 'Statistics'];
+export function generateBulkResumes(count: number = 50, targetJob: JobRequirement): CandidateApplication[] {
+  const firstNames = ['James', 'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Ethan', 'Sophia', 'Mason', 'Isabella', 'Lucas', 'Mia', 'Oliver', 'Charlotte', 'Elijah', 'Amelia', 'Aiden', 'Harper', 'Karthik', 'Elena', 'Maya', 'Marcus', 'Priya', 'Rohan', 'Chen', 'Fatima', 'Tariq', 'Sora', 'Lukas', 'Ananya'];
+  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'];
+  const colleges = ['UC Berkeley', 'MIT', 'Stanford University', 'Texas A&M', 'Iowa State', 'RISD', 'University of Washington', 'Carnegie Mellon', 'Georgia Tech', 'UT Austin', 'Univ of Michigan', 'Cornell University'];
 
   const results: CandidateApplication[] = [];
+  const skillPool = targetJob.requiredSkills.concat(targetJob.preferredSkills || ['SQL', 'Python', 'Problem Solving', 'Communication', 'Git']);
 
   for (let i = 0; i < count; i++) {
-    const name = `${names[i % names.length]} ${i >= names.length ? `#${Math.floor(i / names.length) + 1}` : ''}`.trim();
-    const email = `${name.toLowerCase().replace(/[^a-z0-9]/g, '.')}@example.com`;
-    const yearsExp = Math.round((2 + (i % 8) * 1.2 + (Math.random() * 2)) * 10) / 10;
-    
-    // Pick random subset of skills
-    const randSkillCount = 4 + (i % 7);
+    const fName = firstNames[i % firstNames.length];
+    const lName = lastNames[(i * 3 + 7) % lastNames.length];
+    const name = `${fName} ${lName}`;
+    const email = `${fName.toLowerCase()}.${lName.toLowerCase()}${i + 1}@example.com`;
+    const yearsExp = Math.max(1, Math.round(((i * 7) % 9 + 1) * 10) / 10);
+
     const candidateSkills: string[] = [];
-    for (let s = 0; s < randSkillCount; s++) {
+    const skillCount = 3 + (i % 6);
+    for (let s = 0; s < skillCount; s++) {
       const sk = skillPool[(i * 3 + s) % skillPool.length];
-      if (!candidateSkills.includes(sk)) candidateSkills.push(sk);
+      if (sk && !candidateSkills.includes(sk)) candidateSkills.push(sk);
     }
 
     const extractionQuality: 'high' | 'medium' | 'low' = i % 15 === 0 ? 'low' : i % 6 === 0 ? 'medium' : 'high';
 
     const resume: StructuredResume = {
       id: `bulk-resume-${i + 1}`,
-      versionName: `${name} - Resume`,
+      versionName: `${name} - Professional CV`,
       createdAt: new Date(Date.now() - (count - i) * 3600000).toISOString(),
       updatedAt: new Date().toISOString(),
       fullName: name,
       email,
       phone: `+1 (555) ${100 + (i % 900)}-${1000 + (i % 9000)}`,
       location: i % 3 === 0 ? 'San Francisco, CA' : i % 2 === 0 ? 'Remote' : 'Austin, TX',
-      summary: `Experienced analytical professional with ${yearsExp} years specializing in ${candidateSkills.slice(0, 3).join(', ')} and database analytics.`,
+      summary: `Experienced professional with ${yearsExp} years of background specializing in ${candidateSkills.slice(0, 3).join(', ')}.`,
       skills: {
         technical: candidateSkills,
         soft: ['Communication', 'Analytical Thinking', 'Teamwork'],
@@ -1321,12 +1554,12 @@ export function generateBulkCandidatePool(count: number, targetJob: JobRequireme
       experience: [
         {
           id: `exp-${i}-1`,
-          company: `Tech Enterprise ${((i % 10) + 1)}`,
-          jobTitle: yearsExp >= 4 ? 'Senior Data Specialist' : 'Data Analyst',
+          company: `Enterprise Org ${((i % 10) + 1)}`,
+          jobTitle: yearsExp >= 4 ? `Senior ${targetJob.title.split(' ')[0]}` : targetJob.title,
           startDate: `${2026 - Math.floor(yearsExp)}-01`,
           endDate: '2026-08',
           isCurrent: true,
-          description: `Managed data reporting pipelines, executed SQL queries, and generated business intelligence metrics using ${candidateSkills.slice(0, 2).join(' and ')}.`,
+          description: `Managed deliverables, executed projects, and optimized workflows using ${candidateSkills.slice(0, 2).join(' and ')}.`,
           technologies: candidateSkills.slice(0, 4)
         }
       ],
@@ -1335,19 +1568,19 @@ export function generateBulkCandidatePool(count: number, targetJob: JobRequireme
           id: `edu-${i}`,
           institution: colleges[i % colleges.length],
           degree: 'Bachelor of Science',
-          fieldOfStudy: 'Computer Science / Analytics',
+          fieldOfStudy: targetJob.department || 'Relevant Discipline',
           graduationYear: `${2026 - Math.floor(yearsExp) - 1}`
         }
       ],
       projects: [
         {
           id: `proj-${i}`,
-          title: `Analytics & Reporting Hub`,
-          description: `Built automated dashboards tracking business performance using ${candidateSkills.slice(0, 2).join(', ')}.`,
+          title: `${targetJob.title.split(' ')[0]} Production System`,
+          description: `Designed and built solutions utilizing ${candidateSkills.slice(0, 2).join(', ')}.`,
           technologies: candidateSkills.slice(0, 3)
         }
       ],
-      certifications: i % 3 === 0 ? [{ id: `c-${i}`, name: 'Microsoft Certified: Power BI Associate', issuer: 'Microsoft', issueDate: '2024-01' }] : [],
+      certifications: i % 3 === 0 ? [{ id: `c-${i}`, name: targetJob.requiredCertifications?.[0] || 'Professional Certified Associate', issuer: 'Accredited Authority', issueDate: '2024-01' }] : [],
       extractionQuality
     };
 
@@ -1379,65 +1612,3 @@ export function generateBulkCandidatePool(count: number, targetJob: JobRequireme
   return results;
 }
 
-export const INITIAL_AUDIT_LOGS: ATSAuditRecord[] = [
-  {
-    id: 'audit-001',
-    candidateName: 'Alex Rivera',
-    jobTitle: 'Senior Data Analyst',
-    overallScore: 89,
-    confidenceScore: 94,
-    breakdown: {
-      skills: 92,
-      experience: 95,
-      responsibilities: 86,
-      projects: 90,
-      education: 95
-    },
-    modelVersion: 'ATS-Hybrid-v2.6',
-    scoringVersion: 'Deterministic-Evidence-v1.4',
-    timestamp: '2026-08-12T14:30:00Z',
-    extractionQuality: 'high (100% text fidelity)',
-    reviewerDecision: 'Shortlisted for Phone Screen',
-    reviewerNotes: 'Verified Power BI certification and SQL pipeline depth.'
-  },
-  {
-    id: 'audit-002',
-    candidateName: 'David Kim',
-    jobTitle: 'Senior Data Analyst',
-    overallScore: 87,
-    confidenceScore: 92,
-    breakdown: {
-      skills: 90,
-      experience: 95,
-      responsibilities: 84,
-      projects: 85,
-      education: 85
-    },
-    modelVersion: 'ATS-Hybrid-v2.6',
-    scoringVersion: 'Deterministic-Evidence-v1.4',
-    timestamp: '2026-08-11T16:15:00Z',
-    extractionQuality: 'high (Clean format)',
-    reviewerDecision: 'Technical Interview Passed',
-    reviewerNotes: 'Strong Snowflake architecture knowledge.'
-  },
-  {
-    id: 'audit-003',
-    candidateName: 'Sophia Zhang',
-    jobTitle: 'Machine Learning Engineer',
-    overallScore: 93,
-    confidenceScore: 96,
-    breakdown: {
-      skills: 95,
-      experience: 90,
-      responsibilities: 92,
-      projects: 95,
-      education: 95
-    },
-    modelVersion: 'ATS-Hybrid-v2.6',
-    scoringVersion: 'Deterministic-Evidence-v1.4',
-    timestamp: '2026-08-11T11:20:00Z',
-    extractionQuality: 'high (Structured LaTeX CV)',
-    reviewerDecision: 'Shortlisted for Deep AI Round',
-    reviewerNotes: 'Direct match for PyTorch and Sentence-BERT transformers.'
-  }
-];
