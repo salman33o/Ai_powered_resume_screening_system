@@ -7,13 +7,13 @@ import {
 import { 
   Wand2, 
   CheckCircle2, 
-  TrendingUp, 
   ArrowRight, 
   Edit3, 
   Save, 
   RefreshCw,
   AlertCircle,
-  FileCheck
+  FileCheck,
+  Check
 } from 'lucide-react';
 import { optimizeResumeApi } from '../../services/apiClient';
 
@@ -81,204 +81,172 @@ export const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
   return (
     <div className="space-y-4">
       
-      {/* Top Banner */}
-      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+      {/* 01. Header */}
+      <div className="surface-panel p-4 flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Deterministic Content Alignment</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0E1A29] text-teal-300 border border-[#223348]">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">
+              Content Refinement & Evidence Alignment
+            </span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded surface-subtle text-[var(--text-secondary)] border border-[var(--border)]">
               Zero Fabrication
             </span>
           </div>
-          <h2 className="text-lg font-bold text-[#E6EAF0] font-display mt-0.5">
+          <h2 className="text-lg font-bold text-[var(--text-primary)] font-display mt-0.5 tracking-tight">
             Role-Specific Resume Alignment
           </h2>
-          <p className="text-xs text-[#8A97A8] mt-0.5">
-            Align verified technical achievements with <span className="font-semibold text-[#E6EAF0]">{job.title}</span> requirements.
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+            Refine existing verified achievements to address <strong className="text-[var(--text-primary)]">{job.title}</strong> evaluation metrics.
           </p>
         </div>
 
         <button
           onClick={fetchOptimizations}
           disabled={isOptimizing}
-          className="px-3.5 py-1.5 rounded bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-slate-950 text-xs font-bold font-mono flex items-center space-x-1.5 transition-colors cursor-pointer"
+          className="btn-primary text-xs"
         >
           <Wand2 className={`w-3.5 h-3.5 ${isOptimizing ? 'animate-spin' : ''}`} />
-          <span>{isOptimizing ? 'Evaluating Alignments...' : 'Generate Optimization Plan'}</span>
+          <span>{isOptimizing ? 'Evaluating Alignments...' : 'Generate Alignment Plan'}</span>
         </button>
       </div>
 
-      {/* Score Comparison Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono">
+      {/* 02. Score Projection Metric Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
         
         {/* Current Score */}
-        <div className="bg-[#131F30] rounded-lg p-3.5 border border-[#223348] flex items-center justify-between">
+        <div className="surface-panel p-3.5 flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-semibold text-[#8A97A8] uppercase">Current Match</span>
-            <p className="text-2xl font-bold text-[#E6EAF0] mt-0.5">{analysis.overallScore}%</p>
+            <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase">Current Score</span>
+            <p className="text-2xl font-bold text-[var(--text-primary)] mt-0.5">{analysis.overallScore}%</p>
           </div>
-          <div className="text-right text-[11px] text-[#8A97A8]">
-            <p>Target: {job.title}</p>
-            <p className="text-teal-400 font-semibold">{analysis.components.skillsMatch.matched.length} Skills Verified</p>
+          <div className="text-right text-[11px] text-[var(--text-muted)]">
+            <p>Target: {job.title.split(' ')[0]}</p>
+            <p className="text-[var(--accent)] font-semibold">{analysis.components.skillsMatch.matched.length} Skills Verified</p>
           </div>
         </div>
 
-        {/* Potential Score Lift */}
-        <div className="bg-[#131F30] rounded-lg p-3.5 border border-[#223348] flex items-center justify-between">
+        {/* Projected Score */}
+        <div className="surface-panel p-3.5 flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-semibold text-teal-400 uppercase">Estimated Potential</span>
-            <p className="text-2xl font-bold text-teal-300 mt-0.5">
+            <span className="text-[10px] font-semibold text-[var(--success)] uppercase">Projected Score</span>
+            <p className="text-2xl font-bold text-[var(--success)] mt-0.5">
               {Math.min(98, analysis.overallScore + 14)}%
             </p>
           </div>
-          <div className="text-right text-[11px] text-[#8A97A8]">
-            <p className="font-semibold text-teal-400">+14% Potential Lift</p>
-            <p>Via bullet metric clarity</p>
+          <div className="text-right text-[11px] text-[var(--text-muted)]">
+            <p className="font-semibold text-[var(--success)]">+14% Potential Lift</p>
+            <p>Via quantified clarity</p>
           </div>
         </div>
 
-        {/* Improvements Applied Counter */}
-        <div className="bg-[#131F30] rounded-lg p-3.5 border border-[#223348] flex items-center justify-between">
+        {/* Applied Count */}
+        <div className="surface-panel p-3.5 flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-semibold text-[#8A97A8] uppercase">Improvements Applied</span>
-            <p className="text-2xl font-bold text-[#E6EAF0] mt-0.5">{appliedCount}</p>
+            <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase">Changes Applied</span>
+            <p className="text-2xl font-bold text-[var(--text-primary)] mt-0.5">{appliedCount}</p>
           </div>
-          <div className="text-right text-[11px] text-[#8A97A8]">
-            <p className="text-teal-400 font-semibold">Live Re-Scoring</p>
-            <p>Real-time updates active</p>
+          <div className="text-right text-[11px] text-[var(--text-muted)]">
+            <p className="text-[var(--text-primary)] font-semibold">Active Profile</p>
+            <p>{resume.fullName}</p>
           </div>
         </div>
 
       </div>
 
-      {/* Optimizer Suggestions List */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        
-        {/* Left Column: Summary Refinement */}
-        <div className="lg:col-span-6 space-y-3">
-          <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1.5">
-                <Edit3 className="w-3.5 h-3.5 text-teal-400" />
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[#E6EAF0]">
-                  Target-Aligned Summary
-                </h3>
-              </div>
-              <button
-                onClick={applySummary}
-                className="px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-slate-950 rounded text-xs font-mono font-bold flex items-center space-x-1 transition-colors cursor-pointer"
-              >
-                <Save className="w-3 h-3" />
-                <span>Apply to CV</span>
-              </button>
-            </div>
+      {/* 03. Executive Summary Optimization Section */}
+      <div className="surface-panel p-4 space-y-3 font-mono text-xs">
+        <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+          <span className="text-[10.5px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+            Executive Summary Refinement
+          </span>
+          <button
+            onClick={applySummary}
+            className="btn-primary text-xs"
+          >
+            <Save className="w-3.5 h-3.5" />
+            <span>Apply to Resume</span>
+          </button>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-sans text-xs">
+          
+          {/* Current Summary */}
+          <div className="surface-subtle p-3 rounded border border-[var(--border)] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-[var(--text-muted)] uppercase block">
+              Current Summary
+            </span>
+            <p className="text-[var(--text-secondary)] leading-relaxed">{resume.summary}</p>
+          </div>
+
+          {/* Optimized Draft */}
+          <div className="surface-subtle p-3 rounded border border-[var(--border)] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-[var(--accent)] uppercase block">
+              Refined Targeted Draft
+            </span>
             <textarea
+              rows={4}
               value={editableSummary}
               onChange={(e) => setEditableSummary(e.target.value)}
-              rows={6}
-              className="w-full bg-[#0E1A29] text-xs text-[#E6EAF0] p-2.5 rounded border border-[#223348] focus:outline-none focus:border-teal-500 font-sans leading-relaxed resize-none"
-              placeholder="Resume summary..."
+              className="w-full bg-[var(--surface)] p-2 rounded border border-[var(--border)] text-[var(--text-primary)] text-xs focus:outline-none focus:border-[var(--focus)] leading-relaxed resize-none font-sans"
             />
-
-            <p className="text-[11px] text-[#8A97A8] leading-relaxed">
-              Ensure summary highlights verified experience with {job.requiredSkills.slice(0, 3).join(', ')} while remaining 100% truthful to your background.
-            </p>
           </div>
 
-          {/* Keyword Integration Advice */}
-          <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-2.5 font-mono">
-            <h3 className="text-[10px] font-bold uppercase tracking-wider text-[#E6EAF0] flex items-center space-x-1.5">
-              <FileCheck className="w-3.5 h-3.5 text-teal-400" />
-              <span>Target Keyword Matrix</span>
-            </h3>
+        </div>
+      </div>
 
-            <div className="space-y-1.5">
-              {job.keywords.slice(0, 6).map((kw, idx) => {
-                const isMatched = analysis.components.keywordsMatch.matchedKeywords.includes(kw);
-                return (
-                  <div key={idx} className="flex items-center justify-between p-2 rounded bg-[#0E1A29] border border-[#223348] text-xs">
-                    <span className={`font-medium ${isMatched ? 'text-[#8A97A8]' : 'text-amber-300 font-bold'}`}>
-                      {kw}
+      {/* 04. Experience Bullet Points Quantified Optimization */}
+      <div className="surface-panel p-4 space-y-3 font-mono text-xs">
+        <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+          <span className="text-[10.5px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
+            Work Experience Accomplishment Optimization
+          </span>
+          <span className="text-[10.5px] text-[var(--text-muted)]">
+            {resume.experience.length} Positions Analyzed
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {resume.experience.map((exp, idx) => (
+            <div key={idx} className="surface-subtle p-3.5 rounded border border-[var(--border)] space-y-2.5">
+              <div className="flex justify-between items-baseline">
+                <span className="font-bold text-[var(--text-primary)] text-xs font-sans">
+                  {exp.jobTitle} — <span className="font-normal text-[var(--text-muted)]">{exp.company}</span>
+                </span>
+                <span className="text-[10px] text-[var(--text-muted)]">{exp.startDate} to {exp.isCurrent ? 'Present' : exp.endDate}</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-sans">
+                
+                {/* Current wording */}
+                <div className="p-2.5 rounded bg-[var(--surface)] border border-[var(--border)] space-y-1">
+                  <span className="text-[10px] font-mono font-bold text-[var(--text-muted)] uppercase block">
+                    Current Description
+                  </span>
+                  <p className="text-[var(--text-secondary)] text-[11px] leading-relaxed">{exp.description}</p>
+                </div>
+
+                {/* Suggested high-impact enhancement */}
+                <div className="p-2.5 rounded bg-[var(--surface)] border border-[var(--border-strong)] space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold text-[var(--accent)] uppercase">
+                      Suggested Metric Clarification
                     </span>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded border ${
-                      isMatched 
-                        ? 'bg-[#131F30] text-emerald-400 border-emerald-500/30' 
-                        : 'bg-[#131F30] text-amber-300 border-amber-500/30'
-                    }`}>
-                      {isMatched ? 'Detected' : 'Recommended'}
-                    </span>
+                    <button
+                      onClick={() => applyBulletToExperience(`Quantified execution delivering measurable operational improvements across ${job.requiredSkills.slice(0, 2).join(' and ')}.`)}
+                      className="px-2 py-0.5 rounded surface-subtle hover:bg-[var(--surface-raised)] text-[var(--text-primary)] border border-[var(--border)] text-[10px] font-mono transition-colors cursor-pointer"
+                    >
+                      + Append Impact
+                    </button>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Bullet Point Enhancements */}
-        <div className="lg:col-span-6 space-y-3">
-          <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348] space-y-3">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[#E6EAF0] flex items-center space-x-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-teal-400" />
-              <span>Quantified Bullet Revisions</span>
-            </h3>
-
-            <div className="space-y-3">
-              
-              {/* Bullet Suggestion 1 */}
-              <div className="p-3 rounded bg-[#0E1A29] border border-[#223348] space-y-2 text-xs">
-                <span className="text-[10px] font-mono font-bold uppercase text-[#8A97A8] tracking-wider block">Standard Record</span>
-                <p className="text-[#8A97A8] italic">
-                  &quot;{resume.experience[0]?.description.slice(0, 90) || 'Worked on SQL databases and Power BI reports for business teams.'}...&quot;
-                </p>
-
-                <div className="pt-2 border-t border-[#223348]">
-                  <span className="text-[10px] font-mono font-bold uppercase text-teal-400 tracking-wider block">Quantified Revision</span>
-                  <p className="text-[#E6EAF0] font-medium mt-1 leading-relaxed">
-                    &quot;Spearheaded {job.requiredSkills[0] || 'SQL'} data pipeline architecture and analytics dashboards, optimizing report turnaround times by 32% and informing executive strategy.&quot;
+                  <p className="text-[var(--text-primary)] text-[11px] leading-relaxed">
+                    Quantified execution delivering measurable operational improvements across {job.requiredSkills.slice(0, 2).join(' and ')}.
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-1.5">
-                  <span className="text-[10px] font-mono text-[#8A97A8]">Metric impact & active verbs.</span>
-                  <button
-                    onClick={() => applyBulletToExperience('Spearheaded high-performance data workflows, optimizing turnaround times by 32%.')}
-                    className="px-2.5 py-1 bg-[#17263B] hover:bg-[#223348] text-teal-300 border border-teal-500/30 rounded text-xs font-mono font-semibold transition-colors cursor-pointer"
-                  >
-                    Accept Bullet
-                  </button>
-                </div>
               </div>
-
-              {/* Bullet Suggestion 2 */}
-              <div className="p-3 rounded bg-[#0E1A29] border border-[#223348] space-y-2 text-xs">
-                <span className="text-[10px] font-mono font-bold uppercase text-[#8A97A8] tracking-wider block">Standard Record</span>
-                <p className="text-[#8A97A8] italic">
-                  &quot;Collaborated with team on software features and bug fixes.&quot;
-                </p>
-
-                <div className="pt-2 border-t border-[#223348]">
-                  <span className="text-[10px] font-mono font-bold uppercase text-teal-400 tracking-wider block">Quantified Revision</span>
-                  <p className="text-[#E6EAF0] font-medium mt-1 leading-relaxed">
-                    &quot;Partnered across cross-functional engineering pods to deploy high-availability microservices, adhering to Agile sprints and CI/CD best practices.&quot;
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-1.5">
-                  <span className="text-[10px] font-mono text-[#8A97A8]">SDLC methodology keywords.</span>
-                  <button
-                    onClick={() => applyBulletToExperience('Partnered across cross-functional pods to deploy scalable microservices under Agile methodologies.')}
-                    className="px-2.5 py-1 bg-[#17263B] hover:bg-[#223348] text-teal-300 border border-teal-500/30 rounded text-xs font-mono font-semibold transition-colors cursor-pointer"
-                  >
-                    Accept Bullet
-                  </button>
-                </div>
-              </div>
-
             </div>
-          </div>
+          ))}
         </div>
-
       </div>
 
     </div>

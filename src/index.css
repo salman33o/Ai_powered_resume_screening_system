@@ -1,38 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  --bg-canvas: #0B1420;
-  --bg-surface: #131F30;
-  --bg-surface-elevated: #17263B;
-  --bg-surface-subtle: #0E1A29;
-  --border-color: #223348;
-  --border-subtle: #192738;
-  --border-hover: #334A66;
-  --border-accent: #14B8A6;
+  --bg: #0B1420;
+  --surface: #131F30;
+  --surface-raised: #182638;
+  --surface-subtle: #101A28;
+
+  --border: #263548;
+  --border-strong: #34465A;
+
   --text-primary: #E6EAF0;
-  --text-secondary: #8A97A8;
-  --text-muted: #5B6B80;
-  --accent-teal: #14B8A6;
-  --accent-teal-hover: #0D9488;
-  --accent-teal-subtle: rgba(20, 184, 166, 0.12);
-  --status-success: #22C55E;
-  --status-warning: #F59E0B;
-  --status-danger: #EF4444;
-  --status-info: #38BDF8;
+  --text-secondary: #9AA8B8;
+  --text-muted: #6F7F91;
+
+  --accent: #2CB8A6;
+  --accent-hover: #35C8B5;
+  --accent-subtle: #173A39;
+
+  --success: #6FA58D;
+  --warning: #B99A63;
+  --danger: #B87878;
+  --info: #718FA8;
+
+  --focus: #35C8B5;
 }
 
 @layer base {
   * {
-    border-color: var(--border-color);
+    border-color: var(--border);
   }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg-canvas);
+    background-color: var(--bg);
     color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5, h6, .font-display {
     font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     letter-spacing: -0.015em;
+    font-weight: 600;
   }
   code, pre, .font-mono {
     font-family: 'IBM Plex Mono', monospace;
@@ -40,35 +46,235 @@
   }
 }
 
-/* Precision flat structural surfaces (No transparency, no backdrop-filter blur) */
+/* ==========================================================================
+   01. SURFACE & CONTAINER TOKENS (Opaque, Flat, Precise Hairline Borders)
+   ========================================================================== */
+.surface-panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.surface-raised {
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+}
+
+.surface-subtle {
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* Legacy utility aliases mapped strictly to flat opaque tokens */
 .glass-panel, .panel-solid {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
 }
 
 .glass-card, .card-solid {
-  background: var(--bg-surface-subtle);
-  border: 1px solid var(--border-color);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
 }
 
 .glass-card:hover, .card-solid:hover {
-  background: var(--bg-surface);
-  border-color: var(--border-hover);
+  background-color: var(--surface);
+  border-color: var(--border-strong);
 }
 
 .glass-input, .input-solid {
-  background: var(--bg-surface-subtle);
-  border: 1px solid var(--border-color);
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border);
   color: var(--text-primary);
-  transition: border-color 0.15s ease;
+  border-radius: 4px;
+  transition: border-color 0.12s ease;
 }
 
 .glass-input:focus, .input-solid:focus {
   outline: none;
-  border-color: var(--accent-teal);
-  background: var(--bg-surface);
+  border-color: var(--focus);
+  background-color: var(--surface);
+}
+
+/* ==========================================================================
+   02. BUTTON TOKENS (Clear Hierarchy, Minimal Radius, Zero Glow)
+   ========================================================================== */
+.btn-primary {
+  background-color: var(--accent);
+  color: #0B1420;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: background-color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--surface);
+  border-color: var(--border-strong);
+  color: #FFFFFF;
+}
+
+.btn-tertiary {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8125rem;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: color 0.12s ease;
+  cursor: pointer;
+}
+
+.btn-tertiary:hover {
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   03. TECHNICAL ATS INSTRUMENT EVALUATION GAUGE & AUDIT TICK-MARKS
+   ========================================================================== */
+.ats-instrument-scale {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.ats-instrument-track {
+  height: 8px;
+  background-color: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ats-instrument-fill {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.25s ease-out;
+}
+
+.ats-instrument-fill.warning {
+  background-color: var(--warning);
+}
+
+.ats-instrument-fill.danger {
+  background-color: var(--danger);
+}
+
+/* ==========================================================================
+   04. EVIDENCE AUDIT & SKILL MATCH TABLES (Editorial & Technical)
+   ========================================================================== */
+.eval-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+}
+
+.eval-th {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--surface-subtle);
+}
+
+.eval-td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.status-match {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.status-partial {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--warning);
+}
+
+.status-gap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.status-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--info);
+}
+
+/* Hairline technical divider */
+.hairline-divider {
+  height: 1px;
+  background-color: var(--border);
+  width: 100%;
 }
 
 /* Solid high-contrast text replacements */
@@ -79,106 +285,35 @@
   color: var(--text-primary);
 }
 
-/* Functional status borders - clean 1px, no soft halos */
-.glow-border-indigo, .glow-border-purple, .border-accent-teal {
-  border-color: var(--accent-teal) !important;
+/* Clean 1px status indicators */
+.border-accent {
+  border-color: var(--accent) !important;
 }
 
-.glow-border-emerald, .border-status-success {
-  border-color: #16A34A !important;
+.border-success {
+  border-color: var(--success) !important;
 }
 
-.glow-border-amber, .border-status-warning {
-  border-color: #D97706 !important;
+.border-warning {
+  border-color: var(--warning) !important;
 }
 
-/* Precision status badges */
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border: 1px solid var(--border-color);
-  background: var(--bg-surface-subtle);
+.border-danger {
+  border-color: var(--danger) !important;
 }
 
-/* Hairline technical divider */
-.hairline-divider {
-  height: 1px;
-  background-color: var(--border-color);
-  width: 100%;
-}
-
-/* Technical Instrument Gauge / Bar */
-.instrument-gauge {
-  background: #0B1420;
-  border: 1px solid var(--border-color);
-  height: 6px;
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-}
-
-.instrument-gauge-fill {
-  height: 100%;
-  background: var(--accent-teal);
-  transition: width 0.25s ease-out;
-}
-
-/* Button & interactive components - deliberate human studio feel */
-.btn-teal {
-  background-color: #0D9488;
-  color: #FFFFFF;
-  border: 1px solid #14B8A6;
-  font-weight: 600;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.btn-teal:hover {
-  background-color: #0F766E;
-  border-color: #2DD4BF;
-}
-
-.btn-teal:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Custom crisp scrollbar */
+/* Scrollbar precision */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--bg-canvas);
+  background: var(--bg);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #223348;
-  border-radius: 2px;
+  background: var(--border);
+  border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #334A66;
-}
-
-/* Print styles for Resume & PDF Reports */
-@media print {
-  body {
-    background: #ffffff !important;
-    color: #0f172a !important;
-  }
-  .no-print {
-    display: none !important;
-  }
-  .print-only {
-    display: block !important;
-  }
+  background: var(--border-strong);
 }

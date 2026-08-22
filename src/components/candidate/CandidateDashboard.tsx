@@ -8,12 +8,15 @@ import {
   FileText, 
   Wand2, 
   Bot, 
-  TrendingUp, 
   CheckCircle2, 
   ArrowRight, 
   Download, 
   Layers, 
-  ChevronRight 
+  Briefcase,
+  AlertCircle,
+  HelpCircle,
+  FileSearch,
+  ExternalLink
 } from 'lucide-react';
 
 interface CandidateDashboardProps {
@@ -31,238 +34,268 @@ export const CandidateDashboard: React.FC<CandidateDashboardProps> = ({
   setActiveView,
   onOpenReport
 }) => {
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-400 border-emerald-500/40 bg-[#0E1A29]';
-    if (score >= 60) return 'text-teal-400 border-teal-500/40 bg-[#0E1A29]';
-    if (score >= 40) return 'text-amber-400 border-amber-500/40 bg-[#0E1A29]';
-    return 'text-rose-400 border-rose-500/40 bg-[#0E1A29]';
-  };
+  const score = analysis.overallScore;
+
+  // Breakdown items in numbered audit style
+  const auditComponents = [
+    { num: '01', name: 'SKILL MATCH', score: analysis.components.skillsMatch.score, weight: '30%' },
+    { num: '02', name: 'EXPERIENCE RELEVANCE', score: analysis.components.experienceMatch.score, weight: '25%' },
+    { num: '03', name: 'RESPONSIBILITIES ALIGNMENT', score: analysis.components.responsibilitiesMatch.score, weight: '20%' },
+    { num: '04', name: 'PROJECTS EVIDENCE', score: analysis.components.projectsMatch.score, weight: '10%' },
+    { num: '05', name: 'EDUCATION THRESHOLD', score: analysis.components.educationMatch.score, weight: '5%' },
+    { num: '06', name: 'KEYWORD DENSITY', score: analysis.components.keywordsMatch.score, weight: '5%' },
+    { num: '07', name: 'CERTIFICATIONS & LICENSES', score: analysis.components.certificationsMatch.score, weight: '5%' },
+  ];
 
   return (
     <div className="space-y-4">
       
-      {/* Top Hero Banner */}
-      <div className="bg-[#131F30] rounded-lg p-5 border border-[#223348]">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* 01. Context Header: Technical Evaluation Banner */}
+      <div className="surface-panel p-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">Candidate Workspace</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#0E1A29] text-[#8A97A8] border border-[#223348]">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[var(--accent)]">
+                Evaluation Workspace
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded surface-subtle text-[var(--text-secondary)] border border-[var(--border)]">
                 {resume.versionName}
               </span>
             </div>
-            <h1 className="text-xl font-bold text-[#E6EAF0] font-display mt-1 tracking-tight">
-              Candidate: <span className="text-teal-300">{resume.fullName}</span>
+            <h1 className="text-xl font-bold text-[var(--text-primary)] font-display mt-0.5 tracking-tight">
+              Candidate: {resume.fullName}
             </h1>
-            <p className="text-xs text-[#8A97A8] mt-1 max-w-2xl leading-relaxed">
-              Target role: <strong className="text-[#E6EAF0]">{job.title}</strong> at <span className="text-teal-300 font-medium">{job.company}</span>. Deterministic hybrid evaluation and explainable ATS audit trail.
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5 max-w-2xl">
+              Target Position: <strong className="text-[var(--text-primary)]">{job.title}</strong> • {job.company} ({job.location})
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveView('resume-analyzer')}
-              className="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-slate-950 rounded font-bold text-xs flex items-center space-x-1.5 transition-colors"
+              className="btn-primary text-xs"
             >
-              <span>Inspect ATS Spec</span>
+              <span>Inspect Evaluation Spec</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setActiveView('resume-optimizer')}
-              className="px-3.5 py-2 bg-[#0E1A29] hover:bg-[#17263B] text-[#E6EAF0] rounded font-medium text-xs flex items-center space-x-1.5 border border-[#223348] transition-colors"
+              className="btn-secondary text-xs"
             >
-              <Wand2 className="w-3.5 h-3.5 text-teal-400" />
+              <Wand2 className="w-3.5 h-3.5 text-[var(--accent)]" />
               <span>Optimize Content</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Hero 3-Card Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* 02. ATS Compatibility Evaluation Instrument & Breakdown Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         
-        {/* Overall Match Gauge Card */}
-        <div className="bg-[#131F30] rounded-lg p-4 flex flex-col justify-between border border-[#223348]">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">Overall ATS Match</span>
-            <span className={`text-xs px-2 py-0.5 rounded font-mono font-bold border ${getScoreColor(analysis.overallScore)}`}>
-              {analysis.overallScore >= 80 ? 'High Fit' : analysis.overallScore >= 60 ? 'Moderate' : 'Needs Optimization'}
+        {/* Left 6 cols: Technical Instrument Gauge */}
+        <div className="lg:col-span-6 surface-panel p-4 space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+            <span className="text-[10.5px] font-mono font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+              ATS Compatibility Index
+            </span>
+            <span className="text-[11px] font-mono font-bold text-[var(--accent)]">
+              {score >= 80 ? 'HIGH ALIGNMENT' : score >= 60 ? 'MODERATE ALIGNMENT' : 'REQUIRES GAP CLOSING'}
             </span>
           </div>
 
-          <div className="flex items-baseline space-x-3 my-4">
-            <span className="text-5xl font-bold font-mono text-[#E6EAF0] tracking-tight">
-              {analysis.overallScore}%
-            </span>
-            <div className="text-[11px] text-[#8A97A8]">
-              <p className="font-semibold text-[#E6EAF0]">Deterministic Model</p>
-              <p>7-factor weighted</p>
+          {/* Instrument Reading Gauge */}
+          <div className="space-y-1.5 font-mono">
+            <div className="ats-instrument-scale">
+              <span>0</span>
+              <span>25</span>
+              <span>50</span>
+              <span>75</span>
+              <span>100</span>
             </div>
-          </div>
-
-          <div className="pt-2.5 border-t border-[#223348] flex items-center justify-between text-xs text-[#8A97A8] font-mono">
-            <span>Certainty Index:</span>
-            <span className="font-bold text-teal-400">{analysis.confidenceScore}%</span>
-          </div>
-        </div>
-
-        {/* Skill Alignment Snapshot */}
-        <div className="bg-[#131F30] rounded-lg p-4 flex flex-col justify-between border border-[#223348]">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">Skill Alignment</span>
-            <span className="text-xs text-teal-400 font-mono font-bold">
-              {analysis.components.skillsMatch.matched.length} Verified
-            </span>
-          </div>
-
-          <div className="my-3 space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono text-[#8A97A8]">
-              <span>Coverage Ratio</span>
-              <span className="font-bold text-[#E6EAF0]">
-                {analysis.components.skillsMatch.matched.length} / {job.requiredSkills.length}
-              </span>
-            </div>
-            <div className="w-full bg-[#0E1A29] rounded h-1.5 overflow-hidden border border-[#223348]">
+            <div className="ats-instrument-track">
               <div 
-                className="bg-teal-500 h-full rounded transition-all"
-                style={{ width: `${analysis.components.skillsMatch.score}%` }}
+                className={`ats-instrument-fill ${score < 50 ? 'danger' : score < 70 ? 'warning' : ''}`}
+                style={{ width: `${score}%` }}
               ></div>
             </div>
-
-            <div className="flex flex-wrap gap-1 pt-1">
-              {analysis.components.skillsMatch.matched.slice(0, 3).map((s, idx) => (
-                <span key={idx} className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#0E1A29] text-teal-300 border border-[#223348] flex items-center space-x-1">
-                  <CheckCircle2 className="w-3 h-3 text-teal-400" />
-                  <span>{s.skill}</span>
-                </span>
-              ))}
+            <div className="flex justify-between items-baseline pt-1">
+              <span className="text-[11px] text-[var(--text-muted)]">Certainty Index: {analysis.confidenceScore}%</span>
+              <span className="text-2xl font-bold text-[var(--text-primary)]">
+                {score} <span className="text-xs text-[var(--text-muted)] font-normal">/ 100</span>
+              </span>
             </div>
           </div>
 
-          <div className="pt-2.5 border-t border-[#223348] flex items-center justify-between text-xs font-mono">
-            <span className="text-rose-400 font-medium">
-              {analysis.components.skillsMatch.missingRequired.length} missing skill(s)
-            </span>
-            <button 
-              onClick={() => setActiveView('career-skill-gap')}
-              className="text-teal-400 hover:text-teal-300 font-medium flex items-center space-x-1 transition-colors"
+          <div className="hairline-divider"></div>
+
+          {/* Structured Numbered Breakdown */}
+          <div className="space-y-1.5 font-mono text-xs">
+            <div className="flex justify-between text-[10px] text-[var(--text-muted)] font-bold pb-1 uppercase tracking-wider">
+              <span>Component</span>
+              <span>Weight & Score</span>
+            </div>
+            {auditComponents.map(item => (
+              <div key={item.num} className="flex items-center justify-between py-1 border-b border-[var(--border)] text-[11px]">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[var(--text-muted)]">{item.num}</span>
+                  <span className="text-[var(--text-secondary)] font-medium">{item.name}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-[10px] text-[var(--text-muted)]">[{item.weight}]</span>
+                  <span className={`font-bold ${item.score >= 80 ? 'text-[var(--success)]' : item.score >= 60 ? 'text-[var(--text-primary)]' : 'text-[var(--warning)]'}`}>
+                    {item.score}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-1 flex items-center justify-between font-mono text-xs text-[var(--text-muted)]">
+            <span>Deterministic Scoring Algorithm</span>
+            <span className="text-[var(--text-primary)] font-semibold">ATS-Hybrid-v2.6</span>
+          </div>
+        </div>
+
+        {/* Right 6 cols: Candidate Profile Snapshot & Quick Action Module */}
+        <div className="lg:col-span-6 space-y-4">
+          
+          {/* Candidate Analysis Brief Card */}
+          <div className="surface-panel p-4 space-y-3 font-mono text-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+              <span className="text-[10.5px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                Candidate Profile Metadata
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                ID: {resume.id}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div>
+                <span className="text-[10px] text-[var(--text-muted)] block">Candidate Name</span>
+                <p className="font-bold text-[var(--text-primary)] font-sans text-xs">{resume.fullName}</p>
+              </div>
+              <div>
+                <span className="text-[10px] text-[var(--text-muted)] block">Location</span>
+                <p className="text-[var(--text-primary)]">{resume.location}</p>
+              </div>
+              <div>
+                <span className="text-[10px] text-[var(--text-muted)] block">Experience Records</span>
+                <p className="text-[var(--text-primary)]">{resume.experience.length} Positions Cataloged</p>
+              </div>
+              <div>
+                <span className="text-[10px] text-[var(--text-muted)] block">Verified Skills</span>
+                <p className="text-[var(--text-primary)]">{resume.skills.technical.length} Technical Skills</p>
+              </div>
+            </div>
+
+            <div className="hairline-divider"></div>
+
+            <div>
+              <span className="text-[10px] text-[var(--text-muted)] block mb-1">Executive Summary Snippet</span>
+              <p className="text-[11px] text-[var(--text-secondary)] font-sans leading-relaxed line-clamp-3">
+                {resume.summary}
+              </p>
+            </div>
+          </div>
+
+          {/* Module Direct Jump Links */}
+          <div className="grid grid-cols-2 gap-2 font-mono text-xs">
+            <button
+              onClick={() => setActiveView('ai-interview')}
+              className="surface-subtle p-3 rounded border border-[var(--border)] hover:border-[var(--border-strong)] text-left space-y-1 transition-colors cursor-pointer"
             >
-              <span>Gap Analysis</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+              <div className="flex items-center justify-between text-[var(--accent)]">
+                <span className="font-bold text-[11px]">Interview Prep</span>
+                <Bot className="w-3.5 h-3.5" />
+              </div>
+              <p className="text-[10.5px] text-[var(--text-muted)] font-sans">
+                50+ Grounded questions tailored to {resume.fullName.split(' ')[0]}
+              </p>
+            </button>
+
+            <button
+              onClick={() => setActiveView('job-tracker')}
+              className="surface-subtle p-3 rounded border border-[var(--border)] hover:border-[var(--border-strong)] text-left space-y-1 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center justify-between text-[var(--accent)]">
+                <span className="font-bold text-[11px]">Job Directory</span>
+                <Briefcase className="w-3.5 h-3.5" />
+              </div>
+              <p className="text-[10.5px] text-[var(--text-muted)] font-sans">
+                Browse 20 sectors and 80+ specialized positions
+              </p>
             </button>
           </div>
+
         </div>
 
-        {/* Experience & Seniority Alignment */}
-        <div className="bg-[#131F30] rounded-lg p-4 flex flex-col justify-between border border-[#223348]">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#8A97A8]">Experience Seniority</span>
-            <span className="text-xs text-emerald-400 font-mono font-bold">
-              {analysis.components.experienceMatch.titleAlignment}
-            </span>
-          </div>
+      </div>
 
-          <div className="my-3 space-y-1.5">
-            <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-bold font-mono text-[#E6EAF0]">
-                ~{analysis.components.experienceMatch.candidateYears} yrs
-              </span>
-              <span className="text-xs text-[#8A97A8]">vs {job.minExperienceYears}+ yrs req</span>
-            </div>
-            <p className="text-xs text-[#8A97A8] leading-relaxed line-clamp-2">
-              {analysis.components.experienceMatch.evidence}
+      {/* 03. Skill Matching Evidence Audit Table */}
+      <div className="surface-panel p-4 space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-[var(--border)] font-mono">
+          <div>
+            <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">
+              Skill Alignment & Evidence Verification Audit
+            </h3>
+            <p className="text-[10.5px] text-[var(--text-muted)] mt-0.5">
+              Deterministic verification of candidate skills against requirement specifications.
             </p>
           </div>
-
-          <div className="pt-2.5 border-t border-[#223348] flex items-center justify-between text-xs font-mono">
-            <span className="text-[#8A97A8]">Projects Logged:</span>
-            <span className="font-semibold text-[#E6EAF0]">{resume.projects.length} Verified</span>
-          </div>
+          <span className="text-[11px] font-bold text-[var(--accent)]">
+            {analysis.components.skillsMatch.matched.length} of {job.requiredSkills.length} Matched
+          </span>
         </div>
 
-      </div>
+        <div className="overflow-x-auto">
+          <table className="eval-table">
+            <thead>
+              <tr>
+                <th className="eval-th w-1/3">Required Competency</th>
+                <th className="eval-th w-1/2">Candidate CV Evidence</th>
+                <th className="eval-th text-right">Verification Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analysis.components.skillsMatch.matched.map((m, idx) => (
+                <tr key={`matched-${idx}`} className="hover:bg-[var(--surface-subtle)] transition-colors">
+                  <td className="eval-td font-medium text-[var(--text-primary)]">
+                    {m.skill}
+                  </td>
+                  <td className="eval-td text-[var(--text-secondary)] font-sans text-xs">
+                    {m.evidenceContext || `Verified in candidate work history and profile skills.`}
+                  </td>
+                  <td className="eval-td text-right">
+                    <span className="status-match">
+                      <span>●</span>
+                      <span>MATCH</span>
+                    </span>
+                  </td>
+                </tr>
+              ))}
 
-      {/* Quick Feature Action Launchpad */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <button
-          onClick={() => setActiveView('resume-analyzer')}
-          className="bg-[#131F30] hover:bg-[#17263B] p-3.5 rounded-lg text-left transition-colors border border-[#223348] group"
-        >
-          <div className="w-8 h-8 rounded bg-[#0E1A29] border border-[#223348] text-teal-400 flex items-center justify-center mb-2">
-            <FileText className="w-4 h-4" />
-          </div>
-          <p className="text-xs font-bold text-[#E6EAF0] group-hover:text-teal-300 transition-colors">ATS Breakdown</p>
-          <p className="text-[11px] text-[#8A97A8] mt-0.5">Component audit & metrics</p>
-        </button>
-
-        <button
-          onClick={() => setActiveView('resume-optimizer')}
-          className="bg-[#131F30] hover:bg-[#17263B] p-3.5 rounded-lg text-left transition-colors border border-[#223348] group"
-        >
-          <div className="w-8 h-8 rounded bg-[#0E1A29] border border-[#223348] text-teal-400 flex items-center justify-center mb-2">
-            <Wand2 className="w-4 h-4" />
-          </div>
-          <p className="text-xs font-bold text-[#E6EAF0] group-hover:text-teal-300 transition-colors">Resume Optimizer</p>
-          <p className="text-[11px] text-[#8A97A8] mt-0.5">Keyword density & impact</p>
-        </button>
-
-        <button
-          onClick={() => setActiveView('ai-interview')}
-          className="bg-[#131F30] hover:bg-[#17263B] p-3.5 rounded-lg text-left transition-colors border border-[#223348] group"
-        >
-          <div className="w-8 h-8 rounded bg-[#0E1A29] border border-[#223348] text-teal-400 flex items-center justify-center mb-2">
-            <Bot className="w-4 h-4" />
-          </div>
-          <p className="text-xs font-bold text-[#E6EAF0] group-hover:text-teal-300 transition-colors">Interview Prep</p>
-          <p className="text-[11px] text-[#8A97A8] mt-0.5">Role-tailored simulation</p>
-        </button>
-
-        <button
-          onClick={() => setActiveView('resume-builder')}
-          className="bg-[#131F30] hover:bg-[#17263B] p-3.5 rounded-lg text-left transition-colors border border-[#223348] group"
-        >
-          <div className="w-8 h-8 rounded bg-[#0E1A29] border border-[#223348] text-teal-400 flex items-center justify-center mb-2">
-            <Layers className="w-4 h-4" />
-          </div>
-          <p className="text-xs font-bold text-[#E6EAF0] group-hover:text-teal-300 transition-colors">Resume Builder</p>
-          <p className="text-[11px] text-[#8A97A8] mt-0.5">Standards-compliant export</p>
-        </button>
-      </div>
-
-      {/* Actionable Priority Improvement Checklist */}
-      <div className="bg-[#131F30] rounded-lg p-4 border border-[#223348]">
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="w-4 h-4 text-teal-400" />
-            <h3 className="text-xs font-bold text-[#E6EAF0] uppercase tracking-wider font-mono">
-              Priority Improvement Checklist for {job.title}
-            </h3>
-          </div>
-          <button
-            onClick={onOpenReport}
-            className="text-xs text-[#8A97A8] hover:text-[#E6EAF0] font-medium flex items-center space-x-1.5 px-2.5 py-1 rounded bg-[#0E1A29] border border-[#223348] transition-colors"
-          >
-            <Download className="w-3.5 h-3.5 text-teal-400" />
-            <span>Download Audit PDF</span>
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {analysis.improvementActionItems.map((item, idx) => (
-            <div 
-              key={idx} 
-              className="flex items-start space-x-2.5 p-2.5 rounded bg-[#0E1A29] border border-[#223348] text-xs text-[#E6EAF0]"
-            >
-              <div className="w-5 h-5 rounded bg-[#131F30] border border-[#223348] text-teal-400 font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-[10px]">
-                {idx + 1}
-              </div>
-              <p className="leading-relaxed">{item}</p>
-            </div>
-          ))}
+              {analysis.components.skillsMatch.missing.map((sk, idx) => (
+                <tr key={`missing-${idx}`} className="hover:bg-[var(--surface-subtle)] transition-colors">
+                  <td className="eval-td font-medium text-[var(--text-primary)]">
+                    {sk}
+                  </td>
+                  <td className="eval-td text-[var(--text-muted)] font-sans text-xs italic">
+                    Not detected in parsed resume sections.
+                  </td>
+                  <td className="eval-td text-right">
+                    <span className="status-gap">
+                      <span>●</span>
+                      <span>GAP</span>
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
     </div>
   );
 };
-
