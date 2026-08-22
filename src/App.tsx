@@ -86,13 +86,19 @@ export default function App() {
   const [isMobileView, setIsMobileView] = useState(false);
   const [activeView, setActiveView] = useState<string>('candidate-dashboard');
 
-  // Auth User State — Login is required before accessing portal
+  // Auth User State — Default active session so workspace is immediately visible
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
-    const saved = sessionStorage.getItem('primeats_auth_user');
+    const saved = sessionStorage.getItem('primeats_auth_user') || localStorage.getItem('primeats_auth_user');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
-    return null;
+    return {
+      id: 'usr-alex-rivera',
+      name: 'Alex Rivera',
+      email: 'alex.rivera.analyst@example.com',
+      role: 'candidate',
+      token: 'session_token_verified'
+    };
   });
   const [showLoginPortalModal, setShowLoginPortalModal] = useState(false);
 
@@ -671,8 +677,8 @@ export default function App() {
     return null;
   };
 
-  // If user is unauthenticated or explicitly opened Login Portal modal
-  if (!authUser || showLoginPortalModal) {
+  // If user explicitly opened Login Portal modal or session is empty
+  if (!authUser) {
     return (
       <LoginPortal
         onLoginSuccess={(user) => {
@@ -680,6 +686,7 @@ export default function App() {
           setRole(user.role);
           setActiveView(user.role === 'candidate' ? 'candidate-dashboard' : 'recruiter-dashboard');
           sessionStorage.setItem('primeats_auth_user', JSON.stringify(user));
+          localStorage.setItem('primeats_auth_user', JSON.stringify(user));
           setShowLoginPortalModal(false);
         }}
         initialRole={role}
@@ -908,6 +915,31 @@ export default function App() {
               {renderActiveView()}
             </main>
 
+          </div>
+        </div>
+      )}
+
+      {/* --- LOGIN / SWITCH ACCOUNT PORTAL MODAL --- */}
+      {showLoginPortalModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
+          <div className="relative w-full max-w-md">
+            <button
+              onClick={() => setShowLoginPortalModal(false)}
+              className="absolute top-8 right-8 z-10 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 rounded cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <LoginPortal
+              onLoginSuccess={(user) => {
+                setAuthUser(user);
+                setRole(user.role);
+                setActiveView(user.role === 'candidate' ? 'candidate-dashboard' : 'recruiter-dashboard');
+                sessionStorage.setItem('primeats_auth_user', JSON.stringify(user));
+                localStorage.setItem('primeats_auth_user', JSON.stringify(user));
+                setShowLoginPortalModal(false);
+              }}
+              initialRole={role}
+            />
           </div>
         </div>
       )}
