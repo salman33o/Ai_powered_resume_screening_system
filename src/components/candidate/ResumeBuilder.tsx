@@ -126,8 +126,8 @@ export const ResumeBuilder: React.FC<ResumeBuilderProps> = ({
     setIsVerifyingCert(true);
     try {
       // Parse file text
-      const parsedText = await parseUploadedResumeFile(file);
-      const text = parsedText.toLowerCase();
+      const parsedResume = await parseUploadedResumeFile(file);
+      const text = `${file.name} ${parsedResume.fullName || ''} ${parsedResume.summary || ''} ${(parsedResume.skills?.technical || []).join(' ')} ${(parsedResume.certifications || []).map(c => c.name).join(' ')}`.toLowerCase();
 
       // Intelligent extraction heuristics
       let certName = 'Professional Accredited Certificate';

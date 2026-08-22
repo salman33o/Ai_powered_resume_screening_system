@@ -182,37 +182,37 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
       setThroughput(Math.round(processed.length / (elapsed || 0.1)));
       onScreeningComplete(processed);
     } else {
-      const resumes = generateBulkResumes(totalToScreen);
+      const bulkApps = generateBulkResumes(totalToScreen, activeJob);
       let current = 0;
-      const chunkStep = Math.max(10, Math.floor(resumes.length / 25));
+      const chunkStep = Math.max(10, Math.floor(bulkApps.length / 25));
 
       const interval = setInterval(() => {
         current += chunkStep;
-        if (current >= resumes.length) {
-          current = resumes.length;
+        if (current >= bulkApps.length) {
+          current = bulkApps.length;
           clearInterval(interval);
 
-          const processed: PipelineCandidate[] = resumes.map((r, idx) => {
-            const atsScore = evaluateResumeAgainstJob(r, activeJob);
-            let stage: any = 'applied';
+          const processed: PipelineCandidate[] = bulkApps.map((app, idx) => {
+            const atsScore = app.atsAnalysis || evaluateResumeAgainstJob(app.resume, activeJob);
+            let stage: any = app.stage || 'applied';
             if (atsScore.overallScore >= 80) stage = 'shortlisted';
             else if (atsScore.overallScore >= 60) stage = 'screening';
 
             return {
-              id: `cand-bulk-${Date.now()}-${idx}`,
-              candidateId: r.id,
-              candidateName: r.fullName,
-              candidateEmail: r.email,
-              candidatePhone: r.phone,
+              id: app.id || `cand-bulk-${Date.now()}-${idx}`,
+              candidateId: app.candidateId || app.resume.id,
+              candidateName: app.candidateName || app.resume.fullName,
+              candidateEmail: app.candidateEmail || app.resume.email,
+              candidatePhone: app.candidatePhone || app.resume.phone,
               jobId: activeJob.id,
               jobTitle: activeJob.title,
               companyName: activeJob.company,
-              appliedDate: new Date(Date.now() - idx * 3600000).toISOString(),
+              appliedDate: app.appliedDate || new Date(Date.now() - idx * 3600000).toISOString(),
               stage,
-              resume: r,
+              resume: app.resume,
               atsAnalysis: atsScore,
               atsScore,
-              recruiterNotes: [],
+              recruiterNotes: app.recruiterNotes || [],
               tags: atsScore.overallScore >= 80 ? ['High Match', 'Auto-Shortlist'] : ['Processed'],
               recruiterRating: atsScore.overallScore >= 85 ? 5 : atsScore.overallScore >= 70 ? 4 : 3
             };
@@ -220,10 +220,10 @@ export const BulkScreening: React.FC<BulkScreeningProps> = ({
 
           processed.sort((a, b) => b.atsScore.overallScore - a.atsScore.overallScore);
           setScreenedResults(processed);
-          setProcessedCount(resumes.length);
+          setProcessedCount(bulkApps.length);
           setIsProcessing(false);
           const elapsed = (performance.now() - startTime) / 1000;
-          setThroughput(Math.round(resumes.length / (elapsed || 0.1)));
+          setThroughput(Math.round(bulkApps.length / (elapsed || 0.1)));
           onScreeningComplete(processed);
         } else {
           setProcessedCount(current);
